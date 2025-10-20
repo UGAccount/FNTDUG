@@ -36,7 +36,7 @@
         "Mic Toss": "Every 5 attacks this unit throws its microphone applying bleed for 1s, dealing 10% of this unit's current damage."
       },
       "Obtainability": [
-        "Uncommon Present (50%)",
+        "Uncommon Present (25%)",
         "Merchant 150 Coins",
         "Summons (50%)"
       ]
@@ -342,7 +342,7 @@
         "High Pressure": "Every 10th attack knocks back enemies a short distance (30s CD to knockback the same enemy again). This unit's attacks ignore armor damage resistance."
       },
       "Obtainability": [
-        "Mythic Present (2%)",
+        "Mythic Present (25%)",
         "Merchant 7500 Coins",
         "Summons (2%)"
       ]
@@ -971,7 +971,7 @@
         "Arcade Machine": "This unit makes money every wave based on its current upgrade. [Upgrade 1: 200 Cash, Upgrade 2: 450 Cash, Upgrade 3: 1000 Cash, Upgrade 4: 1600 Cash]"
       },
       "Obtainability": [
-        "Mythic Present (2%)",
+        "Mythic Present (25%)",
         "Merchant 7500 Coins",
         "Summons (2%)"
       ]
@@ -1016,7 +1016,7 @@
         "Birthday Boy": "Provides a 3% buff to damage, range, and cooldown to every unit in its radius."
       },
       "Obtainability": [
-        "Epic Present (18%)",
+        "Epic Present (25%)",
         "Merchant 1250 Coins",
         "Summons (18%)"
       ]
@@ -1448,7 +1448,8 @@
       "BaseStats": {
         "Range": 18,
         "Damage": 125,
-        "Cooldown": 2.2
+        ""
+: 2.2
       },
       "UpgradeStats": [
         {
@@ -1533,7 +1534,7 @@
         "Megalomaniac": "For every enemy killed in this unit's range, gain 0.1% range. [10% max buff]"
       },
       "Obtainability": [
-        "Rare Present (30%)",
+        "Rare Present (50%)",
         "Merchant 500 Coins",
         "Summons (30%)"
       ]
@@ -2136,7 +2137,7 @@
         "Generator": "Every second attack deals 40% bonus damage."
       },
       "Obtainability": [
-        "Epic Present (18%)",
+        "Epic Present (25%)",
         "Merchant 1250 Coins",
         "Summons (18%)"
       ]
@@ -2183,7 +2184,7 @@
         "Faz-Shotgun": "Does extra damage based on enemy distance from unit. 120% damage in 20% range, 110% damage in 40% range, 100% damage in 60% range, 90% damage in 80% range, 80% damage in 100% range."
       },
       "Obtainability": [
-        "Epic Present (18%)",
+        "Epic Present (25%)",
         "Merchant 1250 Coins",
         "Summons (18%)"
       ]
@@ -2230,7 +2231,7 @@
         "Energy Surplus": "Every 4th attack, this unit's next attack will deal an additional 150% of its current damage"
       },
       "Obtainability": [
-        "Epic Present (18%)",
+        "Epic Present (25%)",
         "Merchant 1250 Coins",
         "Summons (18%)"
       ]
@@ -2271,7 +2272,7 @@
         "Paper Cuts": "Attacks apply bleed for 1s, dealing 5% of this unit's current damage."
       },
       "Obtainability": [
-        "Rare Present (30%)",
+        "Rare Present (50%)",
         "Merchant 500 Coins",
         "Summons (30%)"
       ]
@@ -2312,7 +2313,7 @@
         "Right Hook": "This unit performs a follow up attack dealing 25% of its current damage every 6th attack."
       },
       "Obtainability": [
-        "Uncommon Present (50%)",
+        "Uncommon Present (25%)",
         "Merchant 150 Coins",
         "Summons (50%)"
       ]
@@ -2353,7 +2354,7 @@
         "Flaming Cupcake": "Every 5 attacks this unit's cupcake will apply burn for 1s, dealing 10% of her current damage."
       },
       "Obtainability": [
-        "Uncommon Present (50%)",
+        "Uncommon Present (25%)",
         "Merchant 150 Coins",
         "Summons (50%)"
       ]
@@ -2394,7 +2395,7 @@
         "Guitar Solo": "Every 10s this unit provides itself a 10% damage boost for 5s"
       },
       "Obtainability": [
-        "Uncommon Present (50%)",
+        "Uncommon Present (25%)",
         "Merchant 150 Coins",
         "Summons (50%)"
       ]
@@ -2512,7 +2513,7 @@
         "Charged Laser [Upgrade 3-5]": "Every 5 seconds, this unit will damage enemies around its target for 100% of its damage."
       },
       "Obtainability": [
-        "Mythic Present (2%)",
+        "Mythic Present (25%)",
         "Merchant 7500 Coins",
         "Summons (2%)"
       ]
@@ -2555,7 +2556,7 @@
         "Synchronized Hardware": "For every Endo in its radius including itself, provide a self 5% range boost [20% max buff]"
       },
       "Obtainability": [
-        "Mythic Present (2%)",
+        "Mythic Present (25%)",
         "Merchant 7500 Coins",
         "Summons (2%)"
       ]
