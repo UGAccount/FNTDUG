@@ -471,32 +471,27 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 15,
-        "Damage": 0,
-        "Cooldown": 0
+        "RangeBoost": 1.02
       },
       "UpgradeStats": [
         {
           "Range": 15,
-          "Damage": 0,
-          "Cooldown": 0,
+          "RangeBoost": 1.04,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
-          "Damage": 0,
-          "Cooldown": 0,
+          "RangeBoost": 1.06,
           "UpgradePrice": 650
         },
         {
           "Range": 17,
-          "Damage": 0,
-          "Cooldown": 0,
+          "RangeBoost": 1.08,
           "UpgradePrice": 850
         },
         {
           "Range": 18,
-          "Damage": 0,
-          "Cooldown": 0,
+          "RangeBoost": 1.10,
           "UpgradePrice": 1050
         }
       ],
@@ -558,30 +553,30 @@
       "MaxPlaced": 3,
       "BaseStats": {
         "Range": 15,
-        "Damage": 0,
-        "Cooldown": 0,
-        "Speed": 0
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": .97
       },
       "UpgradeStats": [
         {
           "Range": 16,
-          "Damage": 0,
-          "Cooldown": 0,
-          "Speed": 0,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": .97,
           "UpgradePrice": 600
         },
         {
           "Range": 17,
-          "Damage": 0,
-          "Cooldown": 0,
-          "Speed": 0,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": .97,
           "UpgradePrice": 800
         },
         {
           "Range": 18,
-          "Damage": 0,
-          "Cooldown": 0,
-          "Speed": 0,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": .97,
           "UpgradePrice": 1050
         }
       ],
@@ -603,30 +598,30 @@
       "MaxPlaced": 3,
       "BaseStats": {
         "Range": 15,
-        "Damage": 0,
-        "Cooldown": 0,
-        "Speed": 0
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": .97
       },
       "UpgradeStats": [
         {
           "Range": 16,
-          "Damage": 0,
-          "Cooldown": 0,
-          "Speed": 0,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": .97,
           "UpgradePrice": 600
         },
         {
           "Range": 17,
-          "Damage": 0,
-          "Cooldown": 0,
-          "Speed": 0,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": .97,
           "UpgradePrice": 800
         },
         {
           "Range": 18,
-          "Damage": 0,
-          "Cooldown": 0,
-          "Speed": 0,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": .97,
           "UpgradePrice": 1050
         }
       ],
@@ -910,32 +905,27 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 20,
-        "Damage": 0,
-        "Cooldown": 0
+        "DamageBoost": 1.03
       },
       "UpgradeStats": [
         {
           "Range": 20,
-          "Damage": 0,
-          "Cooldown": 0,
+          "DamageBoost": 1.06,
           "UpgradePrice": 800
         },
         {
           "Range": 20,
-          "Damage": 0,
-          "Cooldown": 0,
+          "DamageBoost": 1.09,
           "UpgradePrice": 1000
         },
         {
           "Range": 20,
-          "Damage": 0,
-          "Cooldown": 0,
+          "DamageBoost": 1.12,
           "UpgradePrice": 1200
         },
         {
           "Range": 20,
-          "Damage": 0,
-          "Cooldown": 0,
+          "DamageBoost": 1.15,
           "UpgradePrice": 1500
         }
       ],
@@ -958,7 +948,7 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 10,
-        "Damage": 10,
+        "DamageBoost": 1.03,
         "Cooldown": 2
       },
       "UpgradeStats": [
@@ -986,27 +976,18 @@
       "Element": "Neutral",
       "MaxPlaced": 3,
       "BaseStats": {
-        "Range": 0,
-        "Damage": 0,
-        "Cooldown": 0
+        "Money": 200
       },
       "UpgradeStats": [
         {
-          "Range": 0,
-          "Damage": 0,
-          "Cooldown": 0,
+          "Money": 450,
           "UpgradePrice": 900
         },
         {
-          "Range": 0,
-          "Damage": 0,
-          "Cooldown": 0,
+          "Money": 1000,
           "UpgradePrice": 2000
         },
-        {
-          "Range": 0,
-          "Damage": 0,
-          "Cooldown": 0,
+          "Money": 1600,
           "UpgradePrice": 3250
         }
       ],
@@ -1027,27 +1008,19 @@
       "Element": "Neutral",
       "MaxPlaced": 3,
       "BaseStats": {
-        "Range": 0,
-        "Damage": 0,
-        "Cooldown": 0
+        "Money": 200
       },
       "UpgradeStats": [
         {
-          "Range": 0,
-          "Damage": 0,
-          "Cooldown": 0,
+          "Money": 450,
           "UpgradePrice": 900
         },
         {
-          "Range": 0,
-          "Damage": 0,
-          "Cooldown": 0,
+          "Money": 1000,
           "UpgradePrice": 2000
         },
         {
-          "Range": 0,
-          "Damage": 0,
-          "Cooldown": 0,
+          "Money": 1600,
           "UpgradePrice": 3250
         }
       ],
