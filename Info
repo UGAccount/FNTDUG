@@ -470,23 +470,28 @@
       "Element": "Neutral",
       "MaxPlaced": 2,
       "BaseStats": {
-        "Range": 15
+        "Range": 15,
+        "RangeBoost": 1.02
       },
       "UpgradeStats": [
         {
           "Range": 15,
+          "RangeBoost": 1.04,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
+          "RangeBoost": 1.06,
           "UpgradePrice": 650
         },
         {
           "Range": 17,
+          "RangeBoost": 1.08,
           "UpgradePrice": 850
         },
         {
           "Range": 18,
+          "RangeBoost": 1.10,
           "UpgradePrice": 1050
         }
       ],
@@ -505,23 +510,28 @@
       "Element": "Neutral",
       "MaxPlaced": 2,
       "BaseStats": {
-        "Range": 15
+        "Range": 15,
+        "RangeBoost": 1.02
       },
       "UpgradeStats": [
         {
           "Range": 15,
+          "RangeBoost": 1.04,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
+          "RangeBoost": 1.06,
           "UpgradePrice": 650
         },
         {
           "Range": 17,
+          "RangeBoost": 1.08,
           "UpgradePrice": 850
         },
         {
           "Range": 18,
+          "RangeBoost": 1.10,
           "UpgradePrice": 1050
         }
       ],
@@ -537,19 +547,31 @@
       "Element": "Neutral",
       "MaxPlaced": 3,
       "BaseStats": {
-        "Range": 15
+        "Range": 15,
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": 0.97
       },
       "UpgradeStats": [
         {
           "Range": 16,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
           "UpgradePrice": 600
         },
         {
           "Range": 17,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
           "UpgradePrice": 800
         },
         {
           "Range": 18,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
           "UpgradePrice": 1050
         }
       ],
@@ -570,19 +592,31 @@
       "Element": "Neutral",
       "MaxPlaced": 3,
       "BaseStats": {
-        "Range": 15
+        "Range": 15,
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": 0.97
       },
       "UpgradeStats": [
         {
           "Range": 16,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
           "UpgradePrice": 600
         },
         {
           "Range": 17,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
           "UpgradePrice": 800
         },
         {
           "Range": 18,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
           "UpgradePrice": 1050
         }
       ],
@@ -865,23 +899,28 @@
       "Element": "Electricity",
       "MaxPlaced": 2,
       "BaseStats": {
-        "Range": 20
+        "Range": 20,
+        "DamageBoost": 1.03
       },
       "UpgradeStats": [
         {
           "Range": 20,
+          "DamageBoost": 1.06,
           "UpgradePrice": 800
         },
         {
           "Range": 20,
+          "DamageBoost": 1.09,
           "UpgradePrice": 1000
         },
         {
           "Range": 20,
+          "DamageBoost": 1.12,
           "UpgradePrice": 1200
         },
         {
           "Range": 20,
+          "DamageBoost": 1.15,
           "UpgradePrice": 1500
         }
       ],
@@ -905,31 +944,36 @@
       "BaseStats": {
         "Range": 20,
         "Damage": 15,
-        "Cooldown": 3
+        "Cooldown": 3,
+       "DamageBoost": 1.03
       },
       "UpgradeStats": [
         {
           "Range": 20,
           "Damage": 20,
           "Cooldown": 3,
+          "DamageBoost": 1.06,
           "UpgradePrice": 800
         },
         {
           "Range": 20,
           "Damage": 20,
           "Cooldown": 3,
+          "DamageBoost": 1.09,
           "UpgradePrice": 1000
         },
         {
           "Range": 20,
           "Damage": 20,
           "Cooldown": 3,
+          "DamageBoost": 1.12,
           "UpgradePrice": 1200
         },
         {
           "Range": 20,
           "Damage": 20,
           "Cooldown": 3,
+          "DamageBoost": 1.15,
           "UpgradePrice": 1500
         }
       ],
