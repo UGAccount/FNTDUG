@@ -511,32 +511,27 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 15,
-        "Damage": 0,
-        "Cooldown": 0
+        "RangeBoost": 1.02
       },
       "UpgradeStats": [
         {
           "Range": 15,
-          "Damage": 0,
-          "Cooldown": 0,
+          "RangeBoost": 1.04,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
-          "Damage": 0,
-          "Cooldown": 0,
+          "RangeBoost": 1.06,
           "UpgradePrice": 650
         },
         {
           "Range": 17,
-          "Damage": 0,
-          "Cooldown": 0,
+          "RangeBoost": 1.08,
           "UpgradePrice": 850
         },
         {
           "Range": 18,
-          "Damage": 0,
-          "Cooldown": 0,
+          "RangeBoost": 1.10,
           "UpgradePrice": 1050
         }
       ],
