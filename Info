@@ -355,7 +355,7 @@
       "PlacementPrice": 500,
       "Type": "Line",
       "Element": "Light",
-      "MaxPlaced": 5,
+      "MaxPlaced": 3,
       "BaseStats": {
         "Range": 20,
         "Damage": 35,
@@ -470,28 +470,23 @@
       "Element": "Neutral",
       "MaxPlaced": 2,
       "BaseStats": {
-        "Range": 15,
-        "RangeBoost": 1.02
+        "Range": 15
       },
       "UpgradeStats": [
         {
           "Range": 15,
-          "RangeBoost": 1.04,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
-          "RangeBoost": 1.06,
           "UpgradePrice": 650
         },
         {
           "Range": 17,
-          "RangeBoost": 1.08,
           "UpgradePrice": 850
         },
         {
           "Range": 18,
-          "RangeBoost": 1.10,
           "UpgradePrice": 1050
         }
       ],
@@ -510,28 +505,23 @@
       "Element": "Neutral",
       "MaxPlaced": 2,
       "BaseStats": {
-        "Range": 15,
-        "RangeBoost": 1.02
+        "Range": 15
       },
       "UpgradeStats": [
         {
           "Range": 15,
-          "RangeBoost": 1.04,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
-          "RangeBoost": 1.06,
           "UpgradePrice": 650
         },
         {
           "Range": 17,
-          "RangeBoost": 1.08,
           "UpgradePrice": 850
         },
         {
           "Range": 18,
-          "RangeBoost": 1.10,
           "UpgradePrice": 1050
         }
       ],
@@ -547,31 +537,19 @@
       "Element": "Neutral",
       "MaxPlaced": 3,
       "BaseStats": {
-        "Range": 15,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97
+        "Range": 15
       },
       "UpgradeStats": [
         {
           "Range": 16,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
           "UpgradePrice": 600
         },
         {
           "Range": 17,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
           "UpgradePrice": 800
         },
         {
           "Range": 18,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
           "UpgradePrice": 1050
         }
       ],
@@ -592,31 +570,19 @@
       "Element": "Neutral",
       "MaxPlaced": 3,
       "BaseStats": {
-        "Range": 15,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97
+        "Range": 15
       },
       "UpgradeStats": [
         {
           "Range": 16,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
           "UpgradePrice": 600
         },
         {
           "Range": 17,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
           "UpgradePrice": 800
         },
         {
           "Range": 18,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
           "UpgradePrice": 1050
         }
       ],
@@ -675,7 +641,7 @@
       "Name": "Shiny Toy Bonnie",
       "Rarity": "Epic",
       "PlacementPrice": 850,
-      "Type": "Single",
+      "Type": "Cone",
       "Element": "Neutral",
       "MaxPlaced": 4,
       "BaseStats": {
@@ -764,7 +730,7 @@
       "Name": "Shiny Toy Freddy",
       "Rarity": "Epic",
       "PlacementPrice": 750,
-      "Type": "Explosion",
+      "Type": "Cone",
       "Element": "Fire",
       "MaxPlaced": 4,
       "BaseStats": {
@@ -799,7 +765,7 @@
         }
       ],
       "Passives": {
-        "Faz-Shotgun": "Does extra damage based on enemy distance from unit. 120% damage in 20% range, 110% damage in 40% range, 100% damage in 60% range, 90% damage in 80% range, 80% damage in 100% range."
+        "Faz-Shotgun": "Does extra damage based on enemy distance from unit. 120% damage in 20% range, 110% damage in 40% range, 100% damage in 60% range, 90% damage in 80% range, 80% damage 100% range."
       }
     },
     {
@@ -899,28 +865,23 @@
       "Element": "Electricity",
       "MaxPlaced": 2,
       "BaseStats": {
-        "Range": 20,
-        "DamageBoost": 1.03
+        "Range": 20
       },
       "UpgradeStats": [
         {
           "Range": 20,
-          "DamageBoost": 1.06,
           "UpgradePrice": 800
         },
         {
           "Range": 20,
-          "DamageBoost": 1.09,
           "UpgradePrice": 1000
         },
         {
           "Range": 20,
-          "DamageBoost": 1.12,
           "UpgradePrice": 1200
         },
         {
           "Range": 20,
-          "DamageBoost": 1.15,
           "UpgradePrice": 1500
         }
       ],
@@ -937,25 +898,39 @@
     {
       "Name": "Shiny Endo 01",
       "Rarity": "Mythical",
-      "PlacementPrice": 100,
+      "PlacementPrice": 1000,
       "Type": "Single",
       "Element": "Electricity",
       "MaxPlaced": 2,
       "BaseStats": {
-        "Range": 10,
-        "DamageBoost": 1.03,
-        "Cooldown": 2
+        "Range": 20,
+        "Damage": 15,
+        "Cooldown": 3
       },
       "UpgradeStats": [
         {
-          "Range": 30,
-          "Damage": 12,
-          "Cooldown": 1.7
+          "Range": 20,
+          "Damage": 20,
+          "Cooldown": 3,
+          "UpgradePrice": 800
         },
         {
-          "Range": 40,
-          "Damage": 14,
-          "Cooldown": 1.5
+          "Range": 20,
+          "Damage": 20,
+          "Cooldown": 3,
+          "UpgradePrice": 1000
+        },
+        {
+          "Range": 20,
+          "Damage": 20,
+          "Cooldown": 3,
+          "UpgradePrice": 1200
+        },
+        {
+          "Range": 20,
+          "Damage": 20,
+          "Cooldown": 3,
+          "UpgradePrice": 1500
         }
       ],
       "Passives": {
@@ -1124,7 +1099,7 @@
       ],
       "Passives": {
         "Water Hose": "Attacks apply a 12% slow for 2s.",
-        "High Pressure": "Every 10th attack knocks back enemies a short distance (30s CD to knockback the same enemy again). This unit's attacks ignore armor damage resistance."
+        "High Pressure": "Every 10th attack knocks back enemies a short distance [This knockback does not work on bosses] (30s CD to knockback the same enemy again). This unit's attacks ignore armor damage resistance."
       }
     },
     {
@@ -1297,44 +1272,44 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 22,
-        "Damage": 50,
-        "Cooldown": 0.5
+        "Damage": 80,
+        "Cooldown": 2
       },
       "UpgradeStats": [
         {
           "Range": 22,
-          "Damage": 60,
-          "Cooldown": 0.5,
+          "Damage": 90,
+          "Cooldown": 2,
           "UpgradePrice": 2000
         },
         {
           "Range": 24,
-          "Damage": 60,
-          "Cooldown": 0.5,
+          "Damage": 100,
+          "Cooldown": 2,
           "UpgradePrice": 2500
         },
         {
           "Range": 24,
-          "Damage": 60,
-          "Cooldown": 0.5,
+          "Damage": 120,
+          "Cooldown": 2.4,
           "UpgradePrice": 4000
         },
         {
           "Range": 26,
-          "Damage": 65,
-          "Cooldown": 0.5,
+          "Damage": 140,
+          "Cooldown": 2.4,
           "UpgradePrice": 4500
         },
         {
           "Range": 28,
-          "Damage": 70,
-          "Cooldown": 0.5,
+          "Damage": 160,
+          "Cooldown": 2.4,
           "UpgradePrice": 4500
         },
         {
           "Range": 28,
-          "Damage": 80,
-          "Cooldown": 0.5,
+          "Damage": 180,
+          "Cooldown": 2.4,
           "UpgradePrice": 5000
         }
       ],
@@ -1404,39 +1379,39 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 22,
-        "Damage": 160,
+        "Damage": 150,
         "Cooldown": 3.6
       },
       "UpgradeStats": [
         {
           "Range": 22,
-          "Damage": 180,
+          "Damage": 170,
           "Cooldown": 3.6,
           "UpgradePrice": 1000
         },
         {
           "Range": 24,
-          "Damage": 200,
+          "Damage": 190,
           "Cooldown": 3.6,
           "UpgradePrice": 1500
         },
         {
           "Range": 24,
-          "Damage": 210,
-          "Cooldown": 3.2,
-          "UpgradePrice": 2000
-        },
-        {
-          "Range": 26,
-          "Damage": 250,
+          "Damage": 200,
           "Cooldown": 3.2,
           "UpgradePrice": 2500
         },
         {
-          "Range": 27,
-          "Damage": 300,
+          "Range": 26,
+          "Damage": 220,
           "Cooldown": 3.2,
           "UpgradePrice": 3000
+        },
+        {
+          "Range": 27,
+          "Damage": 260,
+          "Cooldown": 3.2,
+          "UpgradePrice": 4000
         }
       ],
       "Passives": {
@@ -1873,7 +1848,7 @@
       "Name": "Shiny Withered Freddy",
       "Rarity": "Secret",
       "PlacementPrice": 1800,
-      "Type": "Explosion",
+      "Type": "Cone",
       "Element": "Rust",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -1993,43 +1968,43 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 15,
-        "Damage": 150,
+        "Damage": 90,
         "Cooldown": 1.5
       },
       "UpgradeStats": [
         {
           "Range": 16,
-          "Damage": 175,
+          "Damage": 110,
           "Cooldown": 1.5,
           "UpgradePrice": 1750
         },
         {
           "Range": 17,
-          "Damage": 200,
+          "Damage": 130,
           "Cooldown": 1.5,
           "UpgradePrice": 2250
         },
         {
           "Range": 18,
-          "Damage": 225,
+          "Damage": 130,
           "Cooldown": 1.2,
           "UpgradePrice": 2750
         },
         {
           "Range": 18,
-          "Damage": 300,
+          "Damage": 160,
           "Cooldown": 1.6,
           "UpgradePrice": 3500
         },
         {
           "Range": 19,
-          "Damage": 325,
+          "Damage": 190,
           "Cooldown": 1.6,
           "UpgradePrice": 3000
         },
         {
           "Range": 20,
-          "Damage": 350,
+          "Damage": 210,
           "Cooldown": 1.5,
           "UpgradePrice": 3500
         }
