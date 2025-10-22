@@ -99,7 +99,7 @@
         {
           "Range": 30,
           "Damage": 30,
-          "Cooldown": 15,
+          "Cooldown": 1.5,
           "UpgradePrice": 800
         },
         {
