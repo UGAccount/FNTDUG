@@ -314,7 +314,7 @@
       "PlacementPrice": 500,
       "Type": "Line",
       "Element": "Light",
-      "MaxPlaced": 5,
+      "MaxPlaced": 3,
       "BaseStats": {
         "Range": 20,
         "Damage": 35,
@@ -491,7 +491,7 @@
         },
         {
           "Range": 18,
-          "RangeBoost": 1.10,
+          "RangeBoost": 1.1,
           "UpgradePrice": 1050
         }
       ],
@@ -531,7 +531,7 @@
         },
         {
           "Range": 18,
-          "RangeBoost": 1.10,
+          "RangeBoost": 1.1,
           "UpgradePrice": 1050
         }
       ],
@@ -799,7 +799,7 @@
         }
       ],
       "Passives": {
-        "Faz-Shotgun": "Does extra damage based on enemy distance from unit. 120% damage in 20% range, 110% damage in 40% range, 100% damage in 60% range, 90% damage in 80% range, 80% damage 100% range."
+        "Faz-Shotgun": "Does extra damage based on enemy distance from unit. 120% damage in 20% range, 110% damage in 40% range, 100% damage in 60% range, 90% damage in 80% range, 80% damage in 100% range."
       }
     },
     {
@@ -900,27 +900,32 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 20,
-        "DamageBoost": 1.03
+        "Damage": 15,
+        "Cooldown": 3
       },
       "UpgradeStats": [
         {
           "Range": 20,
-          "DamageBoost": 1.06,
+          "Damage": 20,
+          "Cooldown": 3,
           "UpgradePrice": 800
         },
         {
           "Range": 20,
-          "DamageBoost": 1.09,
+          "Damage": 20,
+          "Cooldown": 3,
           "UpgradePrice": 1000
         },
         {
           "Range": 20,
-          "DamageBoost": 1.12,
+          "Damage": 20,
+          "Cooldown": 3,
           "UpgradePrice": 1200
         },
         {
           "Range": 20,
-          "DamageBoost": 1.15,
+          "Damage": 20,
+          "Cooldown": 3,
           "UpgradePrice": 1500
         }
       ],
@@ -1089,7 +1094,7 @@
       ],
       "Passives": {
         "Water Hose": "Attacks apply a 12% slow for 2s.",
-        "High Pressure": "Every 10th attack knocks back enemies a short distance (30s CD to knockback the same enemy again). This unit's attacks ignore armor damage resistance."
+        "High Pressure": "Every 10th attack knocks back enemies a short distance [This knockback does not work on bosses] (30s CD to knockback the same enemy again). This unit's attacks ignore armor damage resistance."
       },
       "Obtainability": [
         "Mythic Present (25%)",
@@ -1204,7 +1209,7 @@
       "Name": "Shiny Withered Bonnie",
       "Rarity": "Mythical",
       "PlacementPrice": 1100,
-      "Type": "Single",
+      "Type": "Explosion",
       "Element": "Electricity",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -1514,9 +1519,9 @@
         }
       ],
       "Passives": {
-        "I.C.B.C.M (Inter-Continental Ballistic Cupcake Missile)": "Every 12 seconds the top of this unit's cupcake opens, and launches a cupcake missile that targets the highest HP enemy on the field dealing 150% damage.",
+        "I.C.B.C.M (Inter-Continental Ballistic Cupcake Missile)": "Every 12 seconds the top of this unit's cupcake opens, and launches a cupcake missile that targets the highest HP enemy on the field dealing 200% damage.",
         "Explosives Expert": "For every circle attack type unit in this unit's range increase damage and range by 3%. [15% max buff]",
-        "Fallout [Active Ability] [Upgrade 6+]": "Upon activation, for the next 17s I.C.B.C.M's are launched every 3.4s dealing 80% of this unit's current damage. For 3s after this, releases a wave of steam (Cone AOE) dealing burn for 3s dealing 40% of this unit's current damage [13.3% dmg/tick]. [20s Duration] [120s Global CD]"
+        "Fallout [Active Ability] [Upgrade 6+]": "Upon activation, for the next 17s I.C.B.C.M's are launched every 3.4s dealing 140% of this unit's current damage. After this for 3s, releases a wave of steam hitting 3 times for 120% of this unit's current damage (Cone AOE) applying burn for 3s dealing 40% of the damage dealt by the steam [13.3% dmg/tick]. [20s Duration] [120s Global CD]"
       },
       "Obtainability": [
         "Exclusive 249R$ Pack"
@@ -2266,7 +2271,7 @@
         }
       ],
       "Passives": {
-        "Endo Summon": "This unit doesn't attack, instead summons an Endo on the track on its cooldown, with health equal to 100% of his damage. Every 3rd summon, it will instead summon a Gun Endo which shoots enemies as it walks down the track doing 40% of this unit's current damage per shot (Single Target) and has 65% of this unit's current damage as health.",
+        "Endo Summon": "This unit doesn't attack, instead summons an Endo on the track on its cooldown, with health equal to 10% of his damage. Every 3rd summon, it will instead summon a Gun Endo which shoots enemies as it walks down the track doing 40% of this unit's current damage per shot (Single Target) and has 65% of this unit's current damage as health.",
         "Soul Absorption": "Every enemy this unit kills increases its damage by 0.1%. [25% max buff]",
         "Salvage [Active Ability] (Unlocked at Max Upgrade [9])": "Sacrifices a chosen unit, then places a (Single Target) turret that has 75% of that unit's max upgraded damage and matches that upgrade's cooldown. Additionally removes a placement from that unit. [1 usage limit per placement]"
       },
