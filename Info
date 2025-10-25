@@ -901,31 +901,36 @@
       "BaseStats": {
         "Range": 20,
         "Damage": 15,
-        "Cooldown": 3
+        "Cooldown": 3,
+        "DamageBoost": 1.03
       },
       "UpgradeStats": [
         {
           "Range": 20,
           "Damage": 20,
           "Cooldown": 3,
+          "DamageBoost": 1.06,
           "UpgradePrice": 800
         },
         {
           "Range": 20,
           "Damage": 20,
           "Cooldown": 3,
+          "DamageBoost": 1.09,
           "UpgradePrice": 1000
         },
         {
           "Range": 20,
           "Damage": 20,
           "Cooldown": 3,
+          "DamageBoost": 1.12,
           "UpgradePrice": 1200
         },
         {
           "Range": 20,
           "Damage": 20,
           "Cooldown": 3,
+          "DamageBoost": 1.15,
           "UpgradePrice": 1500
         }
       ],
