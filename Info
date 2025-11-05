@@ -2770,6 +2770,608 @@
       "Obtainability": [
         "Puppet Hero Quests"
       ]
+    },
+    {
+      "Name": "Jack-O-Bonnie",
+      "Rarity": "Mythical",
+      "PlacementPrice": 1000,
+      "Type": "Explosion",
+      "Element": "Fire",
+      "MaxPlaced": 4,
+      "BaseStats": {
+        "Range": 22,
+        "Damage": 135,
+        "Cooldown": 4.7
+      },
+      "UpgradeStats": [
+        {
+          "Range": 22,
+          "Damage": 150,
+          "Cooldown": 4.7,
+          "UpgradePrice": 1000
+        },
+        {
+          "Range": 24,
+          "Damage": 165,
+          "Cooldown": 4.5,
+          "UpgradePrice": 1400
+        },
+        {
+          "Range": 24,
+          "Damage": 180,
+          "Cooldown": 4.5,
+          "UpgradePrice": 1800
+        },
+        {
+          "Range": 26,
+          "Damage": 200,
+          "Cooldown": 4.3,
+          "UpgradePrice": 2000
+        },
+        {
+          "Range": 26,
+          "Damage": 225,
+          "Cooldown": 4.3,
+          "UpgradePrice": 2000
+        }
+      ],
+      "Passives": {
+        "Jack-O Blaze": "All attacks from this unit apply a burn for 5% of its damage for 3s. When attacking a burned enemy, this unit does 20% more damage. (This damage boost does not apply to pumpkins)",
+        "Explosive Jack-O-Lanterns": "Every 5s, lays an exploding jack-o-lantern on the track somewhere within this unit’s range (Max of 3 pumpkins per placement). When an enemy touches this pumpkin, the pumpkin will explode, dealing 120% of this unit’s damage, and burning for 10% of that damage."
+      }
+    },
+    {
+      "Name": "Shiny Jack-O-Bonnie",
+      "Rarity": "Mythical",
+      "PlacementPrice": 1000,
+      "Type": "Explosion",
+      "Element": "Fire",
+      "MaxPlaced": 4,
+      "BaseStats": {
+        "Range": 22,
+        "Damage": 135,
+        "Cooldown": 4.7
+      },
+      "UpgradeStats": [
+        {
+          "Range": 22,
+          "Damage": 150,
+          "Cooldown": 4.7,
+          "UpgradePrice": 1000
+        },
+        {
+          "Range": 24,
+          "Damage": 165,
+          "Cooldown": 4.5,
+          "UpgradePrice": 1400
+        },
+        {
+          "Range": 24,
+          "Damage": 180,
+          "Cooldown": 4.5,
+          "UpgradePrice": 1800
+        },
+        {
+          "Range": 26,
+          "Damage": 200,
+          "Cooldown": 4.3,
+          "UpgradePrice": 2000
+        },
+        {
+          "Range": 26,
+          "Damage": 225,
+          "Cooldown": 4.3,
+          "UpgradePrice": 2000
+        }
+      ],
+      "Passives": {
+        "Jack-O Blaze": "All attacks from this unit apply a burn for 5% of its damage for 3s. When attacking a burned enemy, this unit does 20% more damage. (This damage boost does not apply to pumpkins)",
+        "Explosive Jack-O-Lanterns": "Every 5s, lays an exploding jack-o-lantern on the track somewhere within this unit’s range (Max of 3 pumpkins per placement). When an enemy touches this pumpkin, the pumpkin will explode, dealing 120% of this unit’s damage, and burning for 10% of that damage."
+      }
+    },
+    {
+      "Name": "Slasher Bonnie",
+      "Rarity": "Secret",
+      "PlacementPrice": 2550,
+      "Type": "Small Circle",
+      "Element": "Dark",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 15,
+        "Damage": 170,
+        "Cooldown": 2.5
+      },
+      "UpgradeStats": [
+        {
+          "Range": 17,
+          "Damage": 190,
+          "Cooldown": 2.5,
+          "UpgradePrice": 1600
+        },
+        {
+          "Range": 21,
+          "Damage": 210,
+          "Cooldown": 2.2,
+          "UpgradePrice": 2100
+        },
+        {
+          "Range": 21,
+          "Damage": 240,
+          "Cooldown": 2.2,
+          "UpgradePrice": 2800
+        },
+        {
+          "Range": 23,
+          "Damage": 260,
+          "Cooldown": 2.6,
+          "UpgradePrice": 3300
+        },
+        {
+          "Range": 25,
+          "Damage": 280,
+          "Cooldown": 2.6,
+          "UpgradePrice": 2800
+        },
+        {
+          "Range": 26,
+          "Damage": 320,
+          "Cooldown": 2.5,
+          "UpgradePrice": 3300
+        }
+      ],
+      "Passives": {
+        "Bloodlust": "For each enemy in range: increase damage by 5%, range by 3%, and decrease cooldown by 2%. (Max of 5 stacks; 25% damage, 15% range, 10% cooldown) Upon reaching its final upgrade, these stats increase to 7.5% damage, 5% range, and 3% cooldown. (Max 37.5% damage, 25% range, 15% cooldown)",
+        "Indiscriminate Bloodshed": "Bloodlust boost now becomes permanent once obtained, stack cap still applies. Once this unit reaches 5 Bloodlust stacks, this unit’s attack type changes to a 45 Degree Cone."
+      }
+    },
+    {
+      "Name": "Shiny Slasher Bonnie",
+      "Rarity": "Secret",
+      "PlacementPrice": 2550,
+      "Type": "Small Circle",
+      "Element": "Dark",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 15,
+        "Damage": 170,
+        "Cooldown": 2.5
+      },
+      "UpgradeStats": [
+        {
+          "Range": 17,
+          "Damage": 190,
+          "Cooldown": 2.5,
+          "UpgradePrice": 1600
+        },
+        {
+          "Range": 21,
+          "Damage": 210,
+          "Cooldown": 2.2,
+          "UpgradePrice": 2100
+        },
+        {
+          "Range": 21,
+          "Damage": 240,
+          "Cooldown": 2.2,
+          "UpgradePrice": 2800
+        },
+        {
+          "Range": 23,
+          "Damage": 260,
+          "Cooldown": 2.6,
+          "UpgradePrice": 3300
+        },
+        {
+          "Range": 25,
+          "Damage": 280,
+          "Cooldown": 2.6,
+          "UpgradePrice": 2800
+        },
+        {
+          "Range": 26,
+          "Damage": 320,
+          "Cooldown": 2.5,
+          "UpgradePrice": 3300
+        }
+      ],
+      "Passives": {
+        "Bloodlust": "For each enemy in range: increase damage by 5%, range by 3%, and decrease cooldown by 2%. (Max of 5 stacks; 25% damage, 15% range, 10% cooldown) Upon reaching its final upgrade, these stats increase to 7.5% damage, 5% range, and 3% cooldown. (Max 37.5% damage, 25% range, 15% cooldown)",
+        "Indiscriminate Bloodshed": "Bloodlust boost now becomes permanent once obtained, stack cap still applies. Once this unit reaches 5 Bloodlust stacks, this unit’s attack type changes to a 45 Degree Cone."
+      }
+    },
+    {
+      "Name": "Scarecrow Freddy",
+      "Rarity": "Secret",
+      "PlacementPrice": 1400,
+      "Type": "Support",
+      "Element": "Neutral",
+      "MaxPlaced": 1,
+      "BaseStats": {
+        "Range": 20,
+        "Damage": 80,
+        "Cooldown": 0
+      },
+      "UpgradeStats": [
+        {
+          "Range": 20,
+          "Damage": 90,
+          "Cooldown": 0,
+          "UpgradePrice": 1600
+        },
+        {
+          "Range": 20,
+          "Damage": 100,
+          "Cooldown": 0,
+          "UpgradePrice": 2000
+        },
+        {
+          "Range": 22,
+          "Damage": 110,
+          "Cooldown": 0,
+          "UpgradePrice": 3000
+        },
+        {
+          "Range": 22,
+          "Damage": 120,
+          "Cooldown": 0,
+          "UpgradePrice": 3600
+        }
+      ],
+      "Passives": {
+        "Guardian of the Fields": "While in (Guardian) form, this unit slows all enemies in range by 30%, and debuffs all towers in range by 5% Damage and 5% Range. Additionally while in (Guardian) form this unit does 40% of its damage every second passively to all enemies in range.",
+        "Crop Raiser": "While in (Raiser) form, this unit speeds up all enemies in range by 5%, and buffs all towers in range by 15% Damage and 15% Range. Additionally while in (Raiser) form, this unit will attack the strongest enemy in range every 3s for 200% of its damage.",
+        "Form Change [Active Ability]": "Choose between (Guardian) and (Raiser) forms. [1 Time Use Local CD]"
+      }
+    },
+    {
+      "Name": "Shiny Scarecrow Freddy",
+      "Rarity": "Secret",
+      "PlacementPrice": 1400,
+      "Type": "Support",
+      "Element": "Neutral",
+      "MaxPlaced": 1,
+      "BaseStats": {
+        "Range": 20,
+        "Damage": 80,
+        "Cooldown": 0
+      },
+      "UpgradeStats": [
+        {
+          "Range": 20,
+          "Damage": 90,
+          "Cooldown": 0,
+          "UpgradePrice": 1600
+        },
+        {
+          "Range": 20,
+          "Damage": 100,
+          "Cooldown": 0,
+          "UpgradePrice": 2000
+        },
+        {
+          "Range": 22,
+          "Damage": 110,
+          "Cooldown": 0,
+          "UpgradePrice": 3000
+        },
+        {
+          "Range": 22,
+          "Damage": 120,
+          "Cooldown": 0,
+          "UpgradePrice": 3600
+        }
+      ],
+      "Passives": {
+        "Guardian of the Fields": "While in (Guardian) form, this unit slows all enemies in range by 30%, and debuffs all towers in range by 5% Damage and 5% Range. Additionally while in (Guardian) form this unit does 40% of its damage every second passively to all enemies in range.",
+        "Crop Raiser": "While in (Raiser) form, this unit speeds up all enemies in range by 5%, and buffs all towers in range by 15% Damage and 15% Range. Additionally while in (Raiser) form, this unit will attack the strongest enemy in range every 3s for 200% of its damage.",
+        "Form Change [Active Ability]": "Choose between (Guardian) and (Raiser) forms. [1 Time Use Local CD]"
+      }
+    },
+    {
+      "Name": "BBNJ",
+      "Rarity": "Mythical",
+      "PlacementPrice": 1400,
+      "Type": "Line",
+      "Element": "Neutral",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 16,
+        "Damage": 160,
+        "Cooldown": 4.2
+      },
+      "UpgradeStats": [
+        {
+          "Range": 17,
+          "Damage": 180,
+          "Cooldown": 4.2,
+          "UpgradePrice": 1200
+        },
+        {
+          "Range": 18,
+          "Damage": 200,
+          "Cooldown": 4.2,
+          "UpgradePrice": 1500
+        },
+        {
+          "Range": 19,
+          "Damage": 210,
+          "Cooldown": 3.8,
+          "UpgradePrice": 1900
+        },
+        {
+          "Range": 20,
+          "Damage": 230,
+          "Cooldown": 3.8,
+          "UpgradePrice": 2200
+        },
+        {
+          "Range": 21,
+          "Damage": 250,
+          "Cooldown": 3.8,
+          "UpgradePrice": 2500
+        }
+      ],
+      "Passives": {
+        "Trick or Treat!": "Every 30s gains a random buff (or debuff!) to itself of 3, lasting 30s. [1. Increases damage by 15%] [2. Decreases cooldown by 10%] [3. Decreases damage by 5% and increases cooldown by 5%.]",
+        "Angel or Devil?": "When attacking an enemy, has a chance to either burn for 10% damage for 1s, or stun an enemy for 0.4s."
+      }
+    },
+    {
+      "Name": "Shiny BBNJ",
+      "Rarity": "Mythical",
+      "PlacementPrice": 1400,
+      "Type": "Line",
+      "Element": "Neutral",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 16,
+        "Damage": 160,
+        "Cooldown": 4.2
+      },
+      "UpgradeStats": [
+        {
+          "Range": 17,
+          "Damage": 180,
+          "Cooldown": 4.2,
+          "UpgradePrice": 1200
+        },
+        {
+          "Range": 18,
+          "Damage": 200,
+          "Cooldown": 4.2,
+          "UpgradePrice": 1500
+        },
+        {
+          "Range": 19,
+          "Damage": 210,
+          "Cooldown": 3.8,
+          "UpgradePrice": 1900
+        },
+        {
+          "Range": 20,
+          "Damage": 230,
+          "Cooldown": 3.8,
+          "UpgradePrice": 2200
+        },
+        {
+          "Range": 21,
+          "Damage": 250,
+          "Cooldown": 3.8,
+          "UpgradePrice": 2500
+        }
+      ],
+      "Passives": {
+        "Trick or Treat!": "Every 30s gains a random buff (or debuff!) to itself of 3, lasting 30s. [1. Increases damage by 15%] [2. Decreases cooldown by 10%] [3. Decreases damage by 5% and increases cooldown by 5%.]",
+        "Angel or Devil?": "When attacking an enemy, has a chance to either burn for 10% damage for 1s, or stun an enemy for 0.4s."
+      }
+    },
+    {
+      "Name": "Dreadbear",
+      "Rarity": "Nightmare",
+      "PlacementPrice": 3000,
+      "Type": "Line",
+      "Element": "Electricity",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 20,
+        "Damage": 300,
+        "Cooldown": 9
+      },
+      "UpgradeStats": [
+        {
+          "Range": 20,
+          "Damage": 340,
+          "Cooldown": 9,
+          "UpgradePrice": 3000
+        },
+        {
+          "Range": 20,
+          "Damage": 380,
+          "Cooldown": 9,
+          "UpgradePrice": 3600
+        },
+        {
+          "Range": 20,
+          "Damage": 420,
+          "Cooldown": 9,
+          "UpgradePrice": 4000
+        },
+        {
+          "Range": 24,
+          "Damage": 860,
+          "Cooldown": 9,
+          "UpgradePrice": 6000
+        },
+        {
+          "Range": 25,
+          "Damage": 940,
+          "Cooldown": 9,
+          "UpgradePrice": 7200
+        },
+        {
+          "Range": 25,
+          "Damage": 980,
+          "Cooldown": 9,
+          "UpgradePrice": 7200
+        },
+        {
+          "Range": 25,
+          "Damage": 1040,
+          "Cooldown": 9,
+          "UpgradePrice": 7800
+        },
+        {
+          "Range": 25,
+          "Damage": 1100,
+          "Cooldown": 9,
+          "UpgradePrice": 8400
+        }
+      ],
+      "Passives": {
+        "Curse of Dreadbear": "Upon placement, this unit receives a 30% damage, 10% cooldown, and 20% range boost. If another Dreadbear unit is placed within this unit’s range, this unit will lose all of these boosts.",
+        "Heartbeat Current": "Every 60 seconds an electric shock spreads from Dreadbear’s heart throughout the rest of his body, decreasing his cooldown by 15% for 20 seconds.",
+        "Tesla Towers [Active Ability] [Upgrade 6+]": "This unit gains an active ability to place a tesla tower in their range made from the scraps of their destroyed holding board. These tesla towers attack on Dreadbear’s cooldown at the strongest enemy in range for 140% of his damage. Additionally these teslas have 20 range. (Max of 2 tesla towers)"
+      }
+    },
+    {
+      "Name": "Shiny Dreadbear",
+      "Rarity": "Nightmare",
+      "PlacementPrice": 3000,
+      "Type": "Line",
+      "Element": "Electricity",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 20,
+        "Damage": 300,
+        "Cooldown": 9
+      },
+      "UpgradeStats": [
+        {
+          "Range": 20,
+          "Damage": 340,
+          "Cooldown": 9,
+          "UpgradePrice": 3000
+        },
+        {
+          "Range": 20,
+          "Damage": 380,
+          "Cooldown": 9,
+          "UpgradePrice": 3600
+        },
+        {
+          "Range": 20,
+          "Damage": 420,
+          "Cooldown": 9,
+          "UpgradePrice": 4000
+        },
+        {
+          "Range": 24,
+          "Damage": 860,
+          "Cooldown": 9,
+          "UpgradePrice": 6000
+        },
+        {
+          "Range": 25,
+          "Damage": 940,
+          "Cooldown": 9,
+          "UpgradePrice": 7200
+        },
+        {
+          "Range": 25,
+          "Damage": 980,
+          "Cooldown": 9,
+          "UpgradePrice": 7200
+        },
+        {
+          "Range": 25,
+          "Damage": 1040,
+          "Cooldown": 9,
+          "UpgradePrice": 7800
+        },
+        {
+          "Range": 25,
+          "Damage": 1100,
+          "Cooldown": 9,
+          "UpgradePrice": 8400
+        }
+      ],
+      "Passives": {
+        "Curse of Dreadbear": "Upon placement, this unit receives a 30% damage, 10% cooldown, and 20% range boost. If another Dreadbear unit is placed within this unit’s range, this unit will lose all of these boosts.",
+        "Heartbeat Current": "Every 60 seconds an electric shock spreads from Dreadbear’s heart throughout the rest of his body, decreasing his cooldown by 15% for 20 seconds.",
+        "Tesla Towers [Active Ability] [Upgrade 6+]": "This unit gains an active ability to place a tesla tower in their range made from the scraps of their destroyed holding board. These tesla towers attack on Dreadbear’s cooldown at the strongest enemy in range for 140% of his damage. Additionally these teslas have 20 range. (Max of 2 tesla towers)"
+      }
+    },
+    {
+      "Name": "Undead Chica",
+      "Rarity": "Rare",
+      "PlacementPrice": 600,
+      "Type": "Explosion",
+      "Element": "Rust",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 25,
+        "Damage": 80,
+        "Cooldown": 4
+      },
+      "UpgradeStats": [
+        {
+          "Range": 27,
+          "Damage": 90,
+          "Cooldown": 4,
+          "UpgradePrice": 800
+        },
+        {
+          "Range": 29,
+          "Damage": 100,
+          "Cooldown": 4,
+          "UpgradePrice": 1000
+        },
+        {
+          "Range": 31,
+          "Damage": 120,
+          "Cooldown": 4,
+          "UpgradePrice": 1400
+        }
+      ],
+      "Passives": {
+        "Overwhelming Horde": "For each Zombie Cupcake (Zombie Chica’s summon) on the field, increases this units damage by 1% (up to 10%)"
+      }
+    },
+    {
+      "Name": "Shiny Undead Chica",
+      "Rarity": "Rare",
+      "PlacementPrice": 600,
+      "Type": "Explosion",
+      "Element": "Rust",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 25,
+        "Damage": 80,
+        "Cooldown": 4
+      },
+      "UpgradeStats": [
+        {
+          "Range": 27,
+          "Damage": 90,
+          "Cooldown": 4,
+          "UpgradePrice": 800
+        },
+        {
+          "Range": 29,
+          "Damage": 100,
+          "Cooldown": 4,
+          "UpgradePrice": 1000
+        },
+        {
+          "Range": 31,
+          "Damage": 120,
+          "Cooldown": 4,
+          "UpgradePrice": 1400
+        }
+      ],
+      "Passives": {
+        "Overwhelming Horde": "For each Zombie Cupcake (Zombie Chica’s summon) on the field, increases this units damage by 1% (up to 10%)"
+      }
     }
   ],
   "Enchants": {
