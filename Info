@@ -2818,7 +2818,10 @@
       "Passives": {
         "Jack-O Blaze": "All attacks from this unit apply a burn for 5% of its damage for 3s. When attacking a burned enemy, this unit does 20% more damage. (This damage boost does not apply to pumpkins)",
         "Explosive Jack-O-Lanterns": "Every 5s, lays an exploding jack-o-lantern on the track somewhere within this unit’s range (Max of 3 pumpkins per placement). When an enemy touches this pumpkin, the pumpkin will explode, dealing 120% of this unit’s damage, and burning for 10% of that damage."
-      }
+      },
+      "Obtainability": [
+        "Halloween Event Free Pass T30"
+      ]
     },
     {
       "Name": "Shiny Jack-O-Bonnie",
@@ -2922,7 +2925,10 @@
       "Passives": {
         "Bloodlust": "For each enemy in range: increase damage by 5%, range by 3%, and decrease cooldown by 2%. (Max of 5 stacks; 25% damage, 15% range, 10% cooldown) Upon reaching its final upgrade, these stats increase to 7.5% damage, 5% range, and 3% cooldown. (Max 37.5% damage, 25% range, 15% cooldown)",
         "Indiscriminate Bloodshed": "Bloodlust boost now becomes permanent once obtained, stack cap still applies. Once this unit reaches 5 Bloodlust stacks, this unit’s attack type changes to a 45 Degree Cone."
-      }
+      },
+      "Obtainability": [
+        "Halloween Event Exclusive 799R$ / 15000 Pumpkins"
+      ]
     },
     {
       "Name": "Shiny Slasher Bonnie",
@@ -3021,7 +3027,10 @@
         "Guardian of the Fields": "While in (Guardian) form, this unit slows all enemies in range by 30%, and debuffs all towers in range by 5% Damage and 5% Range. Additionally while in (Guardian) form this unit does 40% of its damage every second passively to all enemies in range.",
         "Crop Raiser": "While in (Raiser) form, this unit speeds up all enemies in range by 5%, and buffs all towers in range by 15% Damage and 15% Range. Additionally while in (Raiser) form, this unit will attack the strongest enemy in range every 3s for 200% of its damage.",
         "Form Change [Active Ability]": "Choose between (Guardian) and (Raiser) forms. [1 Time Use Local CD]"
-      }
+      },
+      "Obtainability": [
+        "Halloween Event Exclusive 1299R$ / 35000 Pumpkins"
+      ]
     },
     {
       "Name": "Shiny Scarecrow Freddy",
@@ -3114,7 +3123,10 @@
       "Passives": {
         "Trick or Treat!": "Every 30s gains a random buff (or debuff!) to itself of 3, lasting 30s. [1. Increases damage by 15%] [2. Decreases cooldown by 10%] [3. Decreases damage by 5% and increases cooldown by 5%.]",
         "Angel or Devil?": "When attacking an enemy, has a chance to either burn for 10% damage for 1s, or stun an enemy for 0.4s."
-      }
+      },
+      "Obtainability": [
+        "Halloween Event Craftable"
+      ]
     },
     {
       "Name": "Shiny BBNJ",
@@ -3225,8 +3237,11 @@
           "Damage": 1100,
           "Cooldown": 9,
           "UpgradePrice": 8400
-        }
-      ],
+        },
+      "Obtainability": [
+        "Halloween Event Premium Pass T30"
+      ]
+    },
       "Passives": {
         "Curse of Dreadbear": "Upon placement, this unit receives a 30% damage, 10% cooldown, and 20% range boost. If another Dreadbear unit is placed within this unit’s range, this unit will lose all of these boosts.",
         "Heartbeat Current": "Every 60 seconds an electric shock spreads from Dreadbear’s heart throughout the rest of his body, decreasing his cooldown by 15% for 20 seconds.",
@@ -3335,7 +3350,10 @@
       ],
       "Passives": {
         "Overwhelming Horde": "For each Zombie Cupcake (Zombie Chica’s summon) on the field, increases this units damage by 1% (up to 10%)"
-      }
+      },
+      "Obtainability": [
+        "Halloween Event Craftable"
+      ]
     },
     {
       "Name": "Shiny Undead Chica",
