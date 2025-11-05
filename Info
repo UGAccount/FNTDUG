@@ -3237,16 +3237,16 @@
           "Damage": 1100,
           "Cooldown": 9,
           "UpgradePrice": 8400
-        },
-      "Obtainability": [
-        "Halloween Event Premium Pass T30"
-      ]
-    },
+        }
+      ],
       "Passives": {
         "Curse of Dreadbear": "Upon placement, this unit receives a 30% damage, 10% cooldown, and 20% range boost. If another Dreadbear unit is placed within this unit’s range, this unit will lose all of these boosts.",
         "Heartbeat Current": "Every 60 seconds an electric shock spreads from Dreadbear’s heart throughout the rest of his body, decreasing his cooldown by 15% for 20 seconds.",
         "Tesla Towers [Active Ability] [Upgrade 6+]": "This unit gains an active ability to place a tesla tower in their range made from the scraps of their destroyed holding board. These tesla towers attack on Dreadbear’s cooldown at the strongest enemy in range for 140% of his damage. Additionally these teslas have 20 range. (Max of 2 tesla towers)"
-      }
+       },
+      "Obtainability": [
+        "Halloween Event Premium Pass T30"
+      ]
     },
     {
       "Name": "Shiny Dreadbear",
