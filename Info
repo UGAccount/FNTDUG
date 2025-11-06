@@ -3468,7 +3468,7 @@
     "Engineer": {
       "Description": "+50% EXP",
       "Boost": {
-        "Damage": 1.5,
+        "Damage": 1,
         "Range": 1,
         "Cooldown": 1,
         "Exp": 1.5
