@@ -2104,9 +2104,9 @@
                 });
             }
 
-            function unsearchUnit() {
+function unsearchUnit() {
                 if (window.location.pathname !== '/' && window.location.pathname !== '') {
-                    window.location.href = window.location.origin;
+                    window.location.href = '/unit-machine';
                 } else {
                     currentUnitName = null;
                     unitSearchInput.value = '';
