@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -39,7 +38,10 @@
         --rarity-nightmare-gradient: linear-gradient(to bottom right, rgb(70, 89, 255), rgb(48, 53, 74));
         --rarity-apex-gradient: linear-gradient(to bottom right, rgb(189, 97, 255) 0%, rgb(56, 0, 22) 50%, rgb(255, 56, 106) 100%);
         --rarity-hero-gradient: linear-gradient(to bottom right, rgb(255, 205, 25) 0%, rgb(53, 56, 21) 50%, rgb(255, 251, 133) 100%);
-        --rarity-shiny-gradient: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+
+        --shiny-overlay-image: url('https://iili.io/fJHLgHb.png');
+        --shiny-border-gradient: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+        --shiny-bg-gradient: linear-gradient(90deg, rgba(255, 0, 0, 0.3), rgba(255, 127, 0, 0.3), rgba(255, 255, 0, 0.3), rgba(0, 255, 0, 0.3), rgba(0, 0, 255, 0.3), rgba(75, 0, 130, 0.3), rgba(139, 0, 255, 0.3));
 
         --spacing-xs: 5px;
         --spacing-sm: 7.5px;
@@ -106,17 +108,6 @@
     .hidden {
         display: none !important;
     }
-    
-    #unitImageDisplayContainer.initially-hidden {
-        visibility: hidden;
-        opacity: 0;
-        transition: opacity var(--transition-default), visibility 0s var(--transition-default);
-    }
-    #unitImageDisplayContainer.visible {
-        visibility: visible;
-        opacity: 1;
-        transition-delay: 0s;
-    }
 
     .section-title {
         padding-bottom: var(--spacing-xs);
@@ -142,64 +133,83 @@
 
     #unitImageWrapper {
         position: relative;
-        padding: var(--border-width);
+        padding: 2px;
         border-radius: var(--border-radius);
-        background: var(--text-light);
         width: 100%;
-        aspect-ratio: 1 / 1;
     }
 
     #displayedUnitImage {
         width: 100%;
         aspect-ratio: 1 / 1;
         object-fit: cover;
-        border-radius: calc(var(--border-radius) - var(--border-width));
-        background-color: var(--bg-dark);
+        border-radius: calc(var(--border-radius) - 2px);
         display: block;
+        position: relative;
     }
 
     #unitImageWrapper.rarity-uncommon { background: var(--rarity-uncommon-gradient); }
-    #unitImageWrapper.rarity-uncommon #displayedUnitImage { background: radial-gradient(circle, rgb(46, 128, 38) 30%, rgb(5, 25, 10) 70%); }
     #unitImageWrapper.rarity-rare { background: var(--rarity-rare-gradient); }
-    #unitImageWrapper.rarity-rare #displayedUnitImage { background: radial-gradient(circle, rgb(44, 83, 128) 30%, rgb(2, 5, 15) 70%); }
     #unitImageWrapper.rarity-epic { background: var(--rarity-epic-gradient); }
-    #unitImageWrapper.rarity-epic #displayedUnitImage { background: radial-gradient(circle, rgb(128, 26, 128) 30%, rgb(15, 2, 20) 70%); }
     #unitImageWrapper.rarity-mythic { background: var(--rarity-mythic-gradient); }
-    #unitImageWrapper.rarity-mythic #displayedUnitImage { background: radial-gradient(circle, rgb(128, 128, 0) 30%, rgb(40, 25, 0) 70%); }
     #unitImageWrapper.rarity-secret { background: var(--rarity-secret-gradient); }
-    #unitImageWrapper.rarity-secret #displayedUnitImage { background: radial-gradient(circle, rgb(128, 68, 0) 30%, rgb(30, 0, 0) 70%); }
     #unitImageWrapper.rarity-nightmare { background: var(--rarity-nightmare-gradient); }
-    #unitImageWrapper.rarity-nightmare #displayedUnitImage { background: radial-gradient(circle, rgb(35, 44, 128) 30%, rgb(5, 5, 8) 70%); }
     #unitImageWrapper.rarity-apex { background: var(--rarity-apex-gradient); }
-    #unitImageWrapper.rarity-apex #displayedUnitImage { background: radial-gradient(circle, rgb(94, 48, 128) 30%, rgb(15, 0, 5) 70%); }
     #unitImageWrapper.rarity-hero { background: var(--rarity-hero-gradient); }
-    #unitImageWrapper.rarity-hero #displayedUnitImage { background: radial-gradient(circle, rgb(128, 125, 66) 30%, rgb(15, 15, 5) 70%); }
+
+    .bg-rarity-uncommon { background: radial-gradient(circle, rgb(46, 128, 38) 30%, rgb(5, 25, 10) 70%); }
+    .bg-rarity-rare { background: radial-gradient(circle, rgb(44, 83, 128) 30%, rgb(2, 5, 15) 70%); }
+    .bg-rarity-epic { background: radial-gradient(circle, rgb(128, 26, 128) 30%, rgb(15, 2, 20) 70%); }
+    .bg-rarity-mythic { background: radial-gradient(circle, rgb(128, 128, 0) 30%, rgb(40, 25, 0) 70%); }
+    .bg-rarity-secret { background: radial-gradient(circle, rgb(128, 68, 0) 30%, rgb(30, 0, 0) 70%); }
+    .bg-rarity-nightmare { background: radial-gradient(circle, rgb(35, 44, 128) 30%, rgb(5, 5, 8) 70%); }
+    .bg-rarity-apex { background: radial-gradient(circle, rgb(94, 48, 128) 30%, rgb(15, 0, 5) 70%); }
+    .bg-rarity-hero { background: radial-gradient(circle, rgb(128, 125, 66) 30%, rgb(15, 15, 5) 70%); }
     
-    .shiny-active {
-        background: var(--rarity-shiny-gradient) !important;
-        background-size: 1800% 1800% !important;
-        animation: rainbow-animation 18s ease infinite;
+    #unitImageWrapper.shiny, .gallery-image-container.shiny {
+        background: var(--shiny-border-gradient);
+        background-size: 200% 200%;
+        animation: shiny-border-animation 3s linear infinite;
     }
-    .shiny-active::after {
+
+    #unitImageWrapper.shiny::after, .gallery-image-container.shiny::after {
         content: '';
         position: absolute;
-        top: var(--border-width);
-        left: var(--border-width);
-        right: var(--border-width);
-        bottom: var(--border-width);
-        background-image: url('https://iili.io/fJHLgHb.png');
+        top: 2px;
+        left: 2px;
+        right: 2px;
+        bottom: 2px;
+        background-image: var(--shiny-overlay-image);
         background-size: cover;
         background-position: center;
-        mix-blend-mode: overlay;
-        opacity: 0.7;
+        border-radius: calc(var(--border-radius) - 2px);
         pointer-events: none;
-        border-radius: calc(var(--border-radius) - var(--border-width));
+        z-index: 2;
     }
     
-    @keyframes rainbow-animation {
-        0% { background-position: 0% 82%; }
-        50% { background-position: 100% 19%; }
-        100% { background-position: 0% 82%; }
+    #displayedUnitImage.shiny-bg::before, .gallery-image.shiny-bg::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--shiny-bg-gradient);
+        background-size: 400% 400%;
+        animation: shiny-bg-animation 6s linear infinite;
+        border-radius: inherit;
+        z-index: 1;
+    }
+
+    @keyframes shiny-border-animation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    @keyframes shiny-bg-animation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 
 
@@ -676,35 +686,32 @@
     }
     .gallery-item { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); }
     .gallery-image-container {
-        position: relative; width: 100%; padding: var(--border-width);
-        border-radius: var(--border-radius); background: var(--text-light);
+        position: relative;
+        width: 100%;
+        padding: 2px;
+        border-radius: var(--border-radius);
         cursor: pointer;
     }
-    
+
     .gallery-image-container.rarity-uncommon { background: var(--rarity-uncommon-gradient); }
-    .gallery-image-container.rarity-uncommon .gallery-image { background: radial-gradient(circle, rgb(46, 128, 38) 30%, rgb(5, 25, 10) 70%); }
     .gallery-image-container.rarity-rare { background: var(--rarity-rare-gradient); }
-    .gallery-image-container.rarity-rare .gallery-image { background: radial-gradient(circle, rgb(44, 83, 128) 30%, rgb(2, 5, 15) 70%); }
     .gallery-image-container.rarity-epic { background: var(--rarity-epic-gradient); }
-    .gallery-image-container.rarity-epic .gallery-image { background: radial-gradient(circle, rgb(128, 26, 128) 30%, rgb(15, 2, 20) 70%); }
     .gallery-image-container.rarity-mythic { background: var(--rarity-mythic-gradient); }
-    .gallery-image-container.rarity-mythic .gallery-image { background: radial-gradient(circle, rgb(128, 128, 0) 30%, rgb(40, 25, 0) 70%); }
     .gallery-image-container.rarity-secret { background: var(--rarity-secret-gradient); }
-    .gallery-image-container.rarity-secret .gallery-image { background: radial-gradient(circle, rgb(128, 68, 0) 30%, rgb(30, 0, 0) 70%); }
     .gallery-image-container.rarity-nightmare { background: var(--rarity-nightmare-gradient); }
-    .gallery-image-container.rarity-nightmare .gallery-image { background: radial-gradient(circle, rgb(35, 44, 128) 30%, rgb(5, 5, 8) 70%); }
     .gallery-image-container.rarity-apex { background: var(--rarity-apex-gradient); }
-    .gallery-image-container.rarity-apex .gallery-image { background: radial-gradient(circle, rgb(94, 48, 128) 30%, rgb(15, 0, 5) 70%); }
     .gallery-image-container.rarity-hero { background: var(--rarity-hero-gradient); }
-    .gallery-image-container.rarity-hero .gallery-image { background: radial-gradient(circle, rgb(128, 125, 66) 30%, rgb(15, 15, 5) 70%); }
 
     .gallery-image {
-        width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
-        border-radius: calc(var(--border-radius) - var(--border-width));
-        background-color: var(--bg-dark); display: block;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: calc(var(--border-radius) - 2px);
+        display: block;
+        position: relative;
     }
     .gallery-action-button {
-        position: absolute; right: var(--spacing-xs); z-index: 1; opacity: 0;
+        position: absolute; right: var(--spacing-xs); z-index: 3; opacity: 0;
         transition: opacity var(--transition-fast);
         cursor: pointer;
         pointer-events: none;
@@ -791,7 +798,7 @@
 </head>
 <body>
     <div class="main-container">
-        <div id="unitImageDisplayContainer" class="initially-hidden">
+        <div id="unitImageDisplayContainer" class="hidden">
             <div id="unitImageWrapper">
                 <img id="displayedUnitImage" src="" alt="Selected Unit">
             </div>
@@ -1273,7 +1280,7 @@
                     const effectiveBoosts = selection.version === 'shiny' ? (unitBoosterData.shinyBoosts || unitBoosterData) : unitBoosterData;
 
                     if (effectiveBoosts.dmg && effectiveBoosts.dmg > boosterMultipliers.dmg) boosterMultipliers.dmg = effectiveBoosts.dmg;
-                    if (effectiveBoosts.range && effectiveBoosts.range > boosterMultipliers.range) boosterMultipliers.range = effectiveBoosts.range;
+                    if (effectiveBoosts.range && effectiveBoosts.range > boosterMultipliers.range) boosterMultipliers.range = boosterMultipliers.range;
                     
                     if (effectiveBoosts.cd && effectiveBoosts.cd < boosterMultipliers.cd) boosterMultipliers.cd = effectiveBoosts.cd;
                 });
@@ -1662,6 +1669,22 @@
                 const stats = getCurrentUnitData();
                 if (!stats) return;
                 
+                const isShiny = selectedVersionKey === 'shiny';
+                const unitData = allUnitData[currentUnitName];
+                const rarityClassName = rarityClassMap[unitData.Rarity] || '';
+                const rarityBgClassName = 'bg-' + rarityClassName;
+
+                unitImageWrapper.className = '';
+                displayedUnitImage.className = '';
+
+                if (isShiny) {
+                    unitImageWrapper.classList.add('shiny');
+                    if (rarityBgClassName) displayedUnitImage.classList.add(rarityBgClassName, 'shiny-bg');
+                } else {
+                    if (rarityClassName) unitImageWrapper.classList.add(rarityClassName);
+                    if (rarityBgClassName) displayedUnitImage.classList.add(rarityBgClassName);
+                }
+                
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (stats.Element || 'Neutral');
 
                 if (stats.BackendNote) {
@@ -1798,18 +1821,30 @@
                 const boostHeaderCell = document.createElement('th');
                 const dropdownContainer = document.createElement('div');
                 const versionDropdown = createCustomDropdown('versionDropdown', 'Version:', versions, selectedVersionKey, (value) => {
-                    selectedVersionKey = value; 
-                    updateMainUnitImage(allUnitData[currentUnitName]);
+                    selectedVersionKey = value;
+                    
+                    const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
+                    const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
+                    displayedUnitImage.src = selectedVersionKey === 'shiny' && shinyImageUrl ? shinyImageUrl : normalImageUrl;
+
                     renderUnitTables(allUnitData[currentUnitName]);
                     
-                    const galleryItemContainer = galleryContainer.querySelector(`.gallery-item[data-unit-name="${currentUnitName}"] .gallery-image-container`);
-                    const galleryItemImg = galleryItemContainer?.querySelector('.gallery-image');
-                    if (galleryItemImg) {
+                    const galleryItem = galleryContainer.querySelector(`.gallery-item[data-unit-name="${currentUnitName}"]`);
+                    if (galleryItem) {
+                        const galleryItemImg = galleryItem.querySelector('.gallery-image');
+                        const imageContainer = galleryItem.querySelector('.gallery-image-container');
                         const isShiny = value === 'shiny';
+                        
                         galleryItemImg.dataset.isShiny = isShiny;
                         const targetSrc = isShiny && galleryItemImg.dataset.shinySrc ? galleryItemImg.dataset.shinySrc : galleryItemImg.dataset.normalSrc;
                         if(targetSrc) galleryItemImg.src = targetSrc;
-                        galleryItemContainer.classList.toggle('shiny-active', isShiny);
+                        
+                        const rarityClassName = rarityClassMap[baseUnitStats.Rarity] || '';
+                        imageContainer.classList.toggle('shiny', isShiny);
+                        galleryItemImg.classList.toggle('shiny-bg', isShiny);
+                        if (rarityClassName) {
+                            imageContainer.classList.toggle(rarityClassName, !isShiny);
+                        }
                     }
                 });
                 
@@ -2216,36 +2251,18 @@
 
             function unsearchUnit() {
                 if (window.location.pathname !== '/' && window.location.pathname !== '') {
-                    window.location.href = '/unit-machine';
+                    window.location.href = '/unit-stats-viewer';
                 } else {
                     currentUnitName = null;
                     unitSearchInput.value = '';
                     unitStatsContainer.innerHTML = '';
-                    unitImageDisplayContainer.classList.remove('visible');
+                    unitImageDisplayContainer.classList.add('hidden');
                     graphButton.disabled = true;
                     dpsRankingsButton.disabled = true;
                     populateGallery();
                     updateGalleryCompareButtons();
                 }
             }
-            
-            function updateMainUnitImage(unitData, version = 'normal') {
-                const isShiny = version === 'shiny';
-                const normalImageUrl = unitImages[normalizeUnitName(unitData.Name)];
-                const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${unitData.Name}`)];
-
-                displayedUnitImage.src = isShiny && shinyImageUrl 
-                    ? shinyImageUrl 
-                    : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
-                displayedUnitImage.alt = unitData.Name;
-                
-                unitImageWrapper.className = ''; 
-                if (unitData.Rarity && rarityClassMap[unitData.Rarity]) {
-                    unitImageWrapper.classList.add(rarityClassMap[unitData.Rarity]);
-                }
-                unitImageWrapper.classList.toggle('shiny-active', isShiny);
-            }
-
 
             function selectAndDisplayUnit(unitName, version = 'normal', isPageLoad = false) {
                 const unitSlug = createUnitSlug(unitName);
@@ -2266,27 +2283,34 @@
                     }
 
                     const unitData = allUnitData[unitName];
+                    const normalImageUrl = unitImages[normalizeUnitName(unitName)];
+                    const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${unitName}`)];
                     
-                    const onImageLoad = () => {
-                        unitImageDisplayContainer.classList.add('visible');
+                    displayedUnitImage.src = version === 'shiny' && shinyImageUrl 
+                        ? shinyImageUrl 
+                        : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
+                    displayedUnitImage.alt = unitName;
+                    
+                    const scrollAfterLoad = () => {
                         const searchContainer = document.querySelector('.search-container');
-                        if (searchContainer) {
-                             const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
-                             window.scrollTo({
-                                 top: topPos - 15,
-                                 behavior: 'instant'
-                             });
+                        if (searchContainer && (isPageLoad || !isDpsRankingsMode)) {
+                            const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                            window.scrollTo({
+                                top: topPos - 15,
+                                behavior: 'instant'
+                            });
                         }
-                        displayedUnitImage.removeEventListener('load', onImageLoad);
                     };
-                    displayedUnitImage.addEventListener('load', onImageLoad);
+                    
+                    displayedUnitImage.onload = scrollAfterLoad;
+                    displayedUnitImage.onerror = scrollAfterLoad;
 
-                    updateMainUnitImage(unitData, version);
+                    unitImageDisplayContainer.classList.remove('hidden');
+
                     renderUnitTables(unitData);
-
                     dpsRankingsButton.disabled = false;
                     
-                    const hasDamageStats = unitData.Upgrades.some(upg => upg.Damage !== undefined);
+                    const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
                     graphButton.disabled = !hasDamageStats;
                     
                     populateGallery();
@@ -2337,10 +2361,6 @@
                 imageContainer.className = 'gallery-image-container';
                 
                 const unitData = allUnitData[unitName];
-                if (unitData.Rarity) {
-                    const rarityClassName = rarityClassMap[unitData.Rarity];
-                    if (rarityClassName) imageContainer.classList.add(rarityClassName);
-                }
                 
                 imageContainer.addEventListener('click', (e) => {
                     if (e.target.closest('button')) return;
@@ -2362,15 +2382,23 @@
                 const shinyImageUrl = unitImages[normalizedShinyName];
 
                 let isShiny = isSearched && selectedVersionKey === 'shiny';
-                img.dataset.isShiny = isShiny;
 
                 img.src = isShiny && shinyImageUrl ? shinyImageUrl : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
                 img.alt = unitName;
                 img.loading = 'lazy';
                 if (normalImageUrl) img.dataset.normalSrc = normalImageUrl;
                 if (shinyImageUrl) img.dataset.shinySrc = shinyImageUrl;
-                
-                imageContainer.classList.toggle('shiny-active', isShiny);
+                img.dataset.isShiny = isShiny;
+
+                const rarityClassName = rarityClassMap[unitData.Rarity];
+                const rarityBgClassName = 'bg-' + rarityClassName;
+                if (isShiny) {
+                    imageContainer.classList.add('shiny');
+                    if (rarityBgClassName) img.classList.add(rarityBgClassName, 'shiny-bg');
+                } else {
+                    if (rarityClassName) imageContainer.classList.add(rarityClassName);
+                    if (rarityBgClassName) img.classList.add(rarityBgClassName);
+                }
 
                 imageContainer.appendChild(img);
 
@@ -2420,14 +2448,24 @@
                         e.stopPropagation();
                         triggerAnimation(shinyBtn);
                         const isNowShiny = img.dataset.isShiny !== 'true';
-                        img.dataset.isShiny = isNowShiny;
+                        
                         img.src = isNowShiny ? (img.dataset.shinySrc || img.dataset.normalSrc) : img.dataset.normalSrc;
-                        imageContainer.classList.toggle('shiny-active', isNowShiny);
+                        img.dataset.isShiny = isNowShiny;
+                        
+                        imageContainer.classList.toggle('shiny', isNowShiny);
+                        img.classList.toggle('shiny-bg', isNowShiny);
+                        if (rarityClassName) {
+                            imageContainer.classList.toggle(rarityClassName, !isNowShiny);
+                        }
                         
                         if (currentUnitName === unitName) {
                             selectedVersionKey = isNowShiny ? 'shiny' : 'normal';
-                            updateMainUnitImage(allUnitData[currentUnitName], selectedVersionKey);
-                            renderUnitTables(allUnitData[currentUnitName]);
+                            displayedUnitImage.src = isNowShiny ? (img.dataset.shinySrc || img.dataset.normalSrc) : img.dataset.normalSrc;
+                            unitImageWrapper.classList.toggle('shiny', isNowShiny);
+                            displayedUnitImage.classList.toggle('shiny-bg', isNowShiny);
+                            if (rarityClassName) {
+                                unitImageWrapper.classList.toggle(rarityClassName, !isNowShiny);
+                            }
                         }
                     });
                     imageContainer.appendChild(shinyBtn);
