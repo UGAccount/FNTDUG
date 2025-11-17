@@ -38,6 +38,10 @@
         --rarity-nightmare-gradient: linear-gradient(to bottom right, rgb(70, 89, 255), rgb(48, 53, 74));
         --rarity-apex-gradient: linear-gradient(to bottom right, rgb(189, 97, 255) 0%, rgb(56, 0, 22) 50%, rgb(255, 56, 106) 100%);
         --rarity-hero-gradient: linear-gradient(to bottom right, rgb(255, 205, 25) 0%, rgb(53, 56, 21) 50%, rgb(255, 251, 133) 100%);
+        --rarity-shiny-gradient: linear-gradient(to bottom right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+        --rarity-shiny-background-overlay: linear-gradient(to bottom right, rgba(255, 0, 0, 0.3), rgba(255, 165, 0, 0.3), rgba(255, 255, 0, 0.3), rgba(0, 128, 0, 0.3), rgba(0, 0, 255, 0.3), rgba(75, 0, 130, 0.3), rgba(238, 130, 238, 0.3));
+        --shiny-overlay-image: url('https://iili.io/fJHLgHb.png');
+        --unit-background: var(--bg-dark);
 
         --spacing-xs: 5px;
         --spacing-sm: 7.5px;
@@ -68,6 +72,8 @@
         --z-dropdown: 100;
         --z-suggestions: 101;
         --z-modal: 1000;
+        --z-image: 1;
+        --z-shiny-overlay: 2;
         
         --button-small-size: 24px;
         --search-bar-width-factor: 7.5;
@@ -131,7 +137,6 @@
         position: relative;
         padding: var(--border-width);
         border-radius: var(--border-radius);
-        background: var(--text-light);
         width: 100%;
     }
 
@@ -140,18 +145,66 @@
         aspect-ratio: 1 / 1;
         object-fit: cover;
         border-radius: calc(var(--border-radius) - var(--border-width));
-        background-color: var(--bg-dark);
         display: block;
+        background: var(--unit-background);
+        position: relative;
+        z-index: var(--z-image);
     }
 
-    #unitImageWrapper.rarity-uncommon { background: var(--rarity-uncommon-gradient); }
-    #unitImageWrapper.rarity-rare { background: var(--rarity-rare-gradient); }
-    #unitImageWrapper.rarity-epic { background: var(--rarity-epic-gradient); }
-    #unitImageWrapper.rarity-mythic { background: var(--rarity-mythic-gradient); }
-    #unitImageWrapper.rarity-secret { background: var(--rarity-secret-gradient); }
-    #unitImageWrapper.rarity-nightmare { background: var(--rarity-nightmare-gradient); }
-    #unitImageWrapper.rarity-apex { background: var(--rarity-apex-gradient); }
-    #unitImageWrapper.rarity-hero { background: var(--rarity-hero-gradient); }
+    #unitImageWrapper.rarity-uncommon, .gallery-image-container.rarity-uncommon { 
+        background: var(--rarity-uncommon-gradient);
+        --unit-background: radial-gradient(circle, rgb(46, 128, 38) 30%, rgb(5, 25, 10) 70%);
+    }
+    #unitImageWrapper.rarity-rare, .gallery-image-container.rarity-rare {
+        background: var(--rarity-rare-gradient);
+        --unit-background: radial-gradient(circle, rgb(44, 83, 128) 30%, rgb(2, 5, 15) 70%);
+    }
+    #unitImageWrapper.rarity-epic, .gallery-image-container.rarity-epic {
+        background: var(--rarity-epic-gradient);
+        --unit-background: radial-gradient(circle, rgb(128, 26, 128) 30%, rgb(15, 2, 20) 70%);
+    }
+    #unitImageWrapper.rarity-mythic, .gallery-image-container.rarity-mythic {
+        background: var(--rarity-mythic-gradient);
+        --unit-background: radial-gradient(circle, rgb(128, 128, 0) 30%, rgb(40, 25, 0) 70%);
+    }
+    #unitImageWrapper.rarity-secret, .gallery-image-container.rarity-secret {
+        background: var(--rarity-secret-gradient);
+        --unit-background: radial-gradient(circle, rgb(128, 68, 0) 30%, rgb(30, 0, 0) 70%);
+    }
+    #unitImageWrapper.rarity-nightmare, .gallery-image-container.rarity-nightmare {
+        background: var(--rarity-nightmare-gradient);
+        --unit-background: radial-gradient(circle, rgb(35, 44, 128) 30%, rgb(5, 5, 8) 70%);
+    }
+    #unitImageWrapper.rarity-apex, .gallery-image-container.rarity-apex {
+        background: var(--rarity-apex-gradient);
+        --unit-background: radial-gradient(circle, rgb(94, 48, 128) 30%, rgb(15, 0, 5) 70%);
+    }
+    #unitImageWrapper.rarity-hero, .gallery-image-container.rarity-hero {
+        background: var(--rarity-hero-gradient);
+        --unit-background: radial-gradient(circle, rgb(128, 125, 66) 30%, rgb(15, 15, 5) 70%);
+    }
+    
+    #unitImageWrapper.shiny-border, .gallery-image-container.shiny-border {
+        background: var(--rarity-shiny-gradient);
+    }
+    .shiny-border #displayedUnitImage, .shiny-border .gallery-image {
+        background: var(--rarity-shiny-background-overlay), var(--unit-background);
+    }
+
+    .shiny-overlay::after {
+        content: '';
+        position: absolute;
+        top: var(--border-width);
+        left: var(--border-width);
+        right: var(--border-width);
+        bottom: var(--border-width);
+        background-image: var(--shiny-overlay-image);
+        background-size: cover;
+        background-position: center;
+        border-radius: calc(var(--border-radius) - var(--border-width));
+        z-index: var(--z-shiny-overlay);
+        pointer-events: none;
+    }
 
     #unitStatsContainer {
         width: 100%;
@@ -627,21 +680,17 @@
     .gallery-item { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); }
     .gallery-image-container {
         position: relative; width: 100%; padding: var(--border-width);
-        border-radius: var(--border-radius); background: var(--text-light);
+        border-radius: var(--border-radius);
         cursor: pointer;
     }
-    .gallery-image-container.rarity-uncommon { background: var(--rarity-uncommon-gradient); }
-    .gallery-image-container.rarity-rare { background: var(--rarity-rare-gradient); }
-    .gallery-image-container.rarity-epic { background: var(--rarity-epic-gradient); }
-    .gallery-image-container.rarity-mythic { background: var(--rarity-mythic-gradient); }
-    .gallery-image-container.rarity-secret { background: var(--rarity-secret-gradient); }
-    .gallery-image-container.rarity-nightmare { background: var(--rarity-nightmare-gradient); }
-    .gallery-image-container.rarity-apex { background: var(--rarity-apex-gradient); }
-    .gallery-image-container.rarity-hero { background: var(--rarity-hero-gradient); }
+
     .gallery-image {
         width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
         border-radius: calc(var(--border-radius) - var(--border-width));
-        background-color: var(--bg-dark); display: block;
+        display: block;
+        background: var(--unit-background);
+        position: relative;
+        z-index: var(--z-image);
     }
     .gallery-action-button {
         position: absolute; right: var(--spacing-xs); z-index: 1; opacity: 0;
@@ -1613,6 +1662,20 @@
                 
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (stats.Element || 'Neutral');
 
+                // Clear all previous rarity and shiny classes
+                const allRarityClasses = Object.values(rarityClassMap);
+                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
+                
+                // Add the base rarity class for styling
+                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
+                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
+                }
+
+                // If shiny, add shiny effect classes
+                if (selectedVersionKey === 'shiny') {
+                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
+                }
+
                 if (stats.BackendNote) {
                     const noteWrapper = document.createElement('div');
                     noteWrapper.className = 'aux-table';
@@ -2198,15 +2261,31 @@
                     const normalImageUrl = unitImages[normalizeUnitName(unitName)];
                     const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${unitName}`)];
 
-                    displayedUnitImage.src = version === 'shiny' && shinyImageUrl 
+                    const imageUrl = version === 'shiny' && shinyImageUrl 
                         ? shinyImageUrl 
                         : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
-                    displayedUnitImage.alt = unitName;
+
+                    const scrollToSearch = () => {
+                        const searchContainer = document.querySelector('.search-container');
+                        if (searchContainer) {
+                            const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                            window.scrollTo({
+                                top: topPos - 15,
+                                behavior: 'instant'
+                            });
+                        }
+                    };
                     
-                    unitImageWrapper.className = '';
-                    if (unitData.Rarity && rarityClassMap[unitData.Rarity]) {
-                        unitImageWrapper.classList.add(rarityClassMap[unitData.Rarity]);
+                    displayedUnitImage.onload = null;
+                    displayedUnitImage.onload = scrollToSearch;
+                    
+                    displayedUnitImage.src = imageUrl;
+                    
+                    if (displayedUnitImage.complete) {
+                        requestAnimationFrame(scrollToSearch);
                     }
+
+                    displayedUnitImage.alt = unitName;
                     
                     unitImageDisplayContainer.classList.remove('hidden');
 
@@ -2218,15 +2297,6 @@
                     
                     populateGallery();
                     updateGalleryCompareButtons();
-
-                    const searchContainer = document.querySelector('.search-container');
-                    if (searchContainer) {
-                        const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
-                        window.scrollTo({
-                            top: topPos - 15,
-                            behavior: 'instant'
-                        });
-                    }
                 }
                 updateSuggestions();
             }
@@ -2301,6 +2371,10 @@
                 if (isSearched) {
                    isShiny = selectedVersionKey === 'shiny';
                 }
+                
+                if (isShiny) {
+                    imageContainer.classList.add('shiny-border', 'shiny-overlay');
+                }
 
                 img.src = isShiny && shinyImageUrl ? shinyImageUrl : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
                 img.alt = unitName;
@@ -2359,6 +2433,9 @@
                         const isNowShiny = img.dataset.isShiny !== 'true';
                         img.src = isNowShiny ? (img.dataset.shinySrc || img.dataset.normalSrc) : img.dataset.normalSrc;
                         img.dataset.isShiny = isNowShiny;
+                        
+                        imageContainer.classList.toggle('shiny-border', isNowShiny);
+                        imageContainer.classList.toggle('shiny-overlay', isNowShiny);
                         
                         if (currentUnitName === unitName) {
                             selectedVersionKey = isNowShiny ? 'shiny' : 'normal';
