@@ -38,8 +38,6 @@
         --rarity-nightmare-gradient: linear-gradient(to bottom right, rgb(70, 89, 255), rgb(48, 53, 74));
         --rarity-apex-gradient: linear-gradient(to bottom right, rgb(189, 97, 255) 0%, rgb(56, 0, 22) 50%, rgb(255, 56, 106) 100%);
         --rarity-hero-gradient: linear-gradient(to bottom right, rgb(255, 205, 25) 0%, rgb(53, 56, 21) 50%, rgb(255, 251, 133) 100%);
-        --rarity-shiny-border-gradient: linear-gradient(135deg, red, orange, yellow, green, cyan, blue, violet);
-
 
         --spacing-xs: 5px;
         --spacing-sm: 7.5px;
@@ -142,9 +140,8 @@
         aspect-ratio: 1 / 1;
         object-fit: cover;
         border-radius: calc(var(--border-radius) - var(--border-width));
+        background-color: var(--bg-dark);
         display: block;
-        position: relative;
-        z-index: 2;
     }
 
     #unitImageWrapper.rarity-uncommon { background: var(--rarity-uncommon-gradient); }
@@ -155,15 +152,6 @@
     #unitImageWrapper.rarity-nightmare { background: var(--rarity-nightmare-gradient); }
     #unitImageWrapper.rarity-apex { background: var(--rarity-apex-gradient); }
     #unitImageWrapper.rarity-hero { background: var(--rarity-hero-gradient); }
-    
-    #unitImageWrapper.rarity-uncommon #displayedUnitImage, .gallery-image-container.rarity-uncommon .gallery-image { background: radial-gradient(circle, rgb(46, 128, 38) 30%, rgb(5, 25, 10) 70%); }
-    #unitImageWrapper.rarity-rare #displayedUnitImage, .gallery-image-container.rarity-rare .gallery-image { background: radial-gradient(circle, rgb(44, 83, 128) 30%, rgb(2, 5, 15) 70%); }
-    #unitImageWrapper.rarity-epic #displayedUnitImage, .gallery-image-container.rarity-epic .gallery-image { background: radial-gradient(circle, rgb(128, 26, 128) 30%, rgb(15, 2, 20) 70%); }
-    #unitImageWrapper.rarity-mythic #displayedUnitImage, .gallery-image-container.rarity-mythic .gallery-image { background: radial-gradient(circle, rgb(128, 128, 0) 30%, rgb(40, 25, 0) 70%); }
-    #unitImageWrapper.rarity-secret #displayedUnitImage, .gallery-image-container.rarity-secret .gallery-image { background: radial-gradient(circle, rgb(128, 68, 0) 30%, rgb(30, 0, 0) 70%); }
-    #unitImageWrapper.rarity-nightmare #displayedUnitImage, .gallery-image-container.rarity-nightmare .gallery-image { background: radial-gradient(circle, rgb(35, 44, 128) 30%, rgb(5, 5, 8) 70%); }
-    #unitImageWrapper.rarity-apex #displayedUnitImage, .gallery-image-container.rarity-apex .gallery-image { background: radial-gradient(circle, rgb(94, 48, 128) 30%, rgb(15, 0, 5) 70%); }
-    #unitImageWrapper.rarity-hero #displayedUnitImage, .gallery-image-container.rarity-hero .gallery-image { background: radial-gradient(circle, rgb(128, 125, 66) 30%, rgb(15, 15, 5) 70%); }
 
     #unitStatsContainer {
         width: 100%;
@@ -653,12 +641,10 @@
     .gallery-image {
         width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
         border-radius: calc(var(--border-radius) - var(--border-width));
-        display: block;
-        position: relative;
-        z-index: 2;
+        background-color: var(--bg-dark); display: block;
     }
     .gallery-action-button {
-        position: absolute; right: var(--spacing-xs); z-index: 4; opacity: 0;
+        position: absolute; right: var(--spacing-xs); z-index: 1; opacity: 0;
         transition: opacity var(--transition-fast);
         cursor: pointer;
         pointer-events: none;
@@ -684,36 +670,6 @@
         }
     }
     .gallery-name { color: var(--text-light); }
-    
-    .shiny-effect {
-        background: var(--rarity-shiny-border-gradient);
-    }
-    
-    .shiny-effect::before {
-        content: '';
-        position: absolute;
-        top: var(--border-width); left: var(--border-width); right: var(--border-width); bottom: var(--border-width);
-        background: conic-gradient(from 180deg at 50% 70%, transparent, white, transparent);
-        border-radius: calc(var(--border-radius) - var(--border-width));
-        animation: shiny-spotlight 4s linear infinite;
-        opacity: 0.3;
-        z-index: 1;
-    }
-    
-    .shiny-effect::after {
-        content: '';
-        position: absolute;
-        top: var(--border-width); left: var(--border-width); right: var(--border-width); bottom: var(--border-width);
-        background-image: url('https://iili.io/fJHLgHb.png');
-        background-size: cover;
-        background-position: center;
-        mix-blend-mode: screen;
-        opacity: 0.7;
-        border-radius: calc(var(--border-radius) - var(--border-width));
-        pointer-events: none;
-        z-index: 3;
-    }
-
 
     .table-wrapper::-webkit-scrollbar, #galleryContainer::-webkit-scrollbar, .presets-list::-webkit-scrollbar, .modal-panel-content::-webkit-scrollbar { 
         height: var(--scrollbar-size); width: var(--scrollbar-size);
@@ -740,11 +696,6 @@
     }
     @keyframes button-focus-pulse {
         50% { border-color: var(--primary-accent); box-shadow: var(--focus-shadow); }
-    }
-    
-    @keyframes shiny-spotlight {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
     }
     
     @media (max-width: 500px) {
@@ -1658,13 +1609,6 @@
                     displayedUnitImage.src = selectedVersionKey === 'shiny' && shinyImageUrl 
                         ? shinyImageUrl 
                         : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
-                    
-                    unitImageWrapper.className = '';
-                    if (selectedVersionKey === 'shiny') {
-                        unitImageWrapper.classList.add('shiny-effect');
-                    } else if (stats.Rarity && rarityClassMap[stats.Rarity]) {
-                        unitImageWrapper.classList.add(rarityClassMap[stats.Rarity]);
-                    }
                 }
                 
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (stats.Element || 'Neutral');
@@ -1807,24 +1751,12 @@
                     renderUnitTables(allUnitData[currentUnitName]);
                     
                     const galleryItem = galleryContainer.querySelector(`.gallery-item[data-unit-name="${currentUnitName}"]`);
-                    if (galleryItem) {
-                        const galleryItemImg = galleryItem.querySelector('.gallery-image');
-                        const imageContainer = galleryItem.querySelector('.gallery-image-container');
+                    const galleryItemImg = galleryItem?.querySelector('.gallery-image');
+                    if (galleryItemImg) {
                         const isShiny = value === 'shiny';
-                        
                         galleryItemImg.dataset.isShiny = isShiny;
                         const targetSrc = isShiny && galleryItemImg.dataset.shinySrc ? galleryItemImg.dataset.shinySrc : galleryItemImg.dataset.normalSrc;
                         if(targetSrc) galleryItemImg.src = targetSrc;
-
-                        imageContainer.classList.toggle('shiny-effect', isShiny);
-                        if(isShiny) {
-                            Object.values(rarityClassMap).forEach(cls => imageContainer.classList.remove(cls));
-                        } else {
-                            const unitData = allUnitData[currentUnitName];
-                            if (unitData.Rarity && rarityClassMap[unitData.Rarity]) {
-                                imageContainer.classList.add(rarityClassMap[unitData.Rarity]);
-                            }
-                        }
                     }
                 });
                 
@@ -2265,35 +2197,14 @@
                     const unitData = allUnitData[unitName];
                     const normalImageUrl = unitImages[normalizeUnitName(unitName)];
                     const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${unitName}`)];
-                    
-                    const imageUrl = version === 'shiny' && shinyImageUrl 
+
+                    displayedUnitImage.src = version === 'shiny' && shinyImageUrl 
                         ? shinyImageUrl 
                         : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
                     displayedUnitImage.alt = unitName;
-
-                    if (isPageLoad) {
-                        const scrollAfterImageLoad = () => {
-                            const searchContainer = document.querySelector('.search-container');
-                            if (searchContainer) {
-                                const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
-                                window.scrollTo({
-                                    top: topPos - 15,
-                                    behavior: 'instant'
-                                });
-                            }
-                            displayedUnitImage.onload = null;
-                            displayedUnitImage.onerror = null;
-                        };
-                        displayedUnitImage.onload = scrollAfterImageLoad;
-                        displayedUnitImage.onerror = scrollAfterImageLoad;
-                    }
-                    
-                    displayedUnitImage.src = imageUrl;
                     
                     unitImageWrapper.className = '';
-                    if (version === 'shiny') {
-                        unitImageWrapper.classList.add('shiny-effect');
-                    } else if (unitData.Rarity && rarityClassMap[unitData.Rarity]) {
+                    if (unitData.Rarity && rarityClassMap[unitData.Rarity]) {
                         unitImageWrapper.classList.add(rarityClassMap[unitData.Rarity]);
                     }
                     
@@ -2307,6 +2218,15 @@
                     
                     populateGallery();
                     updateGalleryCompareButtons();
+
+                    const searchContainer = document.querySelector('.search-container');
+                    if (searchContainer) {
+                        const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                        window.scrollTo({
+                            top: topPos - 15,
+                            behavior: 'instant'
+                        });
+                    }
                 }
                 updateSuggestions();
             }
@@ -2353,15 +2273,7 @@
                 imageContainer.className = 'gallery-image-container';
                 
                 const unitData = allUnitData[unitName];
-                
-                let isShiny = false;
-                if (isSearched) {
-                   isShiny = selectedVersionKey === 'shiny';
-                }
-
-                if (isShiny) {
-                    imageContainer.classList.add('shiny-effect');
-                } else if (unitData.Rarity && rarityClassMap[unitData.Rarity]) {
+                if (unitData.Rarity) {
                     const rarityClassName = rarityClassMap[unitData.Rarity];
                     if (rarityClassName) imageContainer.classList.add(rarityClassName);
                 }
@@ -2385,12 +2297,17 @@
                 const normalImageUrl = unitImages[normalizedUnitName];
                 const shinyImageUrl = unitImages[normalizedShinyName];
 
+                let isShiny = false;
+                if (isSearched) {
+                   isShiny = selectedVersionKey === 'shiny';
+                }
+
                 img.src = isShiny && shinyImageUrl ? shinyImageUrl : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
                 img.alt = unitName;
                 img.loading = 'lazy';
                 if (normalImageUrl) img.dataset.normalSrc = normalImageUrl;
                 if (shinyImageUrl) img.dataset.shinySrc = shinyImageUrl;
-                img.dataset.isShiny = String(isShiny);
+                img.dataset.isShiny = isShiny;
 
                 imageContainer.appendChild(img);
 
@@ -2441,16 +2358,7 @@
                         triggerAnimation(shinyBtn);
                         const isNowShiny = img.dataset.isShiny !== 'true';
                         img.src = isNowShiny ? (img.dataset.shinySrc || img.dataset.normalSrc) : img.dataset.normalSrc;
-                        img.dataset.isShiny = String(isNowShiny);
-                        
-                        imageContainer.classList.toggle('shiny-effect', isNowShiny);
-                        if(isNowShiny) {
-                            Object.values(rarityClassMap).forEach(cls => imageContainer.classList.remove(cls));
-                        } else {
-                            if (unitData.Rarity && rarityClassMap[unitData.Rarity]) {
-                                imageContainer.classList.add(rarityClassMap[unitData.Rarity]);
-                            }
-                        }
+                        img.dataset.isShiny = isNowShiny;
                         
                         if (currentUnitName === unitName) {
                             selectedVersionKey = isNowShiny ? 'shiny' : 'normal';
