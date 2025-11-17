@@ -2678,16 +2678,32 @@
                     return Object.keys(boosts).length > 0 ? boosts : null;
                 };
 
+                const applyPlacementBoost = (boost, placements) => {
+                    if (!boost || placements <= 1) return boost;
+                    return 1 + ((boost - 1) * placements);
+                };
+
                 for (const unit of Object.values(allUnitData)) {
-                    const maxBoosts = getBoostsFromUpgrade(unit.Upgrades[unit.Upgrades.length - 1]);
-                    if (maxBoosts) {
-                        dynamicBoosters[unit.Name] = maxBoosts;
-                        if (unit.shinyData) {
-                            const shinyMaxBoosts = getBoostsFromUpgrade(unit.shinyData.Upgrades[unit.shinyData.Upgrades.length - 1]);
-                            if (shinyMaxBoosts) {
-                                dynamicBoosters[unit.Name].shinyBoosts = shinyMaxBoosts;
+                    const processUnitForBoosts = (unitData, isShiny = false) => {
+                        const maxBoosts = getBoostsFromUpgrade(unitData.Upgrades[unitData.Upgrades.length - 1]);
+                        if (maxBoosts) {
+                            const placements = unitData.Max || 1;
+                            if (maxBoosts.dmg) maxBoosts.dmg = applyPlacementBoost(maxBoosts.dmg, placements);
+                            if (maxBoosts.cd) maxBoosts.cd = applyPlacementBoost(maxBoosts.cd, placements);
+                            if (maxBoosts.range) maxBoosts.range = applyPlacementBoost(maxBoosts.range, placements);
+                            
+                            if (isShiny) {
+                                if (!dynamicBoosters[unit.Name]) dynamicBoosters[unit.Name] = {};
+                                dynamicBoosters[unit.Name].shinyBoosts = maxBoosts;
+                            } else {
+                                dynamicBoosters[unit.Name] = maxBoosts;
                             }
                         }
+                    };
+                    
+                    processUnitForBoosts(unit);
+                    if (unit.shinyData) {
+                        processUnitForBoosts(unit.shinyData, true);
                     }
                 }
                 boosterData = dynamicBoosters;
@@ -2806,6 +2822,28 @@
                     });
 
                     allUnitData = finalUnitData;
+                    
+                    Object.values(allUnitData).forEach(unit => {
+                        if (unit.shinyData) {
+                            const shinyUnit = unit.shinyData;
+                            const hasDamage = shinyUnit.Upgrades.some(upg => upg.Damage !== undefined && upg.Damage > 0);
+                            const hasBoost = shinyUnit.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
+
+                            if (hasDamage) {
+                                shinyUnit.Upgrades.forEach(upgrade => {
+                                    if (upgrade.Damage !== undefined) {
+                                        upgrade.Damage *= 1.10;
+                                    }
+                                });
+                            } else if (hasBoost) {
+                                shinyUnit.Upgrades.forEach(upgrade => {
+                                    if (upgrade.Range !== undefined) {
+                                        upgrade.Range *= 1.10;
+                                    }
+                                });
+                            }
+                        }
+                    });
                     
                     fuse = new Fuse(Object.keys(allUnitData), { threshold: 0.3 });
                     processAndStoreBoosterData();
