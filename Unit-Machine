@@ -39,7 +39,7 @@
         --rarity-apex-gradient: linear-gradient(to bottom right, rgb(189, 97, 255) 0%, rgb(56, 0, 22) 50%, rgb(255, 56, 106) 100%);
         --rarity-hero-gradient: linear-gradient(to bottom right, rgb(255, 205, 25) 0%, rgb(53, 56, 21) 50%, rgb(255, 251, 133) 100%);
         --rarity-shiny-gradient: linear-gradient(to bottom right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
-        --rarity-shiny-background-overlay: linear-gradient(to bottom right, rgba(255, 0, 0, 0.3), rgba(255, 165, 0, 0.3), rgba(255, 255, 0, 0.3), rgba(0, 128, 0, 0.3), rgba(0, 0, 255, 0.3), rgba(75, 0, 130, 0.3), rgba(238, 130, 238, 0.3));
+        --rarity-shiny-background-overlay: linear-gradient(to bottom right, rgba(255, 0, 0, 0.15), rgba(255, 165, 0, 0.15), rgba(255, 255, 0, 0.15), rgba(0, 128, 0, 0.15), rgba(0, 0, 255, 0.15), rgba(75, 0, 130, 0.15), rgba(238, 130, 238, 0.15));
         --shiny-overlay-image: url('https://iili.io/fJHLgHb.png');
         --unit-background: var(--bg-dark);
 
@@ -1662,16 +1662,13 @@
                 
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (stats.Element || 'Neutral');
 
-                // Clear all previous rarity and shiny classes
                 const allRarityClasses = Object.values(rarityClassMap);
                 unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
                 
-                // Add the base rarity class for styling
                 if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
                     unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
                 }
 
-                // If shiny, add shiny effect classes
                 if (selectedVersionKey === 'shiny') {
                     unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
                 }
@@ -1814,12 +1811,18 @@
                     renderUnitTables(allUnitData[currentUnitName]);
                     
                     const galleryItem = galleryContainer.querySelector(`.gallery-item[data-unit-name="${currentUnitName}"]`);
-                    const galleryItemImg = galleryItem?.querySelector('.gallery-image');
-                    if (galleryItemImg) {
-                        const isShiny = value === 'shiny';
-                        galleryItemImg.dataset.isShiny = isShiny;
-                        const targetSrc = isShiny && galleryItemImg.dataset.shinySrc ? galleryItemImg.dataset.shinySrc : galleryItemImg.dataset.normalSrc;
-                        if(targetSrc) galleryItemImg.src = targetSrc;
+                    if (galleryItem) {
+                        const galleryItemImg = galleryItem.querySelector('.gallery-image');
+                        const imageContainer = galleryItem.querySelector('.gallery-image-container');
+                        if (galleryItemImg && imageContainer) {
+                            const isShiny = value === 'shiny';
+                            galleryItemImg.dataset.isShiny = isShiny;
+                            const targetSrc = isShiny && galleryItemImg.dataset.shinySrc ? galleryItemImg.dataset.shinySrc : galleryItemImg.dataset.normalSrc;
+                            if(targetSrc) galleryItemImg.src = targetSrc;
+                            
+                            imageContainer.classList.toggle('shiny-border', isShiny);
+                            imageContainer.classList.toggle('shiny-overlay', isShiny);
+                        }
                     }
                 });
                 
@@ -2264,6 +2267,19 @@
                     const imageUrl = version === 'shiny' && shinyImageUrl 
                         ? shinyImageUrl 
                         : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
+                    
+                    displayedUnitImage.src = imageUrl;
+                    displayedUnitImage.alt = unitName;
+                    
+                    unitImageDisplayContainer.classList.remove('hidden');
+                    renderUnitTables(unitData);
+                    dpsRankingsButton.disabled = false;
+                    
+                    const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
+                    graphButton.disabled = !hasDamageStats;
+                    
+                    populateGallery();
+                    updateGalleryCompareButtons();
 
                     const scrollToSearch = () => {
                         const searchContainer = document.querySelector('.search-container');
@@ -2275,28 +2291,8 @@
                             });
                         }
                     };
-                    
-                    displayedUnitImage.onload = null;
-                    displayedUnitImage.onload = scrollToSearch;
-                    
-                    displayedUnitImage.src = imageUrl;
-                    
-                    if (displayedUnitImage.complete) {
-                        requestAnimationFrame(scrollToSearch);
-                    }
 
-                    displayedUnitImage.alt = unitName;
-                    
-                    unitImageDisplayContainer.classList.remove('hidden');
-
-                    renderUnitTables(unitData);
-                    dpsRankingsButton.disabled = false;
-                    
-                    const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
-                    graphButton.disabled = !hasDamageStats;
-                    
-                    populateGallery();
-                    updateGalleryCompareButtons();
+                    requestAnimationFrame(scrollToSearch);
                 }
                 updateSuggestions();
             }
