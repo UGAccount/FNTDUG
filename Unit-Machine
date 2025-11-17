@@ -1281,10 +1281,8 @@
                 const hasBoostStats = unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
                 const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                 const hasRangeStat = unitData.Upgrades.some(upg => upg.Range !== undefined);
-
-                const totalDpsWrapper = document.querySelector('#total-dps-table-wrapper');
+                
                 const elementalContainer = document.getElementById('elemental-dps-container');
-                if (totalDpsWrapper) totalDpsWrapper.style.display = hasDamageStats ? '' : 'none';
                 if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
 
                 const boosterMultipliers = getGlobalBoostMultipliers();
@@ -1343,7 +1341,8 @@
 
                 if (hasDamageStats) {
                     const totalDPS = maxDPS * (unitData.Max || 1);
-                    const totalDpsCell = totalDpsWrapper?.querySelector('td');
+                    const summaryWrapper = document.getElementById('summary-table-wrapper');
+                    const totalDpsCell = summaryWrapper?.querySelector('td');
                     if (totalDpsCell) totalDpsCell.textContent = totalDPS.toFixed(2);
                     
                     if (elementalContainer) {
@@ -1862,10 +1861,49 @@
                 wrapper.appendChild(table);
                 unitStatsContainer.appendChild(wrapper);
 
-                const totalDpsWrapper = document.createElement('div');
-                totalDpsWrapper.className = 'aux-table';
-                createTableInWrapper(['Total DPS'], [['...']], totalDpsWrapper, 'total-dps-table-wrapper');
-                unitStatsContainer.appendChild(totalDpsWrapper);
+                const maxUpgrade = stats.Upgrades[stats.Upgrades.length - 1];
+                const hasDamageStats = stats.Upgrades.some(upg => upg.Damage !== undefined);
+                const hasBoostStats = maxUpgrade.DamageBoost || maxUpgrade.CooldownBoost || maxUpgrade.RangeBoost;
+
+                if (hasDamageStats || hasBoostStats) {
+                    const summaryWrapper = document.createElement('div');
+                    summaryWrapper.className = 'aux-table';
+                    summaryWrapper.id = 'summary-table-wrapper';
+
+                    let headers = [];
+                    let rowData = [];
+
+                    if (hasBoostStats) {
+                        const placements = stats.Max || 1;
+                        const applyPlacementBoost = (boost, placements) => (boost ? (1 + ((boost - 1) * placements)) : 1.0);
+                        
+                        const totalDmgBoost = applyPlacementBoost(maxUpgrade.DamageBoost, placements);
+                        const totalCdBoost = applyPlacementBoost(maxUpgrade.CooldownBoost, placements);
+                        const totalRangeBoost = applyPlacementBoost(maxUpgrade.RangeBoost, placements);
+
+                        const totalDpsBoostPercent = (((totalDmgBoost / totalCdBoost) - 1) * 100).toFixed(1) + '%';
+                        
+                        const boostParts = [];
+                        if (totalDmgBoost !== 1.0) boostParts.push(`${totalDmgBoost.toFixed(2)}x DMG`);
+                        if (totalCdBoost !== 1.0) boostParts.push(`${totalCdBoost.toFixed(2)}x CD`);
+                        if (totalRangeBoost !== 1.0) boostParts.push(`${totalRangeBoost.toFixed(2)}x Range`);
+                        const totalBoostsString = boostParts.join(', ') || 'None';
+
+                        if (hasDamageStats) {
+                            headers = ['Total DPS', 'Total DPS Boost', 'Total Boosts'];
+                            rowData = ['...', totalDpsBoostPercent, totalBoostsString];
+                        } else {
+                            headers = ['Total DPS Boost', 'Total Boosts'];
+                            rowData = [totalDpsBoostPercent, totalBoostsString];
+                        }
+                    } else {
+                        headers = ['Total DPS'];
+                        rowData = ['...'];
+                    }
+                    
+                    createTableInWrapper(headers, [rowData], summaryWrapper);
+                    unitStatsContainer.appendChild(summaryWrapper);
+                }
                 
                 const elementalContainer = document.createElement('div');
                 elementalContainer.id = 'elemental-dps-container';
