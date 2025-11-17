@@ -118,7 +118,40 @@
         gap: var(--spacing-md);
         max-width: var(--container-max-width);
         margin: 0 auto;
+        padding: 0 var(--spacing-md);
     }
+
+    #unitImageDisplayContainer {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    #unitImageWrapper {
+        position: relative;
+        padding: var(--border-width);
+        border-radius: var(--border-radius);
+        background: var(--text-light);
+        width: 100%;
+    }
+
+    #displayedUnitImage {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: calc(var(--border-radius) - var(--border-width));
+        background-color: var(--bg-dark);
+        display: block;
+    }
+
+    #unitImageWrapper.rarity-uncommon { background: var(--rarity-uncommon-gradient); }
+    #unitImageWrapper.rarity-rare { background: var(--rarity-rare-gradient); }
+    #unitImageWrapper.rarity-epic { background: var(--rarity-epic-gradient); }
+    #unitImageWrapper.rarity-mythic { background: var(--rarity-mythic-gradient); }
+    #unitImageWrapper.rarity-secret { background: var(--rarity-secret-gradient); }
+    #unitImageWrapper.rarity-nightmare { background: var(--rarity-nightmare-gradient); }
+    #unitImageWrapper.rarity-apex { background: var(--rarity-apex-gradient); }
+    #unitImageWrapper.rarity-hero { background: var(--rarity-hero-gradient); }
 
     #unitStatsContainer {
         width: 100%;
@@ -681,6 +714,13 @@
     }
 
     @media (min-width: 768px) {
+        .main-container {
+            padding: 0;
+        }
+        #unitImageWrapper {
+            width: auto;
+            max-width: 250px;
+        }
         .search-container { justify-content: center; }
         .input-container { flex-grow: 0; }
         #unitSearchInput { width: var(--search-bar-width-lg); }
@@ -691,6 +731,11 @@
 </head>
 <body>
     <div class="main-container">
+        <div id="unitImageDisplayContainer" class="hidden">
+            <div id="unitImageWrapper">
+                <img id="displayedUnitImage" src="" alt="Selected Unit">
+            </div>
+        </div>
         <div class="search-container">
             <div class="input-container">
                 <input type="text" id="unitSearchInput" placeholder="Search for a unit...">
@@ -817,7 +862,10 @@
                 resetBoostsButton = document.getElementById('resetBoostsButton'), savePresetButton = document.getElementById('savePresetButton'),
                 presetSaveForm = document.getElementById('presetSaveForm'), presetNameInput = document.getElementById('presetNameInput'),
                 confirmSavePresetButton = document.getElementById('confirmSavePresetButton'), cancelSavePresetButton = document.getElementById('cancelSavePresetButton'),
-                presetsListContainer = document.getElementById('presetsListContainer');
+                presetsListContainer = document.getElementById('presetsListContainer'),
+                unitImageDisplayContainer = document.getElementById('unitImageDisplayContainer'),
+                unitImageWrapper = document.getElementById('unitImageWrapper'),
+                displayedUnitImage = document.getElementById('displayedUnitImage');
 
 
             let allUnitData = {}, fuse, currentUnitName = null, comparisonUnitName = null, customLevel = 1, currentGraphLevelIndex = -1,
@@ -1553,6 +1601,15 @@
                 unitStatsContainer.innerHTML = '';
                 const stats = getCurrentUnitData();
                 if (!stats) return;
+
+                if (currentUnitName) {
+                    const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
+                    const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
+                    
+                    displayedUnitImage.src = selectedVersionKey === 'shiny' && shinyImageUrl 
+                        ? shinyImageUrl 
+                        : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
+                }
                 
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (stats.Element || 'Neutral');
 
@@ -2104,13 +2161,14 @@
                 });
             }
 
-function unsearchUnit() {
+            function unsearchUnit() {
                 if (window.location.pathname !== '/' && window.location.pathname !== '') {
                     window.location.href = '/unit-machine';
                 } else {
                     currentUnitName = null;
                     unitSearchInput.value = '';
                     unitStatsContainer.innerHTML = '';
+                    unitImageDisplayContainer.classList.add('hidden');
                     graphButton.disabled = true;
                     dpsRankingsButton.disabled = true;
                     populateGallery();
@@ -2135,7 +2193,24 @@ function unsearchUnit() {
                     if (!settings.saveBoosts) {
                         resetBoosts(false);
                     }
-                    renderUnitTables(allUnitData[unitName]);
+
+                    const unitData = allUnitData[unitName];
+                    const normalImageUrl = unitImages[normalizeUnitName(unitName)];
+                    const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${unitName}`)];
+
+                    displayedUnitImage.src = version === 'shiny' && shinyImageUrl 
+                        ? shinyImageUrl 
+                        : (normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`);
+                    displayedUnitImage.alt = unitName;
+                    
+                    unitImageWrapper.className = '';
+                    if (unitData.Rarity && rarityClassMap[unitData.Rarity]) {
+                        unitImageWrapper.classList.add(rarityClassMap[unitData.Rarity]);
+                    }
+                    
+                    unitImageDisplayContainer.classList.remove('hidden');
+
+                    renderUnitTables(unitData);
                     dpsRankingsButton.disabled = false;
                     
                     const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
