@@ -95,6 +95,22 @@
       "Quick Open": "https://iili.io/KtqMvBp.png",
       "VIP": "https://iili.io/KtqMS4I.png"
     },
+    "Maps": {
+  "G1L1": "https://iili.io/K6Mj47S.png",
+  "G1L2": "https://iili.io/K6Mjr22.png",
+  "G1L3": "https://iili.io/K6MjS14.png",
+  "G1L4": "https://iili.io/K6Mj8Bf.png",
+  "G1L5": "https://iili.io/K6MjkLG.png",
+  "G1L6": "https://iili.io/K6MjeXs.png",
+  "G1L99": "https://iili.io/K6MjwmX.png",
+  "G2L1": "https://iili.io/K6Mjjet.png",
+  "G2L2": "https://iili.io/K6Mjh7I.png",
+  "G2L3": "https://iili.io/K6MjVgp.png",
+  "G2L4": "https://iili.io/K6MjGqv.png",
+  "G2L5": "https://iili.io/K6Mj0Xa.png",
+  "G2L6": "https://iili.io/K6Mj1LJ.png",
+  "G2L99": "https://iili.io/K6MjM1R.png"
+    },
     "Units": {
     "Puppet": "https://iili.io/fHALwt1.png",
     "Dreadbear": "https://iili.io/fHALV8Q.png",
