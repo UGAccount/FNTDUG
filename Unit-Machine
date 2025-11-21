@@ -889,6 +889,8 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const ENABLE_URL_ROUTING = false;
+
             const GITHUB_URL = 'https://raw.githubusercontent.com/UGAccount/FNTDUG/main/Info';
             const unitSearchInput = document.getElementById('unitSearchInput'), searchButton = document.getElementById('searchButton'),
                 boostsButton = document.getElementById('boostsButton'), unitSearchSuggestions = document.getElementById('unitSearchSuggestions'),
@@ -2266,7 +2268,7 @@
             }
 
             function unsearchUnit() {
-                if (window.location.pathname !== '/' && window.location.pathname !== '') {
+                if (ENABLE_URL_ROUTING && window.location.pathname !== '/' && window.location.pathname !== '') {
                     window.location.href = '/unit-machine';
                 } else {
                     currentUnitName = null;
@@ -2281,12 +2283,14 @@
             }
 
             function selectAndDisplayUnit(unitName, version = 'normal', isPageLoad = false) {
-                const unitSlug = createUnitSlug(unitName);
-                const currentPathSlug = window.location.pathname.substring(1);
+                if (ENABLE_URL_ROUTING) {
+                    const unitSlug = createUnitSlug(unitName);
+                    const currentPathSlug = window.location.pathname.substring(1);
 
-                if (!isPageLoad && unitSlug !== currentPathSlug) {
-                    window.location.href = `${window.location.origin}/${unitSlug}`;
-                    return;
+                    if (!isPageLoad && unitSlug !== currentPathSlug) {
+                        window.location.href = `${window.location.origin}/${unitSlug}`;
+                        return;
+                    }
                 }
 
                 unitSearchInput.value = unitName;
@@ -2319,18 +2323,20 @@
                     populateGallery();
                     updateGalleryCompareButtons();
 
-                    const scrollToSearch = () => {
-                        const searchContainer = document.querySelector('.search-container');
-                        if (searchContainer) {
-                            const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
-                            window.scrollTo({
-                                top: topPos - 15,
-                                behavior: 'instant'
-                            });
-                        }
-                    };
+                    if (ENABLE_URL_ROUTING) {
+                        const scrollToSearch = () => {
+                            const searchContainer = document.querySelector('.search-container');
+                            if (searchContainer) {
+                                const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                                window.scrollTo({
+                                    top: topPos - 15,
+                                    behavior: 'instant'
+                                });
+                            }
+                        };
 
-                    requestAnimationFrame(scrollToSearch);
+                        requestAnimationFrame(scrollToSearch);
+                    }
                 }
                 updateSuggestions();
             }
@@ -2890,16 +2896,18 @@
                     updateSortButtonsUI();
                     loadSettings();
 
-                    const pathSlug = decodeURIComponent(window.location.pathname.substring(1));
-                    if (pathSlug) {
-                        const unitNameFromUrl = Object.keys(allUnitData).find(
-                            name => createUnitSlug(name) === pathSlug
-                        );
-                        
-                        if (unitNameFromUrl) {
-                            setTimeout(() => {
-                                selectAndDisplayUnit(unitNameFromUrl, 'normal', true);
-                            }, 0);
+                    if (ENABLE_URL_ROUTING) {
+                        const pathSlug = decodeURIComponent(window.location.pathname.substring(1));
+                        if (pathSlug) {
+                            const unitNameFromUrl = Object.keys(allUnitData).find(
+                                name => createUnitSlug(name) === pathSlug
+                            );
+                            
+                            if (unitNameFromUrl) {
+                                setTimeout(() => {
+                                    selectAndDisplayUnit(unitNameFromUrl, 'normal', true);
+                                }, 0);
+                            }
                         }
                     }
 
