@@ -471,27 +471,32 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 15,
-        "RangeBoost": 1.02
+        "Damage": 0,
+        "Cooldown": 0
       },
       "UpgradeStats": [
         {
           "Range": 15,
-          "RangeBoost": 1.02,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
-          "RangeBoost": 1.02,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 650
         },
         {
           "Range": 17,
-          "RangeBoost": 1.02,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 850
         },
         {
           "Range": 18,
-          "RangeBoost": 1.02,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 1050
         }
       ],
@@ -511,17 +516,20 @@
       "MaxPlaced": 2,
       "BaseStats": {
         "Range": 15,
-        "RangeBoost": 1.02
+        "Damage": 0,
+        "Cooldown": 0
       },
       "UpgradeStats": [
         {
           "Range": 15,
-          "RangeBoost": 1.02,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
-          "RangeBoost": 1.02,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 650
         },
         {
@@ -532,7 +540,8 @@
         },
         {
           "Range": 18,
-          "RangeBoost": 1.02,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 1050
         }
       ],
@@ -541,90 +550,90 @@
       }
     },
     {
-    "Name": "Cupcake",
-    "Rarity": "Epic",
-    "PlacementPrice": 400,
-    "Type": "Support",
-    "Element": "Neutral",
-    "MaxPlaced": 3,
-    "BaseStats": {
-      "Range": 15,
-      "RangeBoost": 1.03,
-      "DamageBoost": 1.03,
-      "CooldownBoost": 0.97
+      "Name": "Cupcake",
+      "Rarity": "Epic",
+      "PlacementPrice": 400,
+      "Type": "Support",
+      "Element": "Neutral",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 15,
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": 0.97
+      },
+      "UpgradeStats": [
+        {
+          "Range": 16,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
+          "UpgradePrice": 600
+        },
+        {
+          "Range": 17,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
+          "UpgradePrice": 800
+        },
+        {
+          "Range": 18,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
+          "UpgradePrice": 1050
+        }
+      ],
+      "Passives": {
+        "Birthday Boy": "Provides a 3% buff to damage, range, and cooldown to every unit in its radius."
+      },
+      "Obtainability": [
+        "Epic Present (25%)",
+        "Merchant 1250 Coins",
+        "Summons (18%)"
+      ]
     },
-    "UpgradeStats": [
-      {
-        "Range": 16,
+    {
+      "Name": "Shiny Cupcake",
+      "Rarity": "Epic",
+      "PlacementPrice": 400,
+      "Type": "Support",
+      "Element": "Neutral",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 15,
         "RangeBoost": 1.03,
         "DamageBoost": 1.03,
-        "CooldownBoost": 0.97,
-        "UpgradePrice": 600
+        "CooldownBoost": 0.97
       },
-      {
-        "Range": 17,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97,
-        "UpgradePrice": 800
-      },
-      {
-        "Range": 18,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97,
-        "UpgradePrice": 1050
+      "UpgradeStats": [
+        {
+          "Range": 16,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
+          "UpgradePrice": 600
+        },
+        {
+          "Range": 17,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
+          "UpgradePrice": 800
+        },
+        {
+          "Range": 18,
+          "RangeBoost": 1.03,
+          "DamageBoost": 1.03,
+          "CooldownBoost": 0.97,
+          "UpgradePrice": 1050
+        }
+      ],
+      "Passives": {
+        "Birthday Boy": "Provides a 3% buff to damage, range, and cooldown to every unit in its radius."
       }
-    ],
-    "Passives": {
-      "Birthday Boy": "Provides a 3% buff to damage, range, and cooldown to every unit in its radius."
     },
-    "Obtainability": [
-      "Epic Present (25%)",
-      "Merchant 1250 Coins",
-      "Summons (18%)"
-    ]
-  },
-  {
-    "Name": "Shiny Cupcake",
-    "Rarity": "Epic",
-    "PlacementPrice": 400,
-    "Type": "Support",
-    "Element": "Neutral",
-    "MaxPlaced": 3,
-    "BaseStats": {
-      "Range": 15,
-      "RangeBoost": 1.03,
-      "DamageBoost": 1.03,
-      "CooldownBoost": 0.97
-    },
-    "UpgradeStats": [
-      {
-        "Range": 16,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97,
-        "UpgradePrice": 600
-      },
-      {
-        "Range": 17,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97,
-        "UpgradePrice": 800
-      },
-      {
-        "Range": 18,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97,
-        "UpgradePrice": 1050
-      }
-    ],
-    "Passives": {
-      "Birthday Boy": "Provides a 3% buff to damage, range, and cooldown to every unit in its radius."
-    }
-  },
     {
       "Name": "Toy Bonnie",
       "Rarity": "Epic",
