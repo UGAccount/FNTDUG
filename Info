@@ -81,7 +81,7 @@
       "Name": "Bonnie",
       "Rarity": "Uncommon",
       "PlacementPrice": 375,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Electricity",
       "MaxPlaced": 4,
       "BaseStats": {
@@ -122,7 +122,7 @@
       "Name": "Shiny Bonnie",
       "Rarity": "Uncommon",
       "PlacementPrice": 375,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Electricity",
       "MaxPlaced": 4,
       "BaseStats": {
@@ -389,7 +389,7 @@
       "Name": "PaperPals",
       "Rarity": "Rare",
       "PlacementPrice": 450,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Neutral",
       "MaxPlaced": 4,
       "BaseStats": {
@@ -430,7 +430,7 @@
       "Name": "Shiny PaperPals",
       "Rarity": "Rare",
       "PlacementPrice": 450,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Neutral",
       "MaxPlaced": 4,
       "BaseStats": {
@@ -470,28 +470,33 @@
       "Element": "Neutral",
       "MaxPlaced": 2,
       "BaseStats": {
-        "Range": 15
+        "Range": 15,
+        "RangeBoost": 1.02
       },
       "UpgradeStats": [
         {
           "Range": 15,
+          "RangeBoost": 1.02,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
+          "RangeBoost": 1.02,
           "UpgradePrice": 650
         },
         {
           "Range": 17,
+          "RangeBoost": 1.02,
           "UpgradePrice": 850
         },
         {
           "Range": 18,
+          "RangeBoost": 1.02,
           "UpgradePrice": 1050
         }
       ],
       "Passives": {
-        "NO PASSIVE": "This unit has no active passive :("
+        "Stolen Batteries": "Every upgrade provides a 2% RNG boost to all units in range"
       },
       "Obtainability": [
         "Premium Pass T1"
@@ -505,115 +510,121 @@
       "Element": "Neutral",
       "MaxPlaced": 2,
       "BaseStats": {
-        "Range": 15
+        "Range": 15,
+        "RangeBoost": 1.02
       },
       "UpgradeStats": [
         {
           "Range": 15,
+          "RangeBoost": 1.02,
           "UpgradePrice": 450
         },
         {
           "Range": 16,
+          "RangeBoost": 1.02,
           "UpgradePrice": 650
         },
         {
           "Range": 17,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 850
         },
         {
           "Range": 18,
+          "RangeBoost": 1.02,
           "UpgradePrice": 1050
         }
       ],
       "Passives": {
-        "NO PASSIVE": "This unit has no active passive :("
+        "Stolen Batteries": "Every upgrade provides a 2% RNG boost to all units in range"
       }
     },
     {
-      "Name": "Cupcake",
-      "Rarity": "Epic",
-      "PlacementPrice": 400,
-      "Type": "Support",
-      "Element": "Neutral",
-      "MaxPlaced": 3,
-      "BaseStats": {
-        "Range": 15,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97
-      },
-      "UpgradeStats": [
-        {
-          "Range": 16,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
-          "UpgradePrice": 600
-        },
-        {
-          "Range": 17,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
-          "UpgradePrice": 800
-        },
-        {
-          "Range": 18,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
-          "UpgradePrice": 1050
-        }
-      ],
-      "Passives": {
-        "Birthday Boy": "Provides a 3% buff to damage, range, and cooldown to every unit in its radius."
-      },
-      "Obtainability": [
-        "Epic Present (25%)",
-        "Merchant 1250 Coins",
-        "Summons (18%)"
-      ]
+    "Name": "Cupcake",
+    "Rarity": "Epic",
+    "PlacementPrice": 400,
+    "Type": "Support",
+    "Element": "Neutral",
+    "MaxPlaced": 3,
+    "BaseStats": {
+      "Range": 15,
+      "RangeBoost": 1.03,
+      "DamageBoost": 1.03,
+      "CooldownBoost": 0.97
     },
-    {
-      "Name": "Shiny Cupcake",
-      "Rarity": "Epic",
-      "PlacementPrice": 400,
-      "Type": "Support",
-      "Element": "Neutral",
-      "MaxPlaced": 3,
-      "BaseStats": {
-        "Range": 15,
+    "UpgradeStats": [
+      {
+        "Range": 16,
         "RangeBoost": 1.03,
         "DamageBoost": 1.03,
-        "CooldownBoost": 0.97
+        "CooldownBoost": 0.97,
+        "UpgradePrice": 600
       },
-      "UpgradeStats": [
-        {
-          "Range": 16,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
-          "UpgradePrice": 600
-        },
-        {
-          "Range": 17,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
-          "UpgradePrice": 800
-        },
-        {
-          "Range": 18,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
-          "UpgradePrice": 1050
-        }
-      ],
-      "Passives": {
-        "Birthday Boy": "Provides a 3% buff to damage, range, and cooldown to every unit in its radius."
+      {
+        "Range": 17,
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": 0.97,
+        "UpgradePrice": 800
+      },
+      {
+        "Range": 18,
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": 0.97,
+        "UpgradePrice": 1050
       }
+    ],
+    "Passives": {
+      "Birthday Boy": "Provides a 3% buff to damage, range, and cooldown to every unit in its radius."
     },
+    "Obtainability": [
+      "Epic Present (25%)",
+      "Merchant 1250 Coins",
+      "Summons (18%)"
+    ]
+  },
+  {
+    "Name": "Shiny Cupcake",
+    "Rarity": "Epic",
+    "PlacementPrice": 400,
+    "Type": "Support",
+    "Element": "Neutral",
+    "MaxPlaced": 3,
+    "BaseStats": {
+      "Range": 15,
+      "RangeBoost": 1.03,
+      "DamageBoost": 1.03,
+      "CooldownBoost": 0.97
+    },
+    "UpgradeStats": [
+      {
+        "Range": 16,
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": 0.97,
+        "UpgradePrice": 600
+      },
+      {
+        "Range": 17,
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": 0.97,
+        "UpgradePrice": 800
+      },
+      {
+        "Range": 18,
+        "RangeBoost": 1.03,
+        "DamageBoost": 1.03,
+        "CooldownBoost": 0.97,
+        "UpgradePrice": 1050
+      }
+    ],
+    "Passives": {
+      "Birthday Boy": "Provides a 3% buff to damage, range, and cooldown to every unit in its radius."
+    }
+  },
     {
       "Name": "Toy Bonnie",
       "Rarity": "Epic",
@@ -1126,7 +1137,7 @@
       "Name": "Withered Bonnie",
       "Rarity": "Mythical",
       "PlacementPrice": 1100,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Electricity",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -1179,7 +1190,7 @@
       "Name": "Shiny Withered Bonnie",
       "Rarity": "Mythical",
       "PlacementPrice": 1100,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Electricity",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -1227,7 +1238,7 @@
       "Name": "Endo 02",
       "Rarity": "Secret",
       "PlacementPrice": 2750,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Electricity",
       "MaxPlaced": 2,
       "BaseStats": {
@@ -1338,7 +1349,7 @@
       "Name": "Party Glock Freddy",
       "Rarity": "Secret",
       "PlacementPrice": 750,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Light",
       "MaxPlaced": 2,
       "BaseStats": {
@@ -1390,7 +1401,7 @@
       "Name": "Shiny Party Glock Freddy",
       "Rarity": "Secret",
       "PlacementPrice": 750,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Light",
       "MaxPlaced": 2,
       "BaseStats": {
@@ -1439,7 +1450,7 @@
       "Name": "Party Packer Cupcake",
       "Rarity": "Secret",
       "PlacementPrice": 1000,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Fire",
       "MaxPlaced": 1,
       "BaseStats": {
@@ -1498,7 +1509,7 @@
       "Name": "Shiny Party Packer Cupcake",
       "Rarity": "Secret",
       "PlacementPrice": 1000,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Fire",
       "MaxPlaced": 1,
       "BaseStats": {
@@ -1545,9 +1556,9 @@
         }
       ],
       "Passives": {
-        "I.C.B.C.M (Inter-Continental Ballistic Cupcake Missile)": "Every 12 seconds the top of this unit's cupcake opens, and launches a cupcake missile that targets the highest HP enemy on the field dealing 150% damage.",
+        "I.C.B.C.M (Inter-Continental Ballistic Cupcake Missile)": "Every 12 seconds the top of this unit's cupcake opens, and launches a cupcake missile that targets the highest HP enemy on the field dealing 200% damage.",
         "Explosives Expert": "For every circle attack type unit in this unit's range increase damage and range by 3%. [15% max buff]",
-        "Fallout [Active Ability] [Upgrade 6+]": "Upon activation, for the next 17s I.C.B.C.M's are launched every 3.4s dealing 80% of this unit's current damage. For 3s after this, releases a wave of steam (Cone AOE) dealing burn for 3s dealing 40% of this unit's current damage [13.3% dmg/tick]. [20s Duration] [120s Global CD]"
+        "Fallout [Active Ability] [Upgrade 6+]": "Upon activation, for the next 17s I.C.B.C.M's are launched every 3.4s dealing 140% of this unit's current damage. After this for 3s, releases a wave of steam hitting 3 times for 120% of this unit's current damage (Cone AOE) applying burn for 3s dealing 40% of the damage dealt by the steam [13.3% dmg/tick]. [20s Duration] [120s Global CD]"
       }
     },
     {
@@ -1679,7 +1690,7 @@
       "Name": "Shadow Freddy",
       "Rarity": "Secret",
       "PlacementPrice": 2500,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Dark",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -1743,7 +1754,7 @@
       "Name": "Shiny Shadow Freddy",
       "Rarity": "Secret",
       "PlacementPrice": 2500,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Dark",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -1968,8 +1979,7 @@
         }
       ],
       "Passives": {
-        "Sword Lunge": "When this unit first hits an enemy, does 30% bonus damage; then applies a bleed dealing 30% DMG over 2 seconds. [15% DMG/tick].",
-        "Memento Mori": "For every second that this unit doesn't attack, increases their damage & range by 1% up to a max of 30%. If this unit attacks before the buff reaches 30%, resets the buff after attacking. If this unit reaches 30% buff before attacking, they hold onto the buff for 45s after attacking."
+        "Sword Lunge": "When this unit first hits an enemy, does 30% bonus damage; then applies a bleed dealing 30% DMG over 2 seconds. [15% DMG/tick]."
       },
       "Obtainability": [
         "Summons (0.25%)"
@@ -2173,7 +2183,7 @@
       "Name": "Purple Guy",
       "Rarity": "Nightmare",
       "PlacementPrice": 4000,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Neutral",
       "MaxPlaced": 2,
       "BaseStats": {
@@ -2248,7 +2258,7 @@
       "Name": "Shiny Purple Guy",
       "Rarity": "Nightmare",
       "PlacementPrice": 4000,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Neutral",
       "MaxPlaced": 2,
       "BaseStats": {
@@ -2443,7 +2453,7 @@
       "Name": "Golden Freddy",
       "Rarity": "Hero",
       "PlacementPrice": 900,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Neutral",
       "MaxPlaced": 1,
       "BaseStats": {
@@ -2587,7 +2597,7 @@
       "Name": "Puppet",
       "Rarity": "Hero",
       "PlacementPrice": 1350,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Light",
       "MaxPlaced": 1,
       "BaseStats": {
@@ -2731,7 +2741,7 @@
       "Name": "Jack-O-Bonnie",
       "Rarity": "Mythical",
       "PlacementPrice": 1000,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Fire",
       "MaxPlaced": 4,
       "BaseStats": {
@@ -2783,7 +2793,7 @@
       "Name": "Shiny Jack-O-Bonnie",
       "Rarity": "Mythical",
       "PlacementPrice": 1000,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Fire",
       "MaxPlaced": 4,
       "BaseStats": {
@@ -2968,6 +2978,12 @@
         },
         {
           "Range": 22,
+          "Damage": 100,
+          "Cooldown": 0,
+          "UpgradePrice": 2400
+        },
+        {
+          "Range": 22,
           "Damage": 110,
           "Cooldown": 0,
           "UpgradePrice": 3000
@@ -3012,6 +3028,12 @@
           "Damage": 100,
           "Cooldown": 0,
           "UpgradePrice": 2000
+        },
+        {
+          "Range": 22,
+          "Damage": 100,
+          "Cooldown": 0,
+          "UpgradePrice": 2400
         },
         {
           "Range": 22,
@@ -3274,7 +3296,7 @@
       "Name": "Undead Chica",
       "Rarity": "Rare",
       "PlacementPrice": 600,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Rust",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -3313,7 +3335,7 @@
       "Name": "Shiny Undead Chica",
       "Rarity": "Rare",
       "PlacementPrice": 600,
-      "Type": "Explosion",
+      "Type": "Circle",
       "Element": "Rust",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -3350,7 +3372,7 @@
       "Rarity": "Apex",
       "PlacementPrice": 5400,
       "Type": "Cone",
-      "Element": "Neutral",
+      "Element": "Fire",
       "MaxPlaced": 1,
       "BaseStats": {
         "Range": 24,
