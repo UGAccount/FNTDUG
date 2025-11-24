@@ -3772,6 +3772,14 @@
         "Range": 1.1,
         "Cooldown": 0.95
       }
+    },
+    "Vengeance (Max)": {
+      "Description": "55% damage, 10% range, 5% SPA, increases damage boost by 0.5% per attack (max 70%)",
+      "Boost": {
+        "Damage": 1.7,
+        "Range": 1.1,
+        "Cooldown": 0.95
+      }
     }
   }
 }
