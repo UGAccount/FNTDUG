@@ -558,30 +558,27 @@
       "MaxPlaced": 3,
       "BaseStats": {
         "Range": 15,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97
+          "Damage": 0,
+          "Cooldown": 0
       },
       "UpgradeStats": [
         {
           "Range": 16,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 600
         },
         {
           "Range": 17,
           "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 800
         },
         {
           "Range": 18,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 1050
         }
       ],
@@ -603,30 +600,26 @@
       "MaxPlaced": 3,
       "BaseStats": {
         "Range": 15,
-        "RangeBoost": 1.03,
-        "DamageBoost": 1.03,
-        "CooldownBoost": 0.97
+          "Damage": 0,
+          "Cooldown": 0
       },
       "UpgradeStats": [
         {
           "Range": 16,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 600
         },
         {
           "Range": 17,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 800
         },
         {
           "Range": 18,
-          "RangeBoost": 1.03,
-          "DamageBoost": 1.03,
-          "CooldownBoost": 0.97,
+          "Damage": 0,
+          "Cooldown": 0,
           "UpgradePrice": 1050
         }
       ],
