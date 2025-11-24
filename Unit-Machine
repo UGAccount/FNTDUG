@@ -313,7 +313,7 @@
         user-select: none;
         padding-right: var(--spacing-xs);
     }
-    #customLevelInput {
+    #customLevelInput, .boost-override-input {
         flex-grow: 1;
         width: 100%;
         min-width: calc(var(--component-height) * 0.75);
@@ -325,6 +325,12 @@
         text-align: center;
         padding: 0;
         -moz-appearance: textfield;
+    }
+    #boostOverrideContainer .boost-override-input {
+        text-align: left;
+    }
+     #boostOverrideContainer .level-input-wrapper {
+        padding: 0 var(--component-padding);
     }
     #customLevelInput::-webkit-outer-spin-button,
     #customLevelInput::-webkit-inner-spin-button {
@@ -814,6 +820,20 @@
                 </button>
             </div>
             <div id="boosterDropdownContainer"></div>
+            <div class="dropdown-flex-container" id="boostOverrideContainer">
+                <div class="level-input-wrapper">
+                    <span class="level-input-label">DMG:</span>
+                    <input type="text" id="dmgOverrideInput" class="boost-override-input" placeholder="e.g. +20%">
+                </div>
+                <div class="level-input-wrapper">
+                    <span class="level-input-label">CD:</span>
+                    <input type="text" id="cdOverrideInput" class="boost-override-input" placeholder="e.g. -10%">
+                </div>
+                <div class="level-input-wrapper">
+                    <span class="level-input-label">RNG:</span>
+                    <input type="text" id="rngOverrideInput" class="boost-override-input" placeholder="e.g. +5%">
+                </div>
+            </div>
             <div class="settings-section">
                 <div class="section-title">Boost Saving & Presets</div>
                 <div class="custom-checkbox">
@@ -1254,6 +1274,14 @@
                 return allUnitData[currentUnitName];
             }
             
+            function parsePercentage(value) {
+                if (typeof value !== 'string' || value.trim() === '') return 1.0;
+                const cleanedValue = value.replace('%', '').trim();
+                const number = parseFloat(cleanedValue);
+                if (isNaN(number)) return 1.0;
+                return 1 + (number / 100);
+            }
+
             function getGlobalBoostMultipliers() {
                 const boosterMultipliers = { dmg: 1.0, cd: 1.0, range: 1.0 };
                 
@@ -1263,13 +1291,39 @@
                     
                     const effectiveBoosts = selection.version === 'shiny' ? (unitBoosterData.shinyBoosts || unitBoosterData) : unitBoosterData;
 
-                    if (effectiveBoosts.dmg && effectiveBoosts.dmg > boosterMultipliers.dmg) boosterMultipliers.dmg = effectiveBoosts.dmg;
-                    if (effectiveBoosts.range && effectiveBoosts.range > boosterMultipliers.range) boosterMultipliers.range = effectiveBoosts.range;
-                    
-                    if (effectiveBoosts.cd && effectiveBoosts.cd < boosterMultipliers.cd) boosterMultipliers.cd = effectiveBoosts.cd;
+                    if (effectiveBoosts.dmg) boosterMultipliers.dmg *= effectiveBoosts.dmg;
+                    if (effectiveBoosts.cd) boosterMultipliers.cd *= effectiveBoosts.cd;
+                    if (effectiveBoosts.range) boosterMultipliers.range *= effectiveBoosts.range;
                 });
+
+                boosterMultipliers.dmg *= parsePercentage(document.getElementById('dmgOverrideInput').value);
+                boosterMultipliers.cd *= parsePercentage(document.getElementById('cdOverrideInput').value);
+                boosterMultipliers.range *= parsePercentage(document.getElementById('rngOverrideInput').value);
                 
                 return boosterMultipliers;
+            }
+
+            function handleOverrideChange() {
+                const dmgOverride = document.getElementById('dmgOverrideInput').value;
+                const cdOverride = document.getElementById('cdOverrideInput').value;
+                const rngOverride = document.getElementById('rngOverrideInput').value;
+                const isOverriding = dmgOverride || cdOverride || rngOverride;
+                const boosterDropdownTrigger = document.querySelector('#boosterDropdownContainer .dropdown-trigger');
+
+                if (boosterDropdownTrigger) {
+                    if (isOverriding) {
+                        boosterDropdownTrigger.style.pointerEvents = 'none';
+                        boosterDropdownTrigger.style.opacity = '0.6';
+                        boosterDropdownTrigger.style.cursor = 'not-allowed';
+                        boosterDropdownTrigger.tabIndex = -1;
+                    } else {
+                        boosterDropdownTrigger.style.pointerEvents = 'auto';
+                        boosterDropdownTrigger.style.opacity = '1';
+                        boosterDropdownTrigger.style.cursor = 'pointer';
+                        boosterDropdownTrigger.tabIndex = 0;
+                    }
+                }
+                updateView();
             }
 
             function populateSingleUnitTbody() {
@@ -1775,17 +1829,35 @@
                 levelInput.setAttribute('aria-label', 'Custom Level Input');
 
                 const updateLevel = (newLevel) => {
-                    newLevel = Math.max(1, Math.min(MAX_LEVEL, parseInt(newLevel, 10) || 1));
-                    if (customLevel !== newLevel) {
-                        customLevel = newLevel;
+                    const parsedLevel = parseInt(newLevel, 10);
+                    if (isNaN(parsedLevel)) return;
+                    
+                    const clampedLevel = Math.max(1, Math.min(MAX_LEVEL, parsedLevel));
+                    if (customLevel !== clampedLevel) {
+                        customLevel = clampedLevel;
                         levelInput.value = customLevel;
                         updateView();
                     } else if (String(levelInput.value) !== String(customLevel)) {
-                        levelInput.value = customLevel;
+                         levelInput.value = customLevel;
                     }
                 };
-                levelInput.addEventListener('input', () => updateLevel(levelInput.value));
-                levelInput.addEventListener('change', () => updateLevel(levelInput.value));
+                
+                levelInput.addEventListener('input', () => {
+                    if(levelInput.value === '') {
+                        customLevel = 1; 
+                        updateView();
+                    } else {
+                        const parsedValue = parseInt(levelInput.value, 10);
+                        if (!isNaN(parsedValue)) {
+                            customLevel = Math.max(1, Math.min(MAX_LEVEL, parsedValue));
+                            updateView();
+                        }
+                    }
+                });
+
+                levelInput.addEventListener('change', () => {
+                     updateLevel(levelInput.value || 1);
+                });
                 
                 minBtn.addEventListener('click', () => { updateLevel(1); triggerAnimation(minBtn); });
                 maxBtn.addEventListener('click', () => { updateLevel(MAX_LEVEL); triggerAnimation(maxBtn); });
@@ -1876,12 +1948,9 @@
                     let rowData = [];
 
                     if (hasBoostStats) {
-                        const placements = stats.Max || 1;
-                        const applyPlacementBoost = (boost, placements) => (boost ? (1 + ((boost - 1) * placements)) : 1.0);
-                        
-                        const totalDmgBoost = applyPlacementBoost(maxUpgrade.DamageBoost, placements);
-                        const totalCdBoost = applyPlacementBoost(maxUpgrade.CooldownBoost, placements);
-                        const totalRangeBoost = applyPlacementBoost(maxUpgrade.RangeBoost, placements);
+                        const totalDmgBoost = maxUpgrade.DamageBoost || 1.0;
+                        const totalCdBoost = maxUpgrade.CooldownBoost || 1.0;
+                        const totalRangeBoost = maxUpgrade.RangeBoost || 1.0;
 
                         const totalDpsBoostPercent = (((totalDmgBoost / totalCdBoost) - 1) * 100).toFixed(1) + '%';
                         
@@ -2633,7 +2702,10 @@
                 return {
                     enchant: selectedEnchantKey,
                     level: customLevel,
-                    boosters: JSON.parse(JSON.stringify(boosterSelections))
+                    boosters: JSON.parse(JSON.stringify(boosterSelections)),
+                    dmgOverride: document.getElementById('dmgOverrideInput').value,
+                    cdOverride: document.getElementById('cdOverrideInput').value,
+                    rngOverride: document.getElementById('rngOverrideInput').value,
                 };
             }
             
@@ -2643,6 +2715,10 @@
                 selectedEnchantKey = state.enchant || 'None';
                 customLevel = state.level || 1;
                 boosterSelections = JSON.parse(JSON.stringify(state.boosters || []));
+
+                document.getElementById('dmgOverrideInput').value = state.dmgOverride || '';
+                document.getElementById('cdOverrideInput').value = state.cdOverride || '';
+                document.getElementById('rngOverrideInput').value = state.rngOverride || '';
 
                 const enchantTrigger = document.getElementById('enchantDropdown');
                 const levelInput = document.getElementById('customLevelInput');
@@ -2658,6 +2734,8 @@
                 boosterDropdownContainer.innerHTML = '';
                 boosterDropdownContainer.appendChild(createBoosterDropdown('boosterDropdown', 'Booster', boosterData, updateView));
                 
+                handleOverrideChange();
+                
                 if (triggerUpdate) {
                     updateView();
                 }
@@ -2667,7 +2745,10 @@
                  applyBoostsState({
                     enchant: 'None',
                     level: 1,
-                    boosters: []
+                    boosters: [],
+                    dmgOverride: '',
+                    cdOverride: '',
+                    rngOverride: '',
                 }, triggerUpdate);
             }
 
@@ -2713,44 +2794,7 @@
             }
 
             function processAndStoreBoosterData() {
-                const dynamicBoosters = {};
-                const getBoostsFromUpgrade = (upgrade) => {
-                    const boosts = {};
-                    if (upgrade.DamageBoost) boosts.dmg = upgrade.DamageBoost;
-                    if (upgrade.CooldownBoost) boosts.cd = upgrade.CooldownBoost;
-                    if (upgrade.RangeBoost) boosts.range = upgrade.RangeBoost;
-                    return Object.keys(boosts).length > 0 ? boosts : null;
-                };
-
-                const applyPlacementBoost = (boost, placements) => {
-                    if (!boost || placements <= 1) return boost;
-                    return 1 + ((boost - 1) * placements);
-                };
-
-                for (const unit of Object.values(allUnitData)) {
-                    const processUnitForBoosts = (unitData, isShiny = false) => {
-                        const maxBoosts = getBoostsFromUpgrade(unitData.Upgrades[unitData.Upgrades.length - 1]);
-                        if (maxBoosts) {
-                            const placements = unitData.Max || 1;
-                            if (maxBoosts.dmg) maxBoosts.dmg = applyPlacementBoost(maxBoosts.dmg, placements);
-                            if (maxBoosts.cd) maxBoosts.cd = applyPlacementBoost(maxBoosts.cd, placements);
-                            if (maxBoosts.range) maxBoosts.range = applyPlacementBoost(maxBoosts.range, placements);
-                            
-                            if (isShiny) {
-                                if (!dynamicBoosters[unit.Name]) dynamicBoosters[unit.Name] = {};
-                                dynamicBoosters[unit.Name].shinyBoosts = maxBoosts;
-                            } else {
-                                dynamicBoosters[unit.Name] = maxBoosts;
-                            }
-                        }
-                    };
-                    
-                    processUnitForBoosts(unit);
-                    if (unit.shinyData) {
-                        processUnitForBoosts(unit.shinyData, true);
-                    }
-                }
-                boosterData = dynamicBoosters;
+                boosterData = {};
                 boosterDropdownContainer.innerHTML = '';
                 boosterDropdownContainer.appendChild(createBoosterDropdown('boosterDropdown', 'Booster', boosterData, updateView));
             }
@@ -2964,6 +3008,10 @@
 
             boostsButton.addEventListener('click', () => boostsPanel.classList.add('show'));
             closeBoostsButton.addEventListener('click', () => boostsPanel.classList.remove('show'));
+
+            document.getElementById('dmgOverrideInput').addEventListener('input', handleOverrideChange);
+            document.getElementById('cdOverrideInput').addEventListener('input', handleOverrideChange);
+            document.getElementById('rngOverrideInput').addEventListener('input', handleOverrideChange);
 
             galleryButton.addEventListener('click', () => galleryPanel.classList.add('show'));
             closeGalleryButton.addEventListener('click', () => galleryPanel.classList.remove('show'));
