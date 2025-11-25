@@ -1748,11 +1748,29 @@
                 createTableInWrapper(['Obtainability'], [[obtainabilityText]], obtainabilityWrapper);
                 unitStatsContainer.appendChild(obtainabilityWrapper);
 
-                const passives = stats.Passives;
-                if (passives && Object.keys(passives).length > 0) {
-                    const passiveEntries = Object.entries(passives);
-                    const passiveWrapper = document.createElement('div');
-                    passiveWrapper.className = 'aux-table';
+                const passives = stats.Passives || {};
+                const actives = stats.Actives || [];
+                const allAbilities = Object.entries(passives);
+
+                actives.forEach(active => {
+                    const activeName = `Active: ${active.Name}`;
+                    let activeDesc = active.Description;
+                    if (active.Upgrade !== undefined) {
+                        const upgradeLevelText = active.Upgrade === 0 ? 'Placement' : `UPG ${active.Upgrade}`;
+                        let details = `(Unlocks at ${upgradeLevelText}`;
+                        if (active.Cooldown !== undefined) {
+                            const cooldownText = typeof active.Cooldown === 'number' ? `${active.Cooldown}s` : active.Cooldown;
+                            details += `, Cooldown: ${cooldownText}`;
+                        }
+                        details += ')';
+                        activeDesc += ` ${details}`;
+                    }
+                    allAbilities.push([activeName, activeDesc]);
+                });
+
+                if (allAbilities.length > 0) {
+                    const abilityWrapper = document.createElement('div');
+                    abilityWrapper.className = 'aux-table';
                     
                     const tableWrapper = document.createElement('div');
                     tableWrapper.className = 'table-wrapper';
@@ -1760,10 +1778,10 @@
                     const thead = document.createElement('thead');
                     const tbody = document.createElement('tbody');
                     
-                    const headerText = passiveEntries.length > 1 ? 'Passives' : 'Passive';
+                    const headerText = allAbilities.length > 1 ? 'Abilities' : 'Ability';
                     thead.appendChild(createTableRow('th', [headerText, 'Description']));
                     
-                    passiveEntries.forEach(([name, description]) => {
+                    allAbilities.forEach(([name, description]) => {
                         const tr = document.createElement('tr');
                         const tdName = document.createElement('td');
                         tdName.textContent = name;
@@ -1779,8 +1797,8 @@
                     
                     table.append(thead, tbody);
                     tableWrapper.appendChild(table);
-                    passiveWrapper.appendChild(tableWrapper);
-                    unitStatsContainer.appendChild(passiveWrapper);
+                    abilityWrapper.appendChild(tableWrapper);
+                    unitStatsContainer.appendChild(abilityWrapper);
                 }
 
                 const wrapper = document.createElement('div'), table = document.createElement('table'), thead = document.createElement('thead'),
@@ -2879,6 +2897,7 @@
                             Max: unit.MaxPlaced,
                             Upgrades: upgrades,
                             Passives: unit.Passives || {},
+                            Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
                             BackendNote: backendNotes[unit.Name] || undefined,
                             BaseStats: unit.BaseStats 
