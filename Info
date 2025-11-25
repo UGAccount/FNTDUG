@@ -2454,7 +2454,7 @@
     {
       "Name": "Golden Freddy",
       "Rarity": "Hero",
-      "PlacementPrice": 900,
+      "PlacementPrice": 750,
       "Type": "Circle",
       "Element": "Neutral",
       "MaxPlaced": 1,
