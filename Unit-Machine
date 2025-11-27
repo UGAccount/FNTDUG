@@ -1337,6 +1337,7 @@
                 const hasBoostStats = unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
                 const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                 const hasRangeStat = unitData.Upgrades.some(upg => upg.Range !== undefined);
+                const hasPerUpgradeTypes = unitData.hasPerUpgradeTypes;
                 
                 const elementalContainer = document.getElementById('elemental-dps-container');
                 if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
@@ -1351,6 +1352,9 @@
                     const basePrice = i === 0 ? (unitData.PlacePrice || 0) : (upgrade.Price || 0);
                     const price = basePrice * enchantCostMultiplier;
                     let rowData = [levelName, price];
+                    if (hasPerUpgradeTypes) {
+                        rowData.push(upgrade.Type || '-');
+                    }
 
                     if (hasDamageStats) {
                         const baseDmg = upgrade.Damage;
@@ -1483,9 +1487,9 @@
                 if (!upgradesTbody) return;
                 
                 const rowsFragment = document.createDocumentFragment();
-                rankingsData.forEach(stats => {
+                rankingsData.forEach((stats, index) => {
                     const rowData = [
-                        stats.originalRank,
+                        index + 1,
                         stats.name,
                         stats.type,
                         stats.element,
@@ -1506,28 +1510,63 @@
             function populateRankingsTbody() {
                 const rankingsData = [];
                 for (const unitName in allUnitData) {
-                    const boostedStats = calculateBoostedMaxStats(allUnitData[unitName]);
-                    if (boostedStats) {
+                    let unitData = allUnitData[unitName];
+                    if (selectedVersionKey === 'shiny' && unitData.shinyData) {
+                        unitData = unitData.shinyData;
+                    }
+                    const boostedStats = calculateBoostedMaxStats(unitData);
+                    if (boostedStats && boostedStats.fullDps > 0) {
                         rankingsData.push(boostedStats);
                     }
                 }
 
-                const sortKey = dpsRankingsSort.key;
-                const sortDir = dpsRankingsSort.direction;
+                const typeOrder = { 'Cone': 1, 'Circle': 2, 'Line': 3, 'Single': 4 };
+                const getTypeRank = (typeStr) => {
+                    if (!typeStr) return 5;
+                    const types = typeStr.split('-');
+                    const finalType = types[types.length - 1];
+                    return typeOrder[finalType] || 5;
+                };
+
+                const defaultCriteria = [
+                    { key: 'fullDps', direction: 'desc' },
+                    { key: 'type', direction: 'asc' },
+                    { key: 'range', direction: 'desc' },
+                    { key: 'cd', direction: 'asc' },
+                    { key: 'damage', direction: 'desc' },
+                    { key: 'placements', direction: 'desc' },
+                ];
+                
+                const primaryCriterion = { key: dpsRankingsSort.key, direction: dpsRankingsSort.direction };
+
+                const sortCriteria = [
+                    primaryCriterion,
+                    ...defaultCriteria.filter(c => c.key !== primaryCriterion.key),
+                    { key: 'name', direction: 'asc' }
+                ];
                 
                 rankingsData.sort((a, b) => {
-                    const valA = a[sortKey];
-                    const valB = b[sortKey];
+                    for (const { key, direction } of sortCriteria) {
+                        let valA = a[key];
+                        let valB = b[key];
 
-                    if (typeof valA === 'string') {
-                        return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(a[sortKey]);
-                    } else {
-                        return sortDir === 'asc' ? valA - valB : valB - a[sortKey];
+                        if (key === 'type') {
+                            valA = getTypeRank(valA);
+                            valB = getTypeRank(valB);
+                        }
+
+                        let comparison = 0;
+                        if (valA < valB) {
+                            comparison = -1;
+                        } else if (valA > valB) {
+                            comparison = 1;
+                        }
+
+                        if (comparison !== 0) {
+                            return direction === 'asc' ? comparison : -comparison;
+                        }
                     }
-                });
-
-                rankingsData.forEach((stats, index) => {
-                    stats.originalRank = index + 1;
+                    return 0;
                 });
                 
                 renderRankingsTbody(rankingsData);
@@ -1628,7 +1667,7 @@
                                     dpsRankingsSort.direction = dpsRankingsSort.direction === 'asc' ? 'desc' : 'asc';
                                 } else {
                                     dpsRankingsSort.key = sortKey;
-                                    dpsRankingsSort.direction = (sortKey === 'type' || sortKey === 'element') ? 'asc' : 'desc';
+                                    dpsRankingsSort.direction = (sortKey === 'type' || sortKey === 'element' || sortKey === 'cd') ? 'asc' : 'desc';
                                 }
                                 populateRankingsTbody();
                             });
@@ -1645,8 +1684,10 @@
                     const hasBoostStats = stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
                     const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                     const hasRangeStat = stats.Upgrades.some(upg => upg.Range !== undefined);
+                    const hasPerUpgradeTypes = stats.hasPerUpgradeTypes;
 
                     let headers = ['Level', 'Cost'];
+                    if (hasPerUpgradeTypes) headers.push('Attack Type');
                     if (hasDamageStats) headers.push('DPS', 'Damage', 'Cooldown', 'Range');
                     if (hasDpsBoost) headers.push('DPS Boost');
                     if (hasBoostStats) headers.push('Boosts');
@@ -2816,6 +2857,50 @@
                 boosterDropdownContainer.innerHTML = '';
                 boosterDropdownContainer.appendChild(createBoosterDropdown('boosterDropdown', 'Booster', boosterData, updateView));
             }
+            
+            function processUnitData(unit) {
+                const processed = { ...unit };
+                let rarity = unit.Rarity;
+                if (rarity === 'Mythical') rarity = 'Mythic';
+                processed.Rarity = rarity;
+                
+                processed.hasPerUpgradeTypes = unit.UpgradeStats?.some(upg => upg.Type) ?? false;
+
+                const typesInOrder = [unit.Type];
+                if (unit.UpgradeStats) {
+                    unit.UpgradeStats.forEach(upg => {
+                        if (upg.Type && upg.Type !== typesInOrder[typesInOrder.length - 1]) {
+                            typesInOrder.push(upg.Type);
+                        }
+                    });
+                }
+                processed.Type = typesInOrder.join('-');
+
+                const upgrades = [];
+                const baseUpgrade = {
+                    ...unit.BaseStats,
+                    Price: 0,
+                    Type: unit.BaseStats.Type || unit.Type
+                };
+                upgrades.push(baseUpgrade);
+
+                if (unit.UpgradeStats) {
+                    let lastType = baseUpgrade.Type;
+                    unit.UpgradeStats.forEach(upg => {
+                        const currentType = upg.Type || lastType;
+                        upgrades.push({
+                            ...upg,
+                            Price: upg.UpgradePrice || 0,
+                            Type: currentType
+                        });
+                        lastType = currentType;
+                    });
+                }
+                processed.Upgrades = upgrades;
+                
+                return processed;
+            }
+
 
             (async function fetchData() {
                 try {
@@ -2857,50 +2942,15 @@
                     const rawUnitData = responseData.Units;
                     const formattedData = {};
                     rawUnitData.forEach(unit => {
-                        const upgrades = [];
-                        const baseUpgrade = {
-                            Damage: unit.BaseStats.Damage,
-                            Cooldown: unit.BaseStats.Cooldown,
-                            Range: unit.BaseStats.Range,
-                            DamageBoost: unit.BaseStats.DamageBoost,
-                            CooldownBoost: unit.BaseStats.CooldownBoost,
-                            RangeBoost: unit.BaseStats.RangeBoost,
-                            Price: 0
-                        };
-                        upgrades.push(baseUpgrade);
-
-                        if (unit.UpgradeStats) {
-                            unit.UpgradeStats.forEach(upg => {
-                                upgrades.push({
-                                    Damage: upg.Damage,
-                                    Cooldown: upg.Cooldown,
-                                    Range: upg.Range,
-                                    DamageBoost: upg.DamageBoost,
-                                    CooldownBoost: upg.CooldownBoost,
-                                    RangeBoost: upg.RangeBoost,
-                                    Price: upg.UpgradePrice || 0
-                                });
-                            });
-                        }
-                        
-                        let rarity = unit.Rarity;
-                        if (rarity === 'Mythical') {
-                            rarity = 'Mythic';
-                        }
-                        
+                        const processedUnit = processUnitData(unit);
                         formattedData[unit.Name] = {
-                            Name: unit.Name,
-                            Rarity: rarity,
-                            Type: unit.Type,
-                            Element: unit.Element || 'Neutral',
+                            ...processedUnit,
                             PlacePrice: unit.PlacementPrice,
                             Max: unit.MaxPlaced,
-                            Upgrades: upgrades,
                             Passives: unit.Passives || {},
                             Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
                             BackendNote: backendNotes[unit.Name] || undefined,
-                            BaseStats: unit.BaseStats 
                         };
                     });
                     
