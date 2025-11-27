@@ -1958,7 +1958,6 @@
                     const clickedCell = e.target.closest('td.clickable-unit-name');
                     if (clickedCell) {
                         const unitName = clickedCell.textContent;
-                        toggleDpsRankingsMode();
                         selectAndDisplayUnit(unitName, settings.saveBoosts ? selectedVersionKey : 'normal');
                     }
                 });
@@ -2391,9 +2390,10 @@
             function selectAndDisplayUnit(unitName, version = 'normal', isPageLoad = false) {
                 if (ENABLE_URL_ROUTING) {
                     const unitSlug = createUnitSlug(unitName);
-                    const currentPathSlug = decodeURIComponent(window.location.pathname.substring(1));
-
-                    if (!isPageLoad && unitSlug !== currentPathSlug) {
+                    const currentPath = window.location.pathname.replace(/\/$/, '');
+                    const currentSlugOrPage = currentPath.substring(1);
+                    
+                    if (!isPageLoad && unitSlug !== currentSlugOrPage) {
                         window.location.href = `${window.location.origin}/${unitSlug}`;
                         return;
                     }
@@ -2652,42 +2652,25 @@
                 graphPanel.classList.add('show');
             }
             
-            function toggleDpsRankingsMode() {
-                isDpsRankingsMode = !isDpsRankingsMode;
-                updateSuggestions(); 
+            function setupDpsRankingsView() {
+                isDpsRankingsMode = true;
+                updateSuggestions();
 
-                if (isDpsRankingsMode) {
-                    dpsRankingsSort = { key: 'fullDps', direction: 'desc' };
-                    menuButton.innerHTML = '<i class="fas fa-arrow-left"></i>';
-                    menuButton.setAttribute('aria-label', 'Return to Unit Stats');
-                    menuButton.removeEventListener('click', handleMenuClick);
-                    menuButton.addEventListener('click', toggleDpsRankingsMode);
-                    
-                    searchButton.classList.add('hidden');
-                    menuButton.parentElement.insertAdjacentElement('afterend', settingsButton);
-                    
-                    unitSearchInput.placeholder = 'Filter rankings...';
-                    unitSearchInput.value = '';
-                    unitSearchInput.style.cursor = 'text';
+                dpsRankingsSort = { key: 'fullDps', direction: 'desc' };
+                menuButton.innerHTML = '<i class="fas fa-arrow-left"></i>';
+                menuButton.setAttribute('aria-label', 'Return to Main Page');
+                menuButton.removeEventListener('click', handleMenuClick);
+                menuButton.onclick = () => { window.location.href = '/'; };
 
-                    unitImageDisplayContainer.classList.add('hidden');
-                } else {
-                    menuButton.innerHTML = '<i class="fas fa-bars"></i>';
-                    menuButton.setAttribute('aria-label', 'Menu');
-                    menuButton.removeEventListener('click', toggleDpsRankingsMode);
-                    menuButton.addEventListener('click', handleMenuClick);
+                searchButton.classList.add('hidden');
+                menuButton.parentElement.insertAdjacentElement('afterend', settingsButton);
 
-                    searchButton.classList.remove('hidden');
-                    menuFlyout.appendChild(settingsButton);
-                    
-                    unitSearchInput.placeholder = 'Search for a unit...';
-                    unitSearchInput.value = currentUnitName || '';
-                    unitSearchInput.style.cursor = 'pointer';
+                unitSearchInput.placeholder = 'Filter rankings...';
+                unitSearchInput.value = '';
+                unitSearchInput.style.cursor = 'text';
 
-                    if (currentUnitName) {
-                        unitImageDisplayContainer.classList.remove('hidden');
-                    }
-                }
+                unitImageDisplayContainer.classList.add('hidden');
+
                 updateView();
             }
 
@@ -2944,16 +2927,27 @@
                     updateSortButtonsUI();
 
                     if (ENABLE_URL_ROUTING) {
-                        const pathSlug = decodeURIComponent(window.location.pathname.substring(1));
-                        if (pathSlug) {
-                            const unitNameFromUrl = Object.keys(allUnitData).find(
-                                name => createUnitSlug(name) === pathSlug
-                            );
-                            
-                            if (unitNameFromUrl) {
-                                setTimeout(() => {
-                                    selectAndDisplayUnit(unitNameFromUrl, selectedVersionKey, true);
-                                }, 0);
+                        const path = window.location.pathname;
+
+                        if (path === '/dps-chart' || path === '/dps-chart/') {
+                            setTimeout(() => {
+                                if (allUnitData["Freddy"]) {
+                                    selectAndDisplayUnit("Freddy", 'normal', true);
+                                }
+                                setupDpsRankingsView();
+                            }, 0);
+                        } else {
+                            const pathSlug = decodeURIComponent(path.substring(1).replace(/\/$/, ''));
+                            if (pathSlug) {
+                                const unitNameFromUrl = Object.keys(allUnitData).find(
+                                    name => createUnitSlug(name) === pathSlug
+                                );
+                                
+                                if (unitNameFromUrl) {
+                                    setTimeout(() => {
+                                        selectAndDisplayUnit(unitNameFromUrl, selectedVersionKey, true);
+                                    }, 0);
+                                }
                             }
                         }
                     }
@@ -3027,8 +3021,10 @@
             globalCompareCheckbox.addEventListener('change', renderStatGraph);
             
             dpsRankingsButton.addEventListener('click', () => {
-                menuFlyout.classList.remove('show');
-                toggleDpsRankingsMode();
+                if (!dpsRankingsButton.disabled) {
+                    triggerAnimation(dpsRankingsButton);
+                    window.location.href = '/dps-chart';
+                }
             });
             
             if (settingsButton && !settingsButton.disabled) {
