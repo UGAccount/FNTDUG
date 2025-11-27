@@ -2664,7 +2664,7 @@
                 menuButton.innerHTML = '<i class="fas fa-arrow-left"></i>';
                 menuButton.setAttribute('aria-label', 'Return to Main Page');
                 menuButton.removeEventListener('click', handleMenuClick);
-                menuButton.onclick = () => { window.location.href = '/'; };
+                menuButton.onclick = () => { window.location.href = '/unit-machine'; };
 
                 searchButton.classList.add('hidden');
                 menuButton.parentElement.insertAdjacentElement('afterend', settingsButton);
