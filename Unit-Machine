@@ -1603,7 +1603,8 @@
                 if (!document.getElementById('main-stats-table') && !isDpsRankingsMode) return;
                 
                 if (isDpsRankingsMode && !document.getElementById('main-stats-table')) {
-                    renderUnitTables(allUnitData["Freddy"]);
+                    const tempUnitName = Object.keys(allUnitData).find(name => allUnitData[name].Upgrades.some(upg => upg.Damage !== undefined));
+                    if(tempUnitName) renderUnitTables(allUnitData[tempUnitName]);
                 }
 
                 const elementDropdownTrigger = document.getElementById('elementDropdown');
@@ -2376,22 +2377,33 @@
                 });
             }
 
+            function resetToInitialView() {
+                currentUnitName = null;
+                unitSearchInput.value = '';
+                unitStatsContainer.innerHTML = '';
+                unitImageDisplayContainer.classList.add('hidden');
+                graphButton.disabled = true;
+                populateGallery();
+                updateGalleryCompareButtons();
+            }
+
             function unsearchUnit() {
                 if (ENABLE_URL_ROUTING && window.location.pathname !== '/' && window.location.pathname !== '') {
                     window.location.href = '/';
                 } else {
-                    currentUnitName = null;
-                    unitSearchInput.value = '';
-                    unitStatsContainer.innerHTML = '';
-                    unitImageDisplayContainer.classList.add('hidden');
-                    graphButton.disabled = true;
-                    dpsRankingsButton.disabled = true;
-                    populateGallery();
-                    updateGalleryCompareButtons();
+                    resetToInitialView();
                 }
             }
 
             function selectAndDisplayUnit(unitName, version = 'normal', isPageLoad = false) {
+                if (isDpsRankingsMode && !ENABLE_URL_ROUTING) {
+                    exitDpsRankingsView_noRouting();
+                } else if (isDpsRankingsMode && ENABLE_URL_ROUTING) {
+                    const unitSlug = createUnitSlug(unitName);
+                    window.location.href = `${window.location.origin}/${unitSlug}`;
+                    return;
+                }
+
                 if (ENABLE_URL_ROUTING) {
                     const unitSlug = createUnitSlug(unitName);
                     const currentPath = window.location.pathname.replace(/\/$/, '');
@@ -2421,7 +2433,6 @@
                     
                     unitImageDisplayContainer.classList.remove('hidden');
                     renderUnitTables(unitData);
-                    dpsRankingsButton.disabled = false;
                     
                     const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
                     graphButton.disabled = !hasDamageStats;
@@ -2655,6 +2666,22 @@
                 renderStatGraph();
                 graphPanel.classList.add('show');
             }
+
+            function exitDpsRankingsView_noRouting() {
+                isDpsRankingsMode = false;
+
+                menuButton.innerHTML = '<i class="fas fa-bars"></i>';
+                menuButton.setAttribute('aria-label', 'Menu');
+                menuButton.onclick = null;
+                menuButton.removeEventListener('click', exitDpsRankingsView_noRouting);
+                menuButton.addEventListener('click', handleMenuClick);
+
+                searchButton.classList.remove('hidden');
+                unitSearchInput.placeholder = 'Search for a unit...';
+                unitSearchInput.style.cursor = 'pointer';
+
+                resetToInitialView();
+            }
             
             function setupDpsRankingsView() {
                 isDpsRankingsMode = true;
@@ -2664,7 +2691,16 @@
                 menuButton.innerHTML = '<i class="fas fa-arrow-left"></i>';
                 menuButton.setAttribute('aria-label', 'Return to Main Page');
                 menuButton.removeEventListener('click', handleMenuClick);
-                menuButton.onclick = () => { window.location.href = '/unit-machine'; };
+
+                if (ENABLE_URL_ROUTING) {
+                    menuButton.onclick = () => {
+                        const referrer = sessionStorage.getItem('dpsRankingsReferrer');
+                        window.location.href = referrer || '/unit-machine';
+                        if (referrer) sessionStorage.removeItem('dpsRankingsReferrer');
+                    };
+                } else {
+                    menuButton.onclick = exitDpsRankingsView_noRouting;
+                }
 
                 searchButton.classList.add('hidden');
                 menuButton.parentElement.insertAdjacentElement('afterend', settingsButton);
@@ -2932,26 +2968,27 @@
 
                     if (ENABLE_URL_ROUTING) {
                         const path = window.location.pathname;
+                        const pathSlug = decodeURIComponent(path.substring(1).replace(/\/$/, ''));
 
-                        if (path === '/dps-chart' || path === '/dps-chart/') {
+                        if (pathSlug === 'dps-chart') {
                             setTimeout(() => {
-                                if (allUnitData["Freddy"]) {
-                                    selectAndDisplayUnit("Freddy", selectedVersionKey, true);
+                                const tempUnitName = Object.keys(allUnitData).find(name => allUnitData[name].Upgrades.some(upg => upg.Damage !== undefined));
+                                if (tempUnitName) {
+                                    currentUnitName = tempUnitName;
+                                    renderUnitTables(allUnitData[tempUnitName]);
+                                    currentUnitName = null;
+                                    unitImageDisplayContainer.classList.add('hidden');
+                                    setupDpsRankingsView();
                                 }
-                                setupDpsRankingsView();
                             }, 0);
-                        } else {
-                            const pathSlug = decodeURIComponent(path.substring(1).replace(/\/$/, ''));
-                            if (pathSlug) {
-                                const unitNameFromUrl = Object.keys(allUnitData).find(
-                                    name => createUnitSlug(name) === pathSlug
-                                );
-                                
-                                if (unitNameFromUrl) {
-                                    setTimeout(() => {
-                                        selectAndDisplayUnit(unitNameFromUrl, selectedVersionKey, true);
-                                    }, 0);
-                                }
+                        } else if (pathSlug) {
+                            const unitNameFromUrl = Object.keys(allUnitData).find(
+                                name => createUnitSlug(name) === pathSlug
+                            );
+                            if (unitNameFromUrl) {
+                                setTimeout(() => {
+                                    selectAndDisplayUnit(unitNameFromUrl, selectedVersionKey, true);
+                                }, 0);
                             }
                         }
                     }
@@ -2963,7 +3000,6 @@
             })();
 
             graphButton.disabled = true;
-            dpsRankingsButton.disabled = true;
 
             unitSearchInput.addEventListener('input', () => {
                 if (isDpsRankingsMode) {
@@ -3002,7 +3038,6 @@
 
             closeBoostsButton.addEventListener('click', () => triggerAnimation(closeBoostsButton));
             graphButton.addEventListener('click', () => { if (!graphButton.disabled) triggerAnimation(graphButton); });
-            dpsRankingsButton.addEventListener('click', () => { if (!dpsRankingsButton.disabled) triggerAnimation(dpsRankingsButton); });
             galleryButton.addEventListener('click', () => triggerAnimation(galleryButton));
             closeGraphButton.addEventListener('click', () => triggerAnimation(closeGraphButton));
             closeGalleryButton.addEventListener('click', () => triggerAnimation(closeGalleryButton));
@@ -3025,9 +3060,27 @@
             globalCompareCheckbox.addEventListener('change', renderStatGraph);
             
             dpsRankingsButton.addEventListener('click', () => {
-                if (!dpsRankingsButton.disabled) {
-                    triggerAnimation(dpsRankingsButton);
+                triggerAnimation(dpsRankingsButton);
+                if (ENABLE_URL_ROUTING) {
+                    const currentPath = window.location.pathname;
+                    if (currentPath && currentPath !== '/' && currentPath !== '/unit-machine' && !currentPath.includes('dps-chart')) {
+                        sessionStorage.setItem('dpsRankingsReferrer', currentPath);
+                    } else {
+                        sessionStorage.setItem('dpsRankingsReferrer', '/unit-machine');
+                    }
                     window.location.href = '/dps-chart';
+                } else {
+                    if (!document.getElementById('main-stats-table')) {
+                        const tempUnitName = Object.keys(allUnitData).find(name => allUnitData[name].Upgrades.some(upg => upg.Damage !== undefined));
+                        if (tempUnitName) {
+                            currentUnitName = tempUnitName;
+                            renderUnitTables(allUnitData[tempUnitName]);
+                            currentUnitName = null;
+                            unitImageDisplayContainer.classList.add('hidden');
+                            unitStatsContainer.querySelectorAll('.aux-table').forEach(el => el.style.display = 'none');
+                        }
+                    }
+                    setupDpsRankingsView();
                 }
             });
             
