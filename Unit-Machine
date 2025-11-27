@@ -2373,18 +2373,19 @@
                 });
             }
 
-            function unsearchUnit(isUserAction = true) {
-                if (ENABLE_URL_ROUTING && isUserAction && window.location.pathname !== '/' && window.location.pathname !== '') {
-                    window.history.pushState({}, '', '/');
+            function unsearchUnit() {
+                if (ENABLE_URL_ROUTING && window.location.pathname !== '/' && window.location.pathname !== '') {
+                    window.location.href = '/';
+                } else {
+                    currentUnitName = null;
+                    unitSearchInput.value = '';
+                    unitStatsContainer.innerHTML = '';
+                    unitImageDisplayContainer.classList.add('hidden');
+                    graphButton.disabled = true;
+                    dpsRankingsButton.disabled = true;
+                    populateGallery();
+                    updateGalleryCompareButtons();
                 }
-                currentUnitName = null;
-                unitSearchInput.value = '';
-                unitStatsContainer.innerHTML = '';
-                unitImageDisplayContainer.classList.add('hidden');
-                graphButton.disabled = true;
-                dpsRankingsButton.disabled = true;
-                populateGallery();
-                updateGalleryCompareButtons();
             }
 
             function selectAndDisplayUnit(unitName, version = 'normal', isPageLoad = false) {
@@ -2393,7 +2394,8 @@
                     const currentPathSlug = decodeURIComponent(window.location.pathname.substring(1));
 
                     if (!isPageLoad && unitSlug !== currentPathSlug) {
-                        window.history.pushState({ unit: unitName, version: version }, ``, `/${unitSlug}`);
+                        window.location.href = `${window.location.origin}/${unitSlug}`;
+                        return;
                     }
                 }
 
@@ -2422,6 +2424,19 @@
                     
                     populateGallery();
                     updateGalleryCompareButtons();
+
+                    if (ENABLE_URL_ROUTING && isPageLoad) {
+                        requestAnimationFrame(() => {
+                            const searchContainer = document.querySelector('.search-container');
+                            if (searchContainer) {
+                                const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                                window.scrollTo({
+                                    top: topPos - 15,
+                                    behavior: 'instant'
+                                });
+                            }
+                        });
+                    }
                 }
                 updateSuggestions();
             }
@@ -2637,7 +2652,7 @@
                 graphPanel.classList.add('show');
             }
             
-            function toggleDpsRankingsMode(isUserAction = true) {
+            function toggleDpsRankingsMode() {
                 isDpsRankingsMode = !isDpsRankingsMode;
                 updateSuggestions(); 
 
@@ -2656,9 +2671,6 @@
                     unitSearchInput.style.cursor = 'text';
 
                     unitImageDisplayContainer.classList.add('hidden');
-                    if (ENABLE_URL_ROUTING && isUserAction && window.location.pathname !== '/dps-chart') {
-                        window.history.pushState({ dps: true }, '', '/dps-chart');
-                    }
                 } else {
                     menuButton.innerHTML = '<i class="fas fa-bars"></i>';
                     menuButton.setAttribute('aria-label', 'Menu');
@@ -2674,12 +2686,6 @@
 
                     if (currentUnitName) {
                         unitImageDisplayContainer.classList.remove('hidden');
-                    }
-                    if (ENABLE_URL_ROUTING && isUserAction) {
-                        const unitSlug = currentUnitName ? createUnitSlug(currentUnitName) : '';
-                        if (window.location.pathname !== `/${unitSlug}`) {
-                            window.history.pushState({ unit: currentUnitName }, '', `/${unitSlug}`);
-                        }
                     }
                 }
                 updateView();
@@ -2939,9 +2945,7 @@
 
                     if (ENABLE_URL_ROUTING) {
                         const pathSlug = decodeURIComponent(window.location.pathname.substring(1));
-                        if (pathSlug === 'dps-chart') {
-                            setTimeout(() => toggleDpsRankingsMode(false), 0);
-                        } else if (pathSlug) {
+                        if (pathSlug) {
                             const unitNameFromUrl = Object.keys(allUnitData).find(
                                 name => createUnitSlug(name) === pathSlug
                             );
@@ -3138,30 +3142,6 @@
             window.addEventListener('resize', () => {
                 updateTablePadding();
                 if (currentUnitName) { setDropdownMinWidths(); synchronizeTableWidths(); }
-            });
-
-            window.addEventListener('popstate', (event) => {
-                if (!ENABLE_URL_ROUTING) return;
-
-                const pathSlug = decodeURIComponent(window.location.pathname.substring(1));
-                const shouldBeDpsMode = pathSlug === 'dps-chart';
-
-                if (shouldBeDpsMode !== isDpsRankingsMode) {
-                    toggleDpsRankingsMode(false);
-                }
-                
-                if (!isDpsRankingsMode) {
-                    if (pathSlug) {
-                        const unitNameFromUrl = Object.keys(allUnitData).find(
-                            name => createUnitSlug(name) === pathSlug
-                        );
-                        if (unitNameFromUrl && unitNameFromUrl !== currentUnitName) {
-                            selectAndDisplayUnit(unitNameFromUrl, selectedVersionKey, true);
-                        }
-                    } else if (currentUnitName !== null) {
-                        unsearchUnit(false);
-                    }
-                }
             });
 
             galleryFilterInput.addEventListener('input', () => {
