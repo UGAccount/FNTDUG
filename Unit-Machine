@@ -1740,16 +1740,22 @@
             function renderUnitTables() {
                 unitStatsContainer.innerHTML = '';
                 const stats = getCurrentUnitData();
-                if (!stats) return;
+                if (!stats && !isDpsRankingsMode) return;
                 
+                if (isDpsRankingsMode && !stats) {
+                    currentUnitName = 'Freddy';
+                }
+                const currentStats = getCurrentUnitData();
+                if (!currentStats) return;
+
                 const baseUnitStats = allUnitData[currentUnitName];
+                
+                selectedElementKey = isDpsRankingsMode ? selectedElementKey : (currentStats.Element || 'Neutral');
 
                 if (currentUnitName) {
                     const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
                     displayedUnitImage.src = normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
                 }
-                
-                selectedElementKey = isDpsRankingsMode ? selectedElementKey : (stats.Element || 'Neutral');
 
                 const allRarityClasses = Object.values(rarityClassMap);
                 unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
@@ -1762,28 +1768,28 @@
                     unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
                 }
 
-                if (stats.BackendNote) {
+                if (currentStats.BackendNote) {
                     const noteWrapper = document.createElement('div');
                     noteWrapper.className = 'aux-table';
-                    createTableInWrapper(['Note'], [[stats.BackendNote]], noteWrapper, 'note-table-wrapper');
+                    createTableInWrapper(['Note'], [[currentStats.BackendNote]], noteWrapper, 'note-table-wrapper');
                     unitStatsContainer.appendChild(noteWrapper);
                 }
 
                 const rarityWrapper = document.createElement('div');
                 rarityWrapper.className = 'aux-table';
-                createTableInWrapper(['Rarity', 'Attack Type', 'Element', 'Placements'], [[stats.Rarity || 'N/A', stats.Type || 'N/A', stats.Element || 'Neutral', stats.Max || 'N/A']], rarityWrapper);
+                createTableInWrapper(['Rarity', 'Attack Type', 'Element', 'Placements'], [[currentStats.Rarity || 'N/A', currentStats.Type || 'N/A', currentStats.Element || 'Neutral', currentStats.Max || 'N/A']], rarityWrapper);
                 unitStatsContainer.appendChild(rarityWrapper);
                 
                 const obtainabilityWrapper = document.createElement('div');
                 obtainabilityWrapper.className = 'aux-table';
-                const obtainabilityText = (stats.Obtainability && stats.Obtainability.length > 0)
-                    ? stats.Obtainability.join(', ')
+                const obtainabilityText = (currentStats.Obtainability && currentStats.Obtainability.length > 0)
+                    ? currentStats.Obtainability.join(', ')
                     : "Data Not Available";
                 createTableInWrapper(['Obtainability'], [[obtainabilityText]], obtainabilityWrapper);
                 unitStatsContainer.appendChild(obtainabilityWrapper);
 
-                const passives = stats.Passives || {};
-                const actives = stats.Actives || [];
+                const passives = currentStats.Passives || {};
+                const actives = currentStats.Actives || [];
                 const allAbilities = Object.entries(passives);
 
                 actives.forEach(active => {
@@ -1977,8 +1983,8 @@
                 wrapper.appendChild(table);
                 unitStatsContainer.appendChild(wrapper);
 
-                const maxUpgrade = stats.Upgrades[stats.Upgrades.length - 1];
-                const hasDamageStats = stats.Upgrades.some(upg => upg.Damage !== undefined);
+                const maxUpgrade = currentStats.Upgrades[currentStats.Upgrades.length - 1];
+                const hasDamageStats = currentStats.Upgrades.some(upg => upg.Damage !== undefined);
                 const hasBoostStats = maxUpgrade.DamageBoost || maxUpgrade.CooldownBoost || maxUpgrade.RangeBoost;
 
                 if (hasDamageStats || hasBoostStats) {
@@ -2421,12 +2427,6 @@
                     }
                     selectedVersionKey = version;
 
-                    const unitData = allUnitData[unitName];
-                    const normalImageUrl = unitImages[normalizeUnitName(unitName)];
-                    
-                    displayedUnitImage.src = normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
-                    displayedUnitImage.alt = unitName;
-                    
                     unitImageDisplayContainer.classList.remove('hidden');
                     renderUnitTables();
                     dpsRankingsButton.disabled = false;
@@ -2670,7 +2670,6 @@
                 menuButton.innerHTML = '<i class="fas fa-bars"></i>';
                 menuButton.setAttribute('aria-label', 'Menu');
                 if (menuButton.onclick) {
-                    menuButton.removeEventListener('click', menuButton.onclick);
                     menuButton.onclick = null;
                 }
                 menuButton.addEventListener('click', handleMenuClick);
@@ -2679,6 +2678,8 @@
                 unitSearchInput.placeholder = 'Search for a unit...';
                 unitSearchInput.style.cursor = 'pointer';
                 unitSearchInput.value = '';
+                
+                menuFlyout.appendChild(settingsButton);
             }
 
             function setupDpsRankingsView() {
@@ -2692,7 +2693,12 @@
                 const backButtonHandler = () => {
                     if (ENABLE_URL_ROUTING) {
                         const previousUnitSlug = sessionStorage.getItem('previousUnitSlug');
-                        window.location.href = previousUnitSlug ? `/${previousUnitSlug}` : '/unit-machine';
+                        if (previousUnitSlug) {
+                            window.location.href = `/${previousUnitSlug}`;
+                        } else {
+                            sessionStorage.setItem('scrollToTopOnLoad', 'true');
+                            window.location.href = '/unit-machine';
+                        }
                     } else {
                         resetToSingleUnitView();
                         if (previousUnitName) {
@@ -2966,27 +2972,33 @@
                     updateSortButtonsUI();
 
                     if (ENABLE_URL_ROUTING) {
-                        const path = window.location.pathname;
+                        const path = window.location.pathname.replace(/\/$/, '');
+                        const pathSlug = decodeURIComponent(path.substring(1));
 
-                        if (path === '/dps-chart' || path === '/dps-chart/') {
+                        if (pathSlug === 'dps-chart') {
                             setTimeout(() => {
-                                if (allUnitData["Freddy"]) {
-                                    selectAndDisplayUnit("Freddy", selectedVersionKey, true);
-                                }
+                                selectAndDisplayUnit("Freddy", selectedVersionKey, true);
                                 setupDpsRankingsView();
                             }, 0);
+                        } else if (pathSlug && pathSlug !== 'unit-machine') {
+                            const unitNameFromUrl = Object.keys(allUnitData).find(
+                                name => createUnitSlug(name) === pathSlug
+                            );
+                            if (unitNameFromUrl) {
+                                setTimeout(() => {
+                                    selectAndDisplayUnit(unitNameFromUrl, selectedVersionKey, true);
+                                }, 0);
+                            }
                         } else {
-                            const pathSlug = decodeURIComponent(path.substring(1).replace(/\/$/, ''));
-                            if (pathSlug) {
-                                const unitNameFromUrl = Object.keys(allUnitData).find(
-                                    name => createUnitSlug(name) === pathSlug
-                                );
-                                
-                                if (unitNameFromUrl) {
-                                    setTimeout(() => {
-                                        selectAndDisplayUnit(unitNameFromUrl, selectedVersionKey, true);
-                                    }, 0);
-                                }
+                            if (sessionStorage.getItem('scrollToTopOnLoad') === 'true') {
+                                sessionStorage.removeItem('scrollToTopOnLoad');
+                                requestAnimationFrame(() => {
+                                    const searchContainer = document.querySelector('.search-container');
+                                    if (searchContainer) {
+                                        const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                                        window.scrollTo({ top: topPos - 15, behavior: 'instant' });
+                                    }
+                                });
                             }
                         }
                     }
@@ -3062,7 +3074,7 @@
                 triggerAnimation(dpsRankingsButton);
                 menuFlyout.classList.remove('show');
                 previousUnitName = currentUnitName;
-
+                
                 if (ENABLE_URL_ROUTING) {
                     if (currentUnitName) {
                         sessionStorage.setItem('previousUnitSlug', createUnitSlug(currentUnitName));
