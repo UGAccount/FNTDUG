@@ -947,7 +947,8 @@
                 boosterData = {},
                 enchantMultipliers = {},
                 enchants = {},
-                unitImages = {};
+                unitImages = {},
+                lastViewedUnitName = null;
             
             const MAX_LEVEL = 60;
        
@@ -2377,6 +2378,7 @@
             }
 
             function unsearchUnit() {
+                lastViewedUnitName = null;
                 if (ENABLE_URL_ROUTING && window.location.pathname !== '/' && window.location.pathname !== '') {
                     window.location.href = '/';
                 } else {
@@ -2385,7 +2387,6 @@
                     unitStatsContainer.innerHTML = '';
                     unitImageDisplayContainer.classList.add('hidden');
                     graphButton.disabled = true;
-                    dpsRankingsButton.disabled = true;
                     populateGallery();
                     updateGalleryCompareButtons();
                 }
@@ -2406,6 +2407,7 @@
                 unitSearchInput.value = unitName;
                 if (allUnitData[unitName]) {
                     currentUnitName = unitName;
+                    lastViewedUnitName = unitName;
                     comparisonUnitName = null;
                     
                     if (!settings.saveBoosts) {
@@ -2421,7 +2423,6 @@
                     
                     unitImageDisplayContainer.classList.remove('hidden');
                     renderUnitTables(unitData);
-                    dpsRankingsButton.disabled = false;
                     
                     const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
                     graphButton.disabled = !hasDamageStats;
@@ -2655,6 +2656,29 @@
                 renderStatGraph();
                 graphPanel.classList.add('show');
             }
+
+            function restoreSingleUnitView() {
+                isDpsRankingsMode = false;
+
+                menuButton.innerHTML = '<i class="fas fa-bars"></i>';
+                menuButton.setAttribute('aria-label', 'Menu');
+                menuButton.onclick = null;
+                menuButton.addEventListener('click', handleMenuClick);
+                
+                unitSearchInput.placeholder = 'Search for a unit...';
+                unitSearchInput.style.cursor = 'pointer';
+                searchButton.classList.remove('hidden');
+                
+                if (menuFlyout && !menuFlyout.contains(settingsButton)) {
+                  menuFlyout.appendChild(settingsButton);
+                }
+                
+                if (lastViewedUnitName) {
+                    selectAndDisplayUnit(lastViewedUnitName, settings.saveBoosts ? selectedVersionKey : 'normal');
+                } else {
+                    unsearchUnit();
+                }
+            }
             
             function setupDpsRankingsView() {
                 isDpsRankingsMode = true;
@@ -2664,7 +2688,19 @@
                 menuButton.innerHTML = '<i class="fas fa-arrow-left"></i>';
                 menuButton.setAttribute('aria-label', 'Return to Main Page');
                 menuButton.removeEventListener('click', handleMenuClick);
-                menuButton.onclick = () => { window.location.href = '/unit-machine'; };
+                
+                menuButton.onclick = () => {
+                    triggerAnimation(menuButton);
+                    if (ENABLE_URL_ROUTING) {
+                        if (lastViewedUnitName) {
+                            window.location.href = `/${createUnitSlug(lastViewedUnitName)}`;
+                        } else {
+                            window.location.href = '/unit-machine';
+                        }
+                    } else {
+                        restoreSingleUnitView();
+                    }
+                };
 
                 searchButton.classList.add('hidden');
                 menuButton.parentElement.insertAdjacentElement('afterend', settingsButton);
@@ -2963,7 +2999,6 @@
             })();
 
             graphButton.disabled = true;
-            dpsRankingsButton.disabled = true;
 
             unitSearchInput.addEventListener('input', () => {
                 if (isDpsRankingsMode) {
@@ -3002,7 +3037,6 @@
 
             closeBoostsButton.addEventListener('click', () => triggerAnimation(closeBoostsButton));
             graphButton.addEventListener('click', () => { if (!graphButton.disabled) triggerAnimation(graphButton); });
-            dpsRankingsButton.addEventListener('click', () => { if (!dpsRankingsButton.disabled) triggerAnimation(dpsRankingsButton); });
             galleryButton.addEventListener('click', () => triggerAnimation(galleryButton));
             closeGraphButton.addEventListener('click', () => triggerAnimation(closeGraphButton));
             closeGalleryButton.addEventListener('click', () => triggerAnimation(closeGalleryButton));
@@ -3025,9 +3059,12 @@
             globalCompareCheckbox.addEventListener('change', renderStatGraph);
             
             dpsRankingsButton.addEventListener('click', () => {
-                if (!dpsRankingsButton.disabled) {
-                    triggerAnimation(dpsRankingsButton);
+                lastViewedUnitName = currentUnitName;
+                triggerAnimation(dpsRankingsButton);
+                if (ENABLE_URL_ROUTING) {
                     window.location.href = '/dps-chart';
+                } else {
+                    setupDpsRankingsView();
                 }
             });
             
