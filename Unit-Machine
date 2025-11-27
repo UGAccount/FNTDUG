@@ -2990,7 +2990,17 @@
                                 }, 0);
                             }
                         } else {
-                            if (sessionStorage.getItem('scrollToTopOnLoad') === 'true') {
+
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                    unitStatsContainer.innerHTML = `<p>Failed to load required data: ${error.message}</p>`;
+                }
+            })();
+
+                            if (ENABLE_URL_ROUTING && sessionStorage.getItem('scrollToTopOnLoad') === 'true') {
                                 sessionStorage.removeItem('scrollToTopOnLoad');
                                 requestAnimationFrame(() => {
                                     const searchContainer = document.querySelector('.search-container');
@@ -3000,14 +3010,6 @@
                                     }
                                 });
                             }
-                        }
-                    }
-
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                    unitStatsContainer.innerHTML = `<p>Failed to load required data: ${error.message}</p>`;
-                }
-            })();
 
             graphButton.disabled = true;
             dpsRankingsButton.disabled = false;
