@@ -909,7 +909,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const ENABLE_URL_ROUTING = false;
+            const ENABLE_URL_ROUTING = true;
 
             const GITHUB_URL = 'https://raw.githubusercontent.com/UGAccount/FNTDUG/main/Info';
             const unitSearchInput = document.getElementById('unitSearchInput'), searchButton = document.getElementById('searchButton'),
@@ -947,8 +947,7 @@
                 boosterData = {},
                 enchantMultipliers = {},
                 enchants = {},
-                unitImages = {},
-                unitBeforeDpsView = null;
+                unitImages = {};
             
             const MAX_LEVEL = 60;
        
@@ -1604,7 +1603,7 @@
                 if (!document.getElementById('main-stats-table') && !isDpsRankingsMode) return;
                 
                 if (isDpsRankingsMode && !document.getElementById('main-stats-table')) {
-                    renderUnitTables(Object.values(allUnitData)[0]);
+                    renderUnitTables(allUnitData["Freddy"]);
                 }
 
                 const elementDropdownTrigger = document.getElementById('elementDropdown');
@@ -1740,7 +1739,7 @@
 
             function renderUnitTables(baseUnitStats) {
                 unitStatsContainer.innerHTML = '';
-                const stats = getCurrentUnitData() || baseUnitStats;
+                const stats = getCurrentUnitData();
                 if (!stats) return;
 
                 if (currentUnitName) {
@@ -2386,6 +2385,7 @@
                     unitStatsContainer.innerHTML = '';
                     unitImageDisplayContainer.classList.add('hidden');
                     graphButton.disabled = true;
+                    dpsRankingsButton.disabled = true;
                     populateGallery();
                     updateGalleryCompareButtons();
                 }
@@ -2421,6 +2421,7 @@
                     
                     unitImageDisplayContainer.classList.remove('hidden');
                     renderUnitTables(unitData);
+                    dpsRankingsButton.disabled = false;
                     
                     const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
                     graphButton.disabled = !hasDamageStats;
@@ -2655,56 +2656,15 @@
                 graphPanel.classList.add('show');
             }
             
-            function returnFromDpsRankings() {
-                if (ENABLE_URL_ROUTING) {
-                    const referrer = document.referrer;
-                    const origin = window.location.origin;
-                    let previousUnitSlug = '';
-
-                    if (referrer && referrer.startsWith(origin)) {
-                        const path = referrer.substring(origin.length);
-                        const slug = path.replace(/^\/|\/$/g, '');
-                        if (slug && slug !== 'dps-chart') {
-                            previousUnitSlug = slug;
-                        }
-                    }
-                    
-                    if (previousUnitSlug) {
-                        window.location.href = `/${previousUnitSlug}`;
-                    } else {
-                        window.location.href = '/'; 
-                    }
-                } else {
-                    isDpsRankingsMode = false;
-                    
-                    menuButton.innerHTML = '<i class="fas fa-bars"></i>';
-                    menuButton.setAttribute('aria-label', 'Menu');
-                    menuButton.removeEventListener('click', returnFromDpsRankings);
-                    menuButton.addEventListener('click', handleMenuClick);
-                    
-                    searchButton.classList.remove('hidden');
-                    unitSearchInput.placeholder = 'Search for a unit...';
-                    unitSearchInput.value = '';
-                    unitSearchInput.style.cursor = 'pointer';
-
-                    if (unitBeforeDpsView) {
-                        selectAndDisplayUnit(unitBeforeDpsView, selectedVersionKey);
-                    } else {
-                        unsearchUnit();
-                    }
-                    unitBeforeDpsView = null;
-                }
-            }
-
             function setupDpsRankingsView() {
                 isDpsRankingsMode = true;
                 updateSuggestions();
 
                 dpsRankingsSort = { key: 'fullDps', direction: 'desc' };
                 menuButton.innerHTML = '<i class="fas fa-arrow-left"></i>';
-                menuButton.setAttribute('aria-label', 'Return');
+                menuButton.setAttribute('aria-label', 'Return to Main Page');
                 menuButton.removeEventListener('click', handleMenuClick);
-                menuButton.onclick = returnFromDpsRankings;
+                menuButton.onclick = () => { window.location.href = '/unit-machine'; };
 
                 searchButton.classList.add('hidden');
                 menuButton.parentElement.insertAdjacentElement('afterend', settingsButton);
@@ -2975,12 +2935,8 @@
 
                         if (path === '/dps-chart' || path === '/dps-chart/') {
                             setTimeout(() => {
-                                const tempUnitName = Object.keys(allUnitData)[0];
-                                if (tempUnitName) {
-                                    const originalCurrent = currentUnitName;
-                                    currentUnitName = tempUnitName;
-                                    renderUnitTables(allUnitData[tempUnitName]);
-                                    currentUnitName = originalCurrent;
+                                if (allUnitData["Freddy"]) {
+                                    selectAndDisplayUnit("Freddy", selectedVersionKey, true);
                                 }
                                 setupDpsRankingsView();
                             }, 0);
@@ -3007,6 +2963,7 @@
             })();
 
             graphButton.disabled = true;
+            dpsRankingsButton.disabled = true;
 
             unitSearchInput.addEventListener('input', () => {
                 if (isDpsRankingsMode) {
@@ -3045,6 +3002,7 @@
 
             closeBoostsButton.addEventListener('click', () => triggerAnimation(closeBoostsButton));
             graphButton.addEventListener('click', () => { if (!graphButton.disabled) triggerAnimation(graphButton); });
+            dpsRankingsButton.addEventListener('click', () => { if (!dpsRankingsButton.disabled) triggerAnimation(dpsRankingsButton); });
             galleryButton.addEventListener('click', () => triggerAnimation(galleryButton));
             closeGraphButton.addEventListener('click', () => triggerAnimation(closeGraphButton));
             closeGalleryButton.addEventListener('click', () => triggerAnimation(closeGalleryButton));
@@ -3067,22 +3025,9 @@
             globalCompareCheckbox.addEventListener('change', renderStatGraph);
             
             dpsRankingsButton.addEventListener('click', () => {
-                triggerAnimation(dpsRankingsButton);
-                unitBeforeDpsView = currentUnitName;
-
-                if (ENABLE_URL_ROUTING) {
+                if (!dpsRankingsButton.disabled) {
+                    triggerAnimation(dpsRankingsButton);
                     window.location.href = '/dps-chart';
-                } else {
-                    if (!document.getElementById('main-stats-table')) {
-                        const tempUnitName = Object.keys(allUnitData)[0];
-                        if (tempUnitName) {
-                            const originalCurrentUnit = currentUnitName;
-                            currentUnitName = tempUnitName;
-                            renderUnitTables(allUnitData[tempUnitName]);
-                            currentUnitName = originalCurrentUnit;
-                        }
-                    }
-                    setupDpsRankingsView();
                 }
             });
             
