@@ -1767,6 +1767,31 @@
                 document.body.removeChild(ruler);
             }
 
+            function updateUnitVisuals() {
+                if (!currentUnitName || !allUnitData[currentUnitName]) return;
+
+                const baseUnitStats = allUnitData[currentUnitName];
+
+                const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
+                let imageUrl = normalImageUrl;
+                if (selectedVersionKey === 'shiny') {
+                    const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
+                    imageUrl = shinyImageUrl || normalImageUrl;
+                }
+                displayedUnitImage.src = imageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
+
+                const allRarityClasses = Object.values(rarityClassMap);
+                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
+
+                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
+                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
+                }
+
+                if (selectedVersionKey === 'shiny') {
+                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
+                }
+            }
+
             function renderUnitTables() {
                 const currentBoosts = getBoostsState();
                 let mainDmgValue = currentBoosts.mainDmg;
@@ -1798,31 +1823,10 @@
                     unitStatsContainer.style.visibility = 'visible';
                     return;
                 }
-
-                const baseUnitStats = allUnitData[currentUnitName];
                 
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (currentStats.Element || 'Neutral');
 
-                if (currentUnitName) {
-                    const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
-                    let imageUrl = normalImageUrl;
-                    if (selectedVersionKey === 'shiny') {
-                        const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
-                        imageUrl = shinyImageUrl || normalImageUrl;
-                    }
-                    displayedUnitImage.src = imageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
-                }
-
-                const allRarityClasses = Object.values(rarityClassMap);
-                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
-                
-                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
-                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
-                }
-
-                if (selectedVersionKey === 'shiny') {
-                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
-                }
+                updateUnitVisuals();
 
                 if (currentStats.BackendNote) {
                     const noteWrapper = document.createElement('div');
@@ -2041,7 +2045,8 @@
                 const dropdownContainer = document.createElement('div');
                 const versionDropdown = createCustomDropdown('versionDropdown', 'Version:', versions, selectedVersionKey, (value) => {
                     selectedVersionKey = value;
-                    renderUnitTables();
+                    updateUnitVisuals();
+                    updateView();
                     populateGallery();
                 });
                 
@@ -2693,7 +2698,8 @@
                     
                     if (currentUnitName === unitName) {
                         selectedVersionKey = isNowShiny ? 'shiny' : 'normal';
-                        renderUnitTables();
+                        updateUnitVisuals();
+                        updateView();
                     }
                 });
                 imageContainer.appendChild(shinyBtn);
@@ -2932,6 +2938,7 @@
                 
                 if (triggerUpdate) {
                     if (currentUnitName && !isDpsRankingsMode) {
+                        updateUnitVisuals();
                         renderUnitTables();
                     } else {
                         updateView();
