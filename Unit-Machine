@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -509,11 +510,7 @@
                     visibility 0s;
     }
 
-    .table-wrapper { 
-        width: 100%; 
-        overflow-x: auto; 
-        padding-bottom: var(--spacing-sm); 
-    }
+    .table-wrapper { width: 100%; overflow-x: auto; }
     table {
         border-collapse: separate; border-spacing: 0; min-width: 100%;
         overflow: hidden; border: var(--border-default); border-radius: var(--border-radius);
@@ -757,14 +754,6 @@
         50% { border-color: var(--primary-accent); box-shadow: var(--focus-shadow); }
     }
     
-    @media (max-width: 767px) {
-        .table-wrapper {
-            /* Force padding on mobile to reserve space for the horizontal scrollbar 
-               and prevent layout shifts due to dynamic scrollbar appearance/disappearance */
-            padding-bottom: var(--spacing-md); 
-        }
-    }
-
     @media (max-width: 500px) {
         #galleryContainer {
             grid-template-columns: repeat(var(--gallery-cols-mobile), 1fr);
@@ -1243,7 +1232,7 @@
                     const updateOptionAppearance = (selection) => {
                         if (selection) {
                             option.classList.add('selected');
-                            if (selection.version === 'shiny' && options[boosterName].shinyBoosts) {
+                            if (selection.version === 'shiny') {
                                 option.classList.add('shiny');
                                 statsSpan.textContent = formatBoostsAsPercentString(options[boosterName].shinyBoosts);
                             } else {
@@ -1394,7 +1383,7 @@
                 updateView();
             }
 
-            function populateSingleUnitTbody() {
+            function updateSingleUnitStats() {
                 const unitData = getCurrentUnitData();
                 if (!unitData) return;
 
@@ -1405,22 +1394,27 @@
                 const hasBoostStats = unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
                 const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                 const hasRangeStat = unitData.Upgrades.some(upg => upg.Range !== undefined);
-                const hasPerUpgradeTypes = unitData.hasPerUpgradeTypes;
                 
                 const elementalContainer = document.getElementById('elemental-dps-container');
                 if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
 
                 const multipliers = getGlobalBoostMultipliers();
-                const upgradeRows = [];
                 let maxDPS = 0;
-
+                
+                const rows = tbody.getElementsByTagName('tr');
                 unitData.Upgrades.forEach((upgrade, i) => {
-                    const levelName = i === 0 ? 'Placement' : (i === unitData.Upgrades.length - 1 ? 'Max' : `UPG ${i}`);
+                    if (!rows[i]) return;
+                    
+                    const cells = rows[i].getElementsByTagName('td');
+                    let cellIndex = 0;
+                    
                     const basePrice = i === 0 ? (unitData.PlacePrice || 0) : (upgrade.Price || 0);
                     const price = basePrice * multipliers.cost;
-                    let rowData = [levelName, price.toLocaleString()];
-                    if (hasPerUpgradeTypes) {
-                        rowData.push(upgrade.Type || '-');
+                    cells[cellIndex++].textContent = i === 0 ? 'Placement' : (i === unitData.Upgrades.length - 1 ? 'Max' : `UPG ${i}`);
+                    cells[cellIndex++].textContent = price.toLocaleString();
+
+                    if (unitData.hasPerUpgradeTypes) {
+                        cells[cellIndex++].textContent = upgrade.Type || '-';
                     }
 
                     if (hasDamageStats) {
@@ -1430,28 +1424,20 @@
                         
                         const dps = calculateDPS(modDmg, modCd);
                         if (dps > maxDPS) maxDPS = dps;
-                        rowData.push(dps.toFixed(2), modDmg.toFixed(2), modCd.toFixed(3), modRange.toFixed(1));
+
+                        cells[cellIndex++].textContent = dps.toFixed(2);
+                        cells[cellIndex++].textContent = modDmg.toFixed(2);
+                        cells[cellIndex++].textContent = modCd.toFixed(3);
+                        cells[cellIndex++].textContent = modRange.toFixed(1);
                     }
+
                     if (hasDpsBoost) {
                         const dmgBoost = upgrade.DamageBoost || 1.0;
                         const cdBoost = upgrade.CooldownBoost || 1.0;
                         const dpsBoostPercent = (((dmgBoost / cdBoost) - 1) * 100).toFixed(1);
-                        rowData.push(`${dpsBoostPercent}%`);
+                        cells[cellIndex++].textContent = `${dpsBoostPercent}%`;
                     }
-                    if (hasBoostStats) {
-                        const boostParts = [];
-                        if (upgrade.DamageBoost) boostParts.push(`${upgrade.DamageBoost}x DMG`);
-                        if (upgrade.CooldownBoost) boostParts.push(`${upgrade.CooldownBoost}x CD`);
-                        if (upgrade.RangeBoost) boostParts.push(`${upgrade.RangeBoost}x Range`);
-                        rowData.push(boostParts.join(', '));
-                    }
-                    if (hasRangeStat && !hasDamageStats) {
-                        rowData.push(upgrade.Range);
-                    }
-                    upgradeRows.push(rowData);
                 });
-
-                tbody.replaceChildren(...upgradeRows.map(rowData => createTableRow('td', rowData)));
 
                 if (hasDamageStats) {
                     const totalDPS = maxDPS * (unitData.Max || 1);
@@ -1642,10 +1628,10 @@
                     persistBoostsIfEnabled();
                 }
 
-                if (!document.getElementById('main-stats-table') && !isDpsRankingsMode) return;
-                
-                if (isDpsRankingsMode && !document.getElementById('main-stats-table')) {
-                    renderUnitTables();
+                const isViewingUnit = currentUnitName && !isDpsRankingsMode;
+                if (!document.getElementById('main-stats-table') && (isViewingUnit || isDpsRankingsMode)) {
+                     setupUnitDisplay();
+                     return;
                 }
 
                 const elementDropdownTrigger = document.getElementById('elementDropdown');
@@ -1669,85 +1655,14 @@
                 document.querySelectorAll('.aux-table').forEach(el => {
                     el.style.display = isDpsRankingsMode ? 'none' : '';
                 });
-                
-                const statsHeaderRow = document.getElementById('stats-header-row');
-                const upgradesTbody = document.getElementById('upgrades-tbody');
-                if (!statsHeaderRow || !upgradesTbody) return;
-
-                statsHeaderRow.innerHTML = ''; 
 
                 if (isDpsRankingsMode) {
-                    const sortKeyMap = { 'Full DPS': 'fullDps', 'Type': 'type', 'Element': 'element', 'Placements': 'placements', 'Damage': 'damage', 'CD': 'cd', 'Range': 'range' };
-                    const rankingHeaders = ['Rank', 'Name', 'Type', 'Element', 'Placements', 'Full DPS', 'Damage', 'CD', 'Range'];
-                    
-                    rankingHeaders.forEach(headerText => {
-                        const th = document.createElement('th');
-                        const sortKey = sortKeyMap[headerText];
-                        const contentWrapper = document.createElement('div');
-                        const textSpan = document.createElement('span');
-                        textSpan.textContent = headerText;
-                        contentWrapper.appendChild(textSpan);
-
-                        if (sortKey) {
-                            th.classList.add('sortable-header');
-                            th.dataset.sortKey = sortKey;
-                            contentWrapper.classList.add('sortable-header-content');
-                            
-                            const indicator = document.createElement('span');
-                            indicator.className = 'sort-indicator';
-                            indicator.innerHTML = '<i class="fas fa-caret-up"></i>';
-                            
-                            contentWrapper.appendChild(indicator);
-
-                            th.addEventListener('click', () => {
-                                if (dpsRankingsSort.key === sortKey) {
-                                    dpsRankingsSort.direction = dpsRankingsSort.direction === 'asc' ? 'desc' : 'asc';
-                                } else {
-                                    dpsRankingsSort.key = sortKey;
-                                    dpsRankingsSort.direction = (sortKey === 'type' || sortKey === 'element' || sortKey === 'cd') ? 'asc' : 'desc';
-                                }
-                                populateRankingsTbody();
-                            });
-                        }
-                        th.appendChild(contentWrapper);
-                        statsHeaderRow.appendChild(th);
-                    });
                     populateRankingsTbody();
                 } else {
-                    const stats = getCurrentUnitData();
-                    if (!stats) return;
-                    
-                    const hasDamageStats = stats.Upgrades.some(upg => upg.Damage !== undefined);
-                    const hasBoostStats = stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
-                    const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
-                    const hasRangeStat = stats.Upgrades.some(upg => upg.Range !== undefined);
-                    const hasPerUpgradeTypes = stats.hasPerUpgradeTypes;
-
-                    let headers = ['Level', 'Cost'];
-                    if (hasPerUpgradeTypes) headers.push('Attack Type');
-                    if (hasDamageStats) headers.push('DPS', 'Damage', 'Cooldown', 'Range');
-                    if (hasDpsBoost) headers.push('DPS Boost');
-                    if (hasBoostStats) headers.push('Boosts');
-                    if (hasRangeStat && !hasDamageStats) headers.push('Range');
-
-                    headers.forEach(headerText => {
-                        const th = document.createElement('th');
-                        th.textContent = headerText;
-                        statsHeaderRow.appendChild(th);
-                    });
-                    populateSingleUnitTbody();
+                    updateSingleUnitStats();
                 }
-                
-                const elementHeaderCell = document.getElementById('element-header-cell');
-                const boostHeaderCell = document.getElementById('boost-header-cell');
-                if (statsHeaderRow && elementHeaderCell && boostHeaderCell) {
-                    const columnCount = statsHeaderRow.children.length;
-                    elementHeaderCell.colSpan = columnCount;
-                    boostHeaderCell.colSpan = columnCount;
-                }
-
-                synchronizeTableWidths();
             }
+
 
             function synchronizeTableWidths() {
                 if (window.innerWidth < 768) return document.querySelectorAll('#unitStatsContainer table').forEach(table => table.style.minWidth = '');
@@ -1779,146 +1694,121 @@
                 document.body.removeChild(ruler);
             }
 
-            function renderUnitTables() {
-                const currentBoosts = getBoostsState();
-                let mainDmgValue = currentBoosts.mainDmg;
-                let mainCdValue = currentBoosts.mainCd;
-                let mainRngValue = currentBoosts.mainRng;
-
-                const isFirstRender = !document.getElementById('mainDmgBoostInput');
-                if (isFirstRender && pendingMainBoosts) {
-                    mainDmgValue = pendingMainBoosts.dmg;
-                    mainCdValue = pendingMainBoosts.cd;
-                    mainRngValue = pendingMainBoosts.rng;
-                    pendingMainBoosts = null;
-                }
-
+            function setupUnitDisplay() {
                 unitStatsContainer.style.visibility = 'hidden';
                 unitStatsContainer.innerHTML = '';
                 
                 const stats = getCurrentUnitData();
-                if (!stats && !isDpsRankingsMode) {
+                 if (!stats && !isDpsRankingsMode) {
                     unitStatsContainer.style.visibility = 'visible';
                     return;
                 }
                 
                 if (isDpsRankingsMode && !stats) {
-                    currentUnitName = 'Freddy';
+                    currentUnitName = Object.keys(allUnitData)[0] || null;
+                    if (!currentUnitName) {
+                        unitStatsContainer.style.visibility = 'visible';
+                        return;
+                    }
                 }
+                
                 const currentStats = getCurrentUnitData();
-                if (!currentStats) {
+                if (!currentStats) { 
                     unitStatsContainer.style.visibility = 'visible';
                     return;
                 }
-
-                const baseUnitStats = allUnitData[currentUnitName];
                 
+                const isSingleUnitView = !isDpsRankingsMode;
+
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (currentStats.Element || 'Neutral');
 
-                if (currentUnitName) {
-                    const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
-                    let imageUrl = normalImageUrl;
-                    if (selectedVersionKey === 'shiny') {
-                        const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
-                        imageUrl = shinyImageUrl || normalImageUrl;
+                if (isSingleUnitView) {
+                    updateDisplayedUnitImage();
+                    
+                    if (currentStats.BackendNote) {
+                        const noteWrapper = document.createElement('div');
+                        noteWrapper.className = 'aux-table';
+                        createTableInWrapper(['Note'], [[currentStats.BackendNote]], noteWrapper, 'note-table-wrapper');
+                        unitStatsContainer.appendChild(noteWrapper);
                     }
-                    displayedUnitImage.src = imageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
-                }
 
-                const allRarityClasses = Object.values(rarityClassMap);
-                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
-                
-                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
-                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
-                }
+                    const rarityWrapper = document.createElement('div');
+                    rarityWrapper.className = 'aux-table';
+                    createTableInWrapper(['Rarity', 'Attack Type', 'Element', 'Placements'], [[currentStats.Rarity || 'N/A', currentStats.Type || 'N/A', currentStats.Element || 'Neutral', currentStats.Max || 'N/A']], rarityWrapper);
+                    unitStatsContainer.appendChild(rarityWrapper);
+                    
+                    const obtainabilityWrapper = document.createElement('div');
+                    obtainabilityWrapper.className = 'aux-table';
+                    const obtainabilityText = (currentStats.Obtainability && currentStats.Obtainability.length > 0)
+                        ? currentStats.Obtainability.join(', ')
+                        : "Data Not Available";
+                    createTableInWrapper(['Obtainability'], [[obtainabilityText]], obtainabilityWrapper);
+                    unitStatsContainer.appendChild(obtainabilityWrapper);
 
-                if (selectedVersionKey === 'shiny') {
-                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
-                }
+                    const passives = currentStats.Passives || {};
+                    const actives = currentStats.Actives || [];
+                    const allAbilities = Object.entries(passives);
 
-                if (currentStats.BackendNote) {
-                    const noteWrapper = document.createElement('div');
-                    noteWrapper.className = 'aux-table';
-                    createTableInWrapper(['Note'], [[currentStats.BackendNote]], noteWrapper, 'note-table-wrapper');
-                    unitStatsContainer.appendChild(noteWrapper);
-                }
-
-                const rarityWrapper = document.createElement('div');
-                rarityWrapper.className = 'aux-table';
-                createTableInWrapper(['Rarity', 'Attack Type', 'Element', 'Placements'], [[currentStats.Rarity || 'N/A', currentStats.Type || 'N/A', currentStats.Element || 'Neutral', currentStats.Max || 'N/A']], rarityWrapper);
-                unitStatsContainer.appendChild(rarityWrapper);
-                
-                const obtainabilityWrapper = document.createElement('div');
-                obtainabilityWrapper.className = 'aux-table';
-                const obtainabilityText = (currentStats.Obtainability && currentStats.Obtainability.length > 0)
-                    ? currentStats.Obtainability.join(', ')
-                    : "Data Not Available";
-                createTableInWrapper(['Obtainability'], [[obtainabilityText]], obtainabilityWrapper);
-                unitStatsContainer.appendChild(obtainabilityWrapper);
-
-                const passives = currentStats.Passives || {};
-                const actives = currentStats.Actives || [];
-                const allAbilities = Object.entries(passives);
-
-                actives.forEach(active => {
-                    const activeName = `Active: ${active.Name}`;
-                    let activeDesc = active.Description;
-                    if (active.Upgrade !== undefined) {
-                        const upgradeLevelText = active.Upgrade === 0 ? 'Placement' : `UPG ${active.Upgrade}`;
-                        let details = `(Unlocks at ${upgradeLevelText}`;
-                        if (active.Cooldown !== undefined) {
-                            const cooldownText = typeof active.Cooldown === 'number' ? `${active.Cooldown}s` : active.Cooldown;
-                            details += `, Cooldown: ${cooldownText}`;
+                    actives.forEach(active => {
+                        const activeName = `Active: ${active.Name}`;
+                        let activeDesc = active.Description;
+                        if (active.Upgrade !== undefined) {
+                            const upgradeLevelText = active.Upgrade === 0 ? 'Placement' : `UPG ${active.Upgrade}`;
+                            let details = `(Unlocks at ${upgradeLevelText}`;
+                            if (active.Cooldown !== undefined) {
+                                const cooldownText = typeof active.Cooldown === 'number' ? `${active.Cooldown}s` : active.Cooldown;
+                                details += `, Cooldown: ${cooldownText}`;
+                            }
+                            details += ')';
+                            activeDesc += ` ${details}`;
                         }
-                        details += ')';
-                        activeDesc += ` ${details}`;
-                    }
-                    allAbilities.push([activeName, activeDesc]);
-                });
-
-                if (allAbilities.length > 0) {
-                    const abilityWrapper = document.createElement('div');
-                    abilityWrapper.className = 'aux-table';
-                    
-                    const tableWrapper = document.createElement('div');
-                    tableWrapper.className = 'table-wrapper';
-                    const table = document.createElement('table');
-                    const thead = document.createElement('thead');
-                    const tbody = document.createElement('tbody');
-                    
-                    const headerText = allAbilities.length > 1 ? 'Abilities' : 'Ability';
-                    thead.appendChild(createTableRow('th', [headerText, 'Description']));
-                    
-                    allAbilities.forEach(([name, description]) => {
-                        const tr = document.createElement('tr');
-                        const tdName = document.createElement('td');
-                        tdName.textContent = name;
-                        tdName.classList.add('passive-name-cell');
-                        
-                        const tdDesc = document.createElement('td');
-                        tdDesc.textContent = description;
-                        tdDesc.classList.add('note-cell');
-                        
-                        tr.append(tdName, tdDesc);
-                        tbody.appendChild(tr);
+                        allAbilities.push([activeName, activeDesc]);
                     });
-                    
-                    table.append(thead, tbody);
-                    tableWrapper.appendChild(table);
-                    abilityWrapper.appendChild(tableWrapper);
-                    unitStatsContainer.appendChild(abilityWrapper);
-                }
 
+                    if (allAbilities.length > 0) {
+                        const abilityWrapper = document.createElement('div');
+                        abilityWrapper.className = 'aux-table';
+                        
+                        const tableWrapper = document.createElement('div');
+                        tableWrapper.className = 'table-wrapper';
+                        const table = document.createElement('table');
+                        const thead = document.createElement('thead');
+                        const tbody = document.createElement('tbody');
+                        
+                        const headerText = allAbilities.length > 1 ? 'Abilities' : 'Ability';
+                        thead.appendChild(createTableRow('th', [headerText, 'Description']));
+                        
+                        allAbilities.forEach(([name, description]) => {
+                            const tr = document.createElement('tr');
+                            const tdName = document.createElement('td');
+                            tdName.textContent = name;
+                            tdName.classList.add('passive-name-cell');
+                            
+                            const tdDesc = document.createElement('td');
+                            tdDesc.textContent = description;
+                            tdDesc.classList.add('note-cell');
+                            
+                            tr.append(tdName, tdDesc);
+                            tbody.appendChild(tr);
+                        });
+                        
+                        table.append(thead, tbody);
+                        tableWrapper.appendChild(table);
+                        abilityWrapper.appendChild(tableWrapper);
+                        unitStatsContainer.appendChild(abilityWrapper);
+                    }
+                }
+                
                 const dmgOverrideVal = document.getElementById('dmgOverrideInput').value.trim();
                 const cdOverrideVal = document.getElementById('cdOverrideInput').value.trim();
                 const rngOverrideVal = document.getElementById('rngOverrideInput').value.trim();
                 const isOverriding = dmgOverrideVal || cdOverrideVal || rngOverrideVal;
-
+                
                 const wrapper = document.createElement('div'), table = document.createElement('table'), thead = document.createElement('thead'),
-                    tbody = document.createElement('tbody');
+                      tbody = document.createElement('tbody');
                 wrapper.className = 'table-wrapper';
                 table.id = 'main-stats-table';
-                
+
                 const elementHeaderRow = document.createElement('tr');
                 const elementHeaderCell = document.createElement('th');
                 const elementDropdownContainer = document.createElement('div');
@@ -1928,6 +1818,11 @@
                 mainBoostContainer.className = 'dropdown-flex-container main-boost-container';
                 mainBoostContainer.style.gap = 'var(--spacing-sm)';
                 mainBoostContainer.style.flex = '2 1 0px';
+
+                const mainDmgValue = pendingMainBoosts ? pendingMainBoosts.dmg : '';
+                const mainCdValue = pendingMainBoosts ? pendingMainBoosts.cd : '';
+                const mainRngValue = pendingMainBoosts ? pendingMainBoosts.rng : '';
+                pendingMainBoosts = null;
 
                 const createMainBoostInput = (id, label, placeholder, value, disabled = false) => {
                     const wrapper = document.createElement('div');
@@ -1946,18 +1841,16 @@
                     wrapper.append(labelSpan, input);
                     return wrapper;
                 };
-
+                
                 mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', 'e.g. +20%', mainDmgValue, isOverriding));
                 mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', 'e.g. -10%', mainCdValue, isOverriding));
                 mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', 'e.g. +5%', mainRngValue, isOverriding));
-
                 elementDropdownContainer.appendChild(mainBoostContainer);
-                
+
                 const dropdownLabel = isDpsRankingsMode ? 'Enemy Element:' : 'Element:';
                 const elementDropdown = createCustomDropdown('elementDropdown', dropdownLabel, elements, selectedElementKey, (value) => {
                     selectedElementKey = value; updateView();
                 });
-
                 elementDropdownContainer.appendChild(elementDropdown);
                 
                 const levelInputContainer = document.createElement('div');
@@ -2018,10 +1911,7 @@
                         }
                     }
                 });
-
-                levelInput.addEventListener('change', () => {
-                     updateLevel(levelInput.value || 1);
-                });
+                levelInput.addEventListener('change', () => { updateLevel(levelInput.value || 1); });
                 
                 minBtn.addEventListener('click', () => { updateLevel(1); triggerAnimation(minBtn); });
                 maxBtn.addEventListener('click', () => { updateLevel(MAX_LEVEL); triggerAnimation(maxBtn); });
@@ -2032,14 +1922,6 @@
                 levelInputWrapper.append(levelLabel, levelInput);
                 levelInputContainer.append(minBtn, minusBtn, levelInputWrapper, plusBtn, maxBtn);
                 elementDropdownContainer.appendChild(levelInputContainer);
-                
-                if (isOverriding) {
-                    mainBoostContainer.style.pointerEvents = 'none';
-                    mainBoostContainer.style.opacity = '0.5';
-                    levelInputContainer.style.pointerEvents = 'none';
-                    levelInputContainer.style.opacity = '0.5';
-                    levelInputContainer.querySelectorAll('input, button').forEach(el => el.disabled = true );
-                }
                 
                 elementHeaderCell.id = 'element-header-cell';
                 elementHeaderCell.className = 'dropdown-header-cell';
@@ -2053,7 +1935,8 @@
                 const dropdownContainer = document.createElement('div');
                 const versionDropdown = createCustomDropdown('versionDropdown', 'Version:', versions, selectedVersionKey, (value) => {
                     selectedVersionKey = value;
-                    renderUnitTables();
+                    updateDisplayedUnitImage();
+                    updateView();
                     populateGallery();
                 });
                 
@@ -2070,7 +1953,7 @@
                 boostHeaderCell.appendChild(dropdownContainer);
                 boostHeaderRow.appendChild(boostHeaderCell);
                 thead.appendChild(boostHeaderRow);
-                
+
                 const mainHeaderRow = document.createElement('tr');
                 mainHeaderRow.id = 'stats-header-row';
                 mainHeaderRow.className = 'main-header-row';
@@ -2081,19 +1964,17 @@
                     const clickedCell = e.target.closest('td.clickable-unit-name');
                     if (clickedCell) {
                         const unitName = clickedCell.textContent;
-
                         if (settings.saveBoosts) {
                             settings.savedBoosts = getBoostsState();
                             saveSettings();
                         }
-
                         if (isDpsRankingsMode && !ENABLE_URL_ROUTING) {
                             resetToSingleUnitView();
                         }
-                        
                         selectAndDisplayUnit(unitName, settings.saveBoosts ? selectedVersionKey : 'normal');
                     }
                 });
+                
                 table.append(thead, tbody);
                 wrapper.appendChild(table);
                 unitStatsContainer.appendChild(wrapper);
@@ -2102,19 +1983,16 @@
                 const hasDamageStats = currentStats.Upgrades.some(upg => upg.Damage !== undefined);
                 const hasBoostStats = maxUpgrade.DamageBoost || maxUpgrade.CooldownBoost || maxUpgrade.RangeBoost;
 
-                if (hasDamageStats || hasBoostStats) {
+                if (isSingleUnitView && (hasDamageStats || hasBoostStats)) {
                     const summaryWrapper = document.createElement('div');
                     summaryWrapper.className = 'aux-table';
                     summaryWrapper.id = 'summary-table-wrapper';
 
-                    let headers = [];
-                    let rowData = [];
-
+                    let headers = [], rowData = [];
                     if (hasBoostStats) {
                         const totalDmgBoost = maxUpgrade.DamageBoost || 1.0;
                         const totalCdBoost = maxUpgrade.CooldownBoost || 1.0;
                         const totalRangeBoost = maxUpgrade.RangeBoost || 1.0;
-
                         const totalDpsBoostPercent = (((totalDmgBoost / totalCdBoost) - 1) * 100).toFixed(1) + '%';
                         
                         const boostParts = [];
@@ -2134,7 +2012,6 @@
                         headers = ['Total DPS'];
                         rowData = ['...'];
                     }
-                    
                     createTableInWrapper(headers, [rowData], summaryWrapper);
                     unitStatsContainer.appendChild(summaryWrapper);
                 }
@@ -2142,13 +2019,144 @@
                 const elementalContainer = document.createElement('div');
                 elementalContainer.id = 'elemental-dps-container';
                 elementalContainer.className = 'aux-table';
-                unitStatsContainer.appendChild(elementalContainer);
+                if (isSingleUnitView) {
+                    unitStatsContainer.appendChild(elementalContainer);
+                }
+
+                if (isDpsRankingsMode) {
+                    setupDpsRankingHeaders();
+                    populateRankingsTbody();
+                } else {
+                    setupSingleUnitHeadersAndBody();
+                    updateSingleUnitStats();
+                }
+
+                const elementHeaderCell = document.getElementById('element-header-cell');
+                const boostHeaderCell = document.getElementById('boost-header-cell');
+                if (mainHeaderRow && elementHeaderCell && boostHeaderCell) {
+                    const columnCount = mainHeaderRow.children.length;
+                    elementHeaderCell.colSpan = columnCount;
+                    boostHeaderCell.colSpan = columnCount;
+                }
 
                 updateView();
+                updateTablePadding();
                 setDropdownMinWidths();
-                synchronizeTableWidths();
                 handleOverrideChange();
+                synchronizeTableWidths();
                 unitStatsContainer.style.visibility = 'visible';
+            }
+
+            function setupSingleUnitHeadersAndBody() {
+                const statsHeaderRow = document.getElementById('stats-header-row');
+                const upgradesTbody = document.getElementById('upgrades-tbody');
+                if (!statsHeaderRow || !upgradesTbody) return;
+
+                const stats = getCurrentUnitData();
+                if (!stats) return;
+
+                const hasDamageStats = stats.Upgrades.some(upg => upg.Damage !== undefined);
+                const hasBoostStats = stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
+                const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
+                const hasRangeStat = stats.Upgrades.some(upg => upg.Range !== undefined);
+                const hasPerUpgradeTypes = stats.hasPerUpgradeTypes;
+
+                let headers = ['Level', 'Cost'];
+                if (hasPerUpgradeTypes) headers.push('Attack Type');
+                if (hasDamageStats) headers.push('DPS', 'Damage', 'Cooldown', 'Range');
+                if (hasDpsBoost) headers.push('DPS Boost');
+                if (hasBoostStats) headers.push('Boosts');
+                if (hasRangeStat && !hasDamageStats) headers.push('Range');
+
+                statsHeaderRow.innerHTML = '';
+                headers.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    statsHeaderRow.appendChild(th);
+                });
+
+                upgradesTbody.innerHTML = '';
+                stats.Upgrades.forEach((upgrade, i) => {
+                    let rowData = ['-', '-']; 
+                    if (hasPerUpgradeTypes) rowData.push(upgrade.Type || '-');
+                    if (hasDamageStats) rowData.push('-', '-', '-', '-');
+                    if (hasDpsBoost) rowData.push('-');
+                    if (hasBoostStats) {
+                        const boostParts = [];
+                        if (upgrade.DamageBoost) boostParts.push(`${upgrade.DamageBoost}x DMG`);
+                        if (upgrade.CooldownBoost) boostParts.push(`${upgrade.CooldownBoost}x CD`);
+                        if (upgrade.RangeBoost) boostParts.push(`${upgrade.RangeBoost}x Range`);
+                        rowData.push(boostParts.join(', '));
+                    }
+                    if (hasRangeStat && !hasDamageStats) rowData.push('-');
+                    upgradesTbody.appendChild(createTableRow('td', rowData));
+                });
+            }
+
+            function setupDpsRankingHeaders() {
+                const statsHeaderRow = document.getElementById('stats-header-row');
+                if (!statsHeaderRow) return;
+                statsHeaderRow.innerHTML = '';
+
+                const sortKeyMap = { 'Full DPS': 'fullDps', 'Type': 'type', 'Element': 'element', 'Placements': 'placements', 'Damage': 'damage', 'CD': 'cd', 'Range': 'range' };
+                const rankingHeaders = ['Rank', 'Name', 'Type', 'Element', 'Placements', 'Full DPS', 'Damage', 'CD', 'Range'];
+                
+                rankingHeaders.forEach(headerText => {
+                    const th = document.createElement('th');
+                    const sortKey = sortKeyMap[headerText];
+                    const contentWrapper = document.createElement('div');
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = headerText;
+                    contentWrapper.appendChild(textSpan);
+
+                    if (sortKey) {
+                        th.classList.add('sortable-header');
+                        th.dataset.sortKey = sortKey;
+                        contentWrapper.classList.add('sortable-header-content');
+                        
+                        const indicator = document.createElement('span');
+                        indicator.className = 'sort-indicator';
+                        indicator.innerHTML = '<i class="fas fa-caret-up"></i>';
+                        contentWrapper.appendChild(indicator);
+
+                        th.addEventListener('click', () => {
+                            if (dpsRankingsSort.key === sortKey) {
+                                dpsRankingsSort.direction = dpsRankingsSort.direction === 'asc' ? 'desc' : 'asc';
+                            } else {
+                                dpsRankingsSort.key = sortKey;
+                                dpsRankingsSort.direction = (sortKey === 'type' || sortKey === 'element' || sortKey === 'cd') ? 'asc' : 'desc';
+                            }
+                            populateRankingsTbody();
+                        });
+                    }
+                    th.appendChild(contentWrapper);
+                    statsHeaderRow.appendChild(th);
+                });
+                updateRankingsHeaderUI();
+            }
+
+            function updateDisplayedUnitImage() {
+                if (!currentUnitName) return;
+
+                const baseUnitStats = allUnitData[currentUnitName];
+                const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
+                let imageUrl = normalImageUrl;
+                
+                if (selectedVersionKey === 'shiny') {
+                    const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
+                    imageUrl = shinyImageUrl || normalImageUrl;
+                }
+                displayedUnitImage.src = imageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
+                
+                const allRarityClasses = Object.values(rarityClassMap);
+                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
+                
+                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
+                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
+                }
+                if (selectedVersionKey === 'shiny') {
+                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
+                }
             }
             
             function computeGlobalStatProfiles() {
@@ -2520,12 +2528,11 @@
             }
 
             function selectAndDisplayUnit(unitName, version = 'normal', isPageLoad = false) {
-                if (ENABLE_URL_ROUTING) {
+                if (ENABLE_URL_ROUTING && !isPageLoad) {
                     const unitSlug = createUnitSlug(unitName);
                     const currentPath = window.location.pathname.replace(/\/$/, '');
                     const currentSlugOrPage = currentPath.substring(1);
-                    
-                    if (!isPageLoad && unitSlug !== currentSlugOrPage) {
+                    if (unitSlug !== currentSlugOrPage) {
                         sessionStorage.setItem('selectedVersion', version);
                         window.location.href = `${window.location.origin}/${unitSlug}`;
                         return;
@@ -2533,37 +2540,44 @@
                 }
 
                 unitSearchInput.value = unitName;
-                if (allUnitData[unitName]) {
-                    currentUnitName = unitName;
-                    comparisonUnitName = null;
-                    
+                if (!allUnitData[unitName]) {
+                    updateSuggestions();
+                    return;
+                }
+                
+                const isNewUnit = currentUnitName !== unitName;
+                currentUnitName = unitName;
+                comparisonUnitName = null;
+                
+                if (isNewUnit) {
                     if (!settings.saveBoosts) {
                         resetBoosts(false);
                     }
                     selectedVersionKey = version;
+                    setupUnitDisplay();
+                } else {
+                    selectedVersionKey = version;
+                    updateDisplayedUnitImage();
+                    updateView();
+                }
 
-                    unitImageDisplayContainer.classList.remove('hidden');
-                    renderUnitTables();
-                    dpsRankingsButton.disabled = false;
-                    
-                    const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
-                    graphButton.disabled = !hasDamageStats;
-                    
-                    populateGallery();
-                    updateGalleryCompareButtons();
+                unitImageDisplayContainer.classList.remove('hidden');
+                dpsRankingsButton.disabled = false;
+                
+                const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
+                graphButton.disabled = !hasDamageStats;
+                
+                populateGallery();
+                updateGalleryCompareButtons();
 
-                    if (ENABLE_URL_ROUTING && isPageLoad) {
-                        requestAnimationFrame(() => {
-                            const searchContainer = document.querySelector('.search-container');
-                            if (searchContainer) {
-                                const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
-                                window.scrollTo({
-                                    top: topPos - 15,
-                                    behavior: 'instant'
-                                });
-                            }
-                        });
-                    }
+                if (ENABLE_URL_ROUTING && isPageLoad) {
+                    requestAnimationFrame(() => {
+                        const searchContainer = document.querySelector('.search-container');
+                        if (searchContainer) {
+                            const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                            window.scrollTo({ top: topPos - 15, behavior: 'instant' });
+                        }
+                    });
                 }
                 updateSuggestions();
             }
@@ -2578,6 +2592,12 @@
                 else { alert('Unit Not Found'); updateSuggestions(); }
             }
 
+            function updateTablePadding() {
+                document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+                    wrapper.style.paddingBottom = wrapper.scrollWidth > wrapper.clientWidth ? 'var(--spacing-sm)' : '0px';
+                });
+            }
+            
             function updateSortButtonsUI() {
                 const alphaIcon = sortAlphaButton.querySelector('i');
                 const rarityIcon = sortRarityButton.querySelector('i');
@@ -2698,7 +2718,8 @@
                     
                     if (currentUnitName === unitName) {
                         selectedVersionKey = isNowShiny ? 'shiny' : 'normal';
-                        renderUnitTables();
+                        updateDisplayedUnitImage();
+                        updateView();
                     }
                 });
                 imageContainer.appendChild(shinyBtn);
@@ -2829,7 +2850,7 @@
                 unitSearchInput.value = '';
                 unitSearchInput.style.cursor = 'text';
                 unitImageDisplayContainer.classList.add('hidden');
-                updateView();
+                setupUnitDisplay();
             }
 
             function saveSettings() {
@@ -2936,11 +2957,7 @@
                 boosterDropdownContainer.appendChild(createBoosterDropdown('boosterDropdown', 'Booster', boosterData, updateView));
                 
                 if (triggerUpdate) {
-                    if (currentUnitName && !isDpsRankingsMode) {
-                        renderUnitTables();
-                    } else {
-                        updateView();
-                    }
+                    updateView();
                 } else {
                     handleOverrideChange();
                 }
@@ -3122,7 +3139,6 @@
 
                         if (pathSlug === 'dps-list') {
                             setTimeout(() => {
-                                selectAndDisplayUnit("Freddy", selectedVersionKey, true);
                                 setupDpsRankingsView();
                             }, 0);
                         } else if (pathSlug && pathSlug !== 'unit-machine') {
@@ -3230,13 +3246,6 @@
                     }
                     window.location.href = '/dps-list';
                 } else {
-                    const tableExists = !!document.getElementById('main-stats-table');
-                    if (!tableExists) {
-                        unitStatsContainer.style.visibility = 'hidden';
-                        selectAndDisplayUnit("Freddy", 'normal');
-                        unitStatsContainer.style.visibility = 'visible';
-                    }
-                    currentUnitName = previousUnitName;
                     setupDpsRankingsView();
                 }
             });
@@ -3350,6 +3359,7 @@
             });
             
             window.addEventListener('resize', () => {
+                updateTablePadding();
                 if (currentUnitName) { setDropdownMinWidths(); synchronizeTableWidths(); }
             });
 
