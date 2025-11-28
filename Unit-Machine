@@ -1767,36 +1767,6 @@
                 document.body.removeChild(ruler);
             }
 
-            function updateUnitImage(unitName, version) {
-                if (!unitName || !allUnitData[unitName]) return;
-
-                const baseUnitStats = allUnitData[unitName];
-                const normalImageUrl = unitImages[normalizeUnitName(unitName)];
-                const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${unitName}`)];
-                const targetUrl = version === 'shiny' ? (shinyImageUrl || normalImageUrl) : normalImageUrl;
-
-                const allRarityClasses = Object.values(rarityClassMap);
-                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
-
-                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
-                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
-                }
-
-                if (version === 'shiny') {
-                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
-                }
-
-                if (targetUrl) {
-                    const tempImg = new Image();
-                    tempImg.onload = () => {
-                        displayedUnitImage.src = tempImg.src;
-                    };
-                    tempImg.src = targetUrl;
-                } else {
-                    displayedUnitImage.src = `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
-                }
-            }
-
             function renderUnitTables() {
                 const currentBoosts = getBoostsState();
                 let mainDmgValue = currentBoosts.mainDmg;
@@ -1828,10 +1798,31 @@
                     unitStatsContainer.style.visibility = 'visible';
                     return;
                 }
+
+                const baseUnitStats = allUnitData[currentUnitName];
                 
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (currentStats.Element || 'Neutral');
+
+                if (currentUnitName) {
+                    const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
+                    let imageUrl = normalImageUrl;
+                    if (selectedVersionKey === 'shiny') {
+                        const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
+                        imageUrl = shinyImageUrl || normalImageUrl;
+                    }
+                    displayedUnitImage.src = imageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
+                }
+
+                const allRarityClasses = Object.values(rarityClassMap);
+                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
                 
-                updateUnitImage(currentUnitName, selectedVersionKey);
+                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
+                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
+                }
+
+                if (selectedVersionKey === 'shiny') {
+                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
+                }
 
                 if (currentStats.BackendNote) {
                     const noteWrapper = document.createElement('div');
@@ -2141,12 +2132,21 @@
                 elementalContainer.className = 'aux-table';
                 unitStatsContainer.appendChild(elementalContainer);
 
-                updateView();
-                updateTablePadding();
-                setDropdownMinWidths();
-                synchronizeTableWidths();
-                handleOverrideChange();
-                unitStatsContainer.style.visibility = 'visible';
+                const finalizeRender = () => {
+                    updateView();
+                    updateTablePadding();
+                    setDropdownMinWidths();
+                    synchronizeTableWidths();
+                    handleOverrideChange();
+                    unitStatsContainer.style.visibility = 'visible';
+                };
+
+                if (displayedUnitImage.complete) {
+                    finalizeRender();
+                } else {
+                    displayedUnitImage.onload = finalizeRender;
+                    displayedUnitImage.onerror = finalizeRender;
+                }
             }
             
             function computeGlobalStatProfiles() {
