@@ -326,10 +326,10 @@
         padding: 0;
         -moz-appearance: textfield;
     }
-    #boostOverrideContainer .boost-override-input, .main-boost-container .boost-override-input {
+    .main-boost-container .boost-override-input {
         text-align: left;
     }
-     #boostOverrideContainer .level-input-wrapper, .main-boost-container .level-input-wrapper {
+     .main-boost-container .level-input-wrapper {
         padding: 0 var(--component-padding);
     }
     #customLevelInput::-webkit-outer-spin-button,
@@ -820,23 +820,6 @@
                 </button>
             </div>
             <div id="boosterDropdownContainer"></div>
-             <div class="settings-section">
-                <div class="section-title">Global Boost Override</div>
-                <div class="dropdown-flex-container" id="boostOverrideContainer">
-                    <div class="level-input-wrapper">
-                        <span class="level-input-label">DMG:</span>
-                        <input type="text" id="dmgOverrideInput" class="boost-override-input" placeholder="e.g. +20%">
-                    </div>
-                    <div class="level-input-wrapper">
-                        <span class="level-input-label">CD:</span>
-                        <input type="text" id="cdOverrideInput" class="boost-override-input" placeholder="e.g. -10%">
-                    </div>
-                    <div class="level-input-wrapper">
-                        <span class="level-input-label">RNG:</span>
-                        <input type="text" id="rngOverrideInput" class="boost-override-input" placeholder="e.g. +5%">
-                    </div>
-                </div>
-            </div>
             <div class="settings-section">
                 <div class="section-title">Boost Saving & Presets</div>
                 <div class="custom-checkbox">
@@ -1298,88 +1281,40 @@
 
             function getGlobalBoostMultipliers() {
                 const multipliers = { dmg: 1.0, cd: 1.0, range: 1.0, cost: 1.0 };
-                const dmgOverrideInput = document.getElementById('dmgOverrideInput');
-                const cdOverrideInput = document.getElementById('cdOverrideInput');
-                const rngOverrideInput = document.getElementById('rngOverrideInput');
                 
-                const isOverriding = dmgOverrideInput && (
-                    dmgOverrideInput.value.trim() !== '' || 
-                    cdOverrideInput.value.trim() !== '' || 
-                    rngOverrideInput.value.trim() !== ''
-                );
-
                 if (selectedVersionKey === 'shiny') {
                     multipliers.dmg *= 1.10;
                 }
-
-                if (isOverriding) {
-                    multipliers.dmg *= parsePercentage(dmgOverrideInput.value.trim());
-                    multipliers.cd *= parsePercentage(cdOverrideInput.value.trim(), 'cd');
-                    multipliers.range *= parsePercentage(rngOverrideInput.value.trim());
-                } else {
-                    const enchant = enchantMultipliers[selectedEnchantKey];
-                    if (enchant) {
-                        multipliers.dmg *= (enchant.dmg || 1.0);
-                        multipliers.cd *= (enchant.cd || 1.0);
-                        multipliers.range *= (enchant.range || 1.0);
-                        multipliers.cost *= (enchant.cost || 1.0);
-                    }
-
-                    multipliers.dmg *= calculateLevelMultiplier(customLevel);
-
-                    boosterSelections.forEach(selection => {
-                        const unitBoosterData = boosterData[selection.name];
-                        if (unitBoosterData) {
-                            const effectiveBoosts = selection.version === 'shiny' ? (unitBoosterData.shinyBoosts || unitBoosterData) : unitBoosterData;
-                            if (effectiveBoosts.dmg) multipliers.dmg *= effectiveBoosts.dmg;
-                            if (effectiveBoosts.cd) multipliers.cd *= effectiveBoosts.cd;
-                            if (effectiveBoosts.range) multipliers.range *= effectiveBoosts.range;
-                        }
-                    });
-
-                    const mainDmgInput = document.getElementById('mainDmgBoostInput');
-                    const mainCdInput = document.getElementById('mainCdBoostInput');
-                    const mainRngInput = document.getElementById('mainRngBoostInput');
-
-                    if (mainDmgInput) multipliers.dmg *= parsePercentage(mainDmgInput.value);
-                    if (mainCdInput) multipliers.cd *= parsePercentage(mainCdInput.value, 'cd');
-                    if (mainRngInput) multipliers.range *= parsePercentage(mainRngInput.value);
-                }
-                return multipliers;
-            }
-
-            function handleOverrideChange() {
-                const dmgOverride = document.getElementById('dmgOverrideInput').value.trim();
-                const cdOverride = document.getElementById('cdOverrideInput').value.trim();
-                const rngOverride = document.getElementById('rngOverrideInput').value.trim();
-                const isOverriding = dmgOverride || cdOverride || rngOverride;
-
-                const controlsToToggle = [
-                    document.querySelector('#boosterDropdownContainer'),
-                    document.getElementById('enchantDropdown')?.parentElement,
-                    document.getElementById('levelControlsContainer'),
-                    document.querySelector('.main-boost-container')
-                ];
-
-                controlsToToggle.forEach(control => {
-                    if (!control) return;
-                    const isEnabled = !isOverriding;
-                    control.style.pointerEvents = isEnabled ? 'auto' : 'none';
-                    control.style.opacity = isEnabled ? '1' : '0.5';
-                    control.querySelectorAll('input, button, .dropdown-trigger').forEach(el => {
-                        if (el.tagName === 'BUTTON' || el.tagName === 'INPUT') {
-                            el.disabled = !isEnabled;
-                        }
-                        el.tabIndex = isEnabled ? 0 : -1;
-                        if (!isEnabled && el.classList.contains('dropdown-trigger')) {
-                            el.classList.remove('open', 'focused');
-                            const options = el.nextElementSibling;
-                            if (options) options.classList.remove('show');
-                        }
-                    });
-                });
                 
-                updateView();
+                const enchant = enchantMultipliers[selectedEnchantKey];
+                if (enchant) {
+                    multipliers.dmg *= (enchant.dmg || 1.0);
+                    multipliers.cd *= (enchant.cd || 1.0);
+                    multipliers.range *= (enchant.range || 1.0);
+                    multipliers.cost *= (enchant.cost || 1.0);
+                }
+
+                multipliers.dmg *= calculateLevelMultiplier(customLevel);
+
+                boosterSelections.forEach(selection => {
+                    const unitBoosterData = boosterData[selection.name];
+                    if (unitBoosterData) {
+                        const effectiveBoosts = selection.version === 'shiny' ? (unitBoosterData.shinyBoosts || unitBoosterData) : unitBoosterData;
+                        if (effectiveBoosts.dmg) multipliers.dmg *= effectiveBoosts.dmg;
+                        if (effectiveBoosts.cd) multipliers.cd *= effectiveBoosts.cd;
+                        if (effectiveBoosts.range) multipliers.range *= effectiveBoosts.range;
+                    }
+                });
+
+                const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                const mainCdInput = document.getElementById('mainCdBoostInput');
+                const mainRngInput = document.getElementById('mainRngBoostInput');
+
+                if (mainDmgInput) multipliers.dmg *= parsePercentage(mainDmgInput.value);
+                if (mainCdInput) multipliers.cd *= parsePercentage(mainCdInput.value, 'cd');
+                if (mainRngInput) multipliers.range *= parsePercentage(mainRngInput.value);
+                
+                return multipliers;
             }
 
             function populateSingleUnitTbody() {
@@ -1901,11 +1836,6 @@
                     unitStatsContainer.appendChild(abilityWrapper);
                 }
 
-                const dmgOverrideVal = document.getElementById('dmgOverrideInput').value.trim();
-                const cdOverrideVal = document.getElementById('cdOverrideInput').value.trim();
-                const rngOverrideVal = document.getElementById('rngOverrideInput').value.trim();
-                const isOverriding = dmgOverrideVal || cdOverrideVal || rngOverrideVal;
-
                 const wrapper = document.createElement('div'), table = document.createElement('table'), thead = document.createElement('thead'),
                     tbody = document.createElement('tbody');
                 wrapper.className = 'table-wrapper';
@@ -1921,7 +1851,7 @@
                 mainBoostContainer.style.gap = 'var(--spacing-sm)';
                 mainBoostContainer.style.flex = '2 1 0px';
 
-                const createMainBoostInput = (id, label, placeholder, value, disabled = false) => {
+                const createMainBoostInput = (id, label, placeholder, value) => {
                     const wrapper = document.createElement('div');
                     wrapper.className = 'level-input-wrapper';
                     const labelSpan = document.createElement('span');
@@ -1933,15 +1863,14 @@
                     input.className = 'boost-override-input';
                     input.placeholder = placeholder;
                     input.value = value;
-                    input.disabled = disabled;
                     input.addEventListener('input', () => updateView());
                     wrapper.append(labelSpan, input);
                     return wrapper;
                 };
 
-                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', 'e.g. +20%', mainDmgValue, isOverriding));
-                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', 'e.g. -10%', mainCdValue, isOverriding));
-                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', 'e.g. +5%', mainRngValue, isOverriding));
+                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', 'e.g. +20%', mainDmgValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', 'e.g. -10%', mainCdValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', 'e.g. +5%', mainRngValue));
 
                 elementDropdownContainer.appendChild(mainBoostContainer);
                 
@@ -2025,14 +1954,6 @@
                 levelInputContainer.append(minBtn, minusBtn, levelInputWrapper, plusBtn, maxBtn);
                 elementDropdownContainer.appendChild(levelInputContainer);
                 
-                if (isOverriding) {
-                    mainBoostContainer.style.pointerEvents = 'none';
-                    mainBoostContainer.style.opacity = '0.5';
-                    levelInputContainer.style.pointerEvents = 'none';
-                    levelInputContainer.style.opacity = '0.5';
-                    levelInputContainer.querySelectorAll('input, button').forEach(el => el.disabled = true );
-                }
-                
                 elementHeaderCell.id = 'element-header-cell';
                 elementHeaderCell.className = 'dropdown-header-cell';
                 elementHeaderCell.style.borderRight = 'none';
@@ -2052,7 +1973,7 @@
                 
                 const enchantsDropdown = createCustomDropdown('enchantDropdown', 'Enchant:', enchants, selectedEnchantKey, (value) => {
                     selectedEnchantKey = value; updateView();
-                }, isOverriding);
+                });
 
                 boostHeaderRow.className = 'main-header-row';
                 boostHeaderCell.id = 'boost-header-cell';
@@ -2141,7 +2062,6 @@
                 updateTablePadding();
                 setDropdownMinWidths();
                 synchronizeTableWidths();
-                handleOverrideChange();
                 unitStatsContainer.style.visibility = 'visible';
             }
             
@@ -2879,9 +2799,6 @@
                     enchant: selectedEnchantKey,
                     level: customLevel,
                     boosters: JSON.parse(JSON.stringify(boosterSelections)),
-                    dmgOverride: document.getElementById('dmgOverrideInput').value,
-                    cdOverride: document.getElementById('cdOverrideInput').value,
-                    rngOverride: document.getElementById('rngOverrideInput').value,
                     mainDmg: mainDmgInput ? mainDmgInput.value : '',
                     mainCd: mainCdInput ? mainCdInput.value : '',
                     mainRng: mainRngInput ? mainRngInput.value : ''
@@ -2895,10 +2812,6 @@
                 selectedEnchantKey = state.enchant || 'None';
                 customLevel = state.level || 1;
                 boosterSelections = JSON.parse(JSON.stringify(state.boosters || []));
-
-                document.getElementById('dmgOverrideInput').value = state.dmgOverride || '';
-                document.getElementById('cdOverrideInput').value = state.cdOverride || '';
-                document.getElementById('rngOverrideInput').value = state.rngOverride || '';
                 
                 const mainDmgInput = document.getElementById('mainDmgBoostInput');
                 const mainCdInput = document.getElementById('mainCdBoostInput');
@@ -2943,8 +2856,6 @@
                     } else {
                         updateView();
                     }
-                } else {
-                    handleOverrideChange();
                 }
             }
             
@@ -2954,9 +2865,6 @@
                     enchant: 'None',
                     level: 1,
                     boosters: [],
-                    dmgOverride: '',
-                    cdOverride: '',
-                    rngOverride: '',
                     mainDmg: '',
                     mainCd: '',
                     mainRng: ''
@@ -3114,9 +3022,6 @@
                     loadSettings();
                     populateGallery();
                     updateSortButtonsUI();
-                    
-                    document.getElementById('boostOverrideContainer').style.gap = 'var(--spacing-sm)';
-                    handleOverrideChange();
 
                     if (ENABLE_URL_ROUTING) {
                         const path = window.location.pathname.replace(/\/$/, '');
@@ -3204,10 +3109,6 @@
 
             boostsButton.addEventListener('click', () => boostsPanel.classList.add('show'));
             closeBoostsButton.addEventListener('click', () => boostsPanel.classList.remove('show'));
-
-            document.getElementById('dmgOverrideInput').addEventListener('input', handleOverrideChange);
-            document.getElementById('cdOverrideInput').addEventListener('input', handleOverrideChange);
-            document.getElementById('rngOverrideInput').addEventListener('input', handleOverrideChange);
 
             galleryButton.addEventListener('click', () => galleryPanel.classList.add('show'));
             closeGalleryButton.addEventListener('click', () => galleryPanel.classList.remove('show'));
