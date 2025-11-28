@@ -952,6 +952,8 @@
                 enchants = {},
                 unitImages = {};
             
+            let pendingMainBoosts = null;
+            
             const MAX_LEVEL = 60;
        
             const backendNotes = {};
@@ -1126,14 +1128,14 @@
                 return isOpen;
             };
 
-            const createCustomDropdown = (id, label, options, defaultValue, onChange) => {
+            const createCustomDropdown = (id, label, options, defaultValue, onChange, disabled = false) => {
                 const container = document.createElement('div'), trigger = document.createElement('div'), optionsDiv = document.createElement('div'),
                       triggerText = document.createElement('span');
                 triggerText.className = 'dropdown-trigger-text';
                 container.className = 'custom-dropdown';
                 trigger.id = id;
                 trigger.className = 'dropdown-trigger';
-                trigger.tabIndex = 0;
+                trigger.tabIndex = disabled ? -1 : 0;
                 trigger.appendChild(triggerText);
                 const labelText = label ? `${label} ` : '';
                 triggerText.textContent = `${labelText}${options[defaultValue]}`;
@@ -1161,9 +1163,16 @@
                         });
                     }
                 };
-                trigger.addEventListener('click', toggle);
-                trigger.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); } });
+                if (!disabled) {
+                    trigger.addEventListener('click', toggle);
+                    trigger.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); } });
+                }
                 container.append(trigger, optionsDiv);
+                
+                if (disabled) {
+                    container.style.pointerEvents = 'none';
+                    container.style.opacity = '0.5';
+                }
                 return container;
             };
 
@@ -1759,12 +1768,18 @@
             }
 
             function renderUnitTables() {
-                const mainDmgInput = document.getElementById('mainDmgBoostInput');
-                const mainCdInput = document.getElementById('mainCdBoostInput');
-                const mainRngInput = document.getElementById('mainRngBoostInput');
-                const mainDmgValue = mainDmgInput ? mainDmgInput.value : '';
-                const mainCdValue = mainCdInput ? mainCdInput.value : '';
-                const mainRngValue = mainRngInput ? mainRngInput.value : '';
+                const currentBoosts = getBoostsState();
+                let mainDmgValue = currentBoosts.mainDmg;
+                let mainCdValue = currentBoosts.mainCd;
+                let mainRngValue = currentBoosts.mainRng;
+
+                const isFirstRender = !document.getElementById('mainDmgBoostInput');
+                if (isFirstRender && pendingMainBoosts) {
+                    mainDmgValue = pendingMainBoosts.dmg;
+                    mainCdValue = pendingMainBoosts.cd;
+                    mainRngValue = pendingMainBoosts.rng;
+                    pendingMainBoosts = null;
+                }
 
                 unitStatsContainer.style.visibility = 'hidden';
                 unitStatsContainer.innerHTML = '';
@@ -1877,6 +1892,11 @@
                     unitStatsContainer.appendChild(abilityWrapper);
                 }
 
+                const dmgOverrideVal = document.getElementById('dmgOverrideInput').value.trim();
+                const cdOverrideVal = document.getElementById('cdOverrideInput').value.trim();
+                const rngOverrideVal = document.getElementById('rngOverrideInput').value.trim();
+                const isOverriding = dmgOverrideVal || cdOverrideVal || rngOverrideVal;
+
                 const wrapper = document.createElement('div'), table = document.createElement('table'), thead = document.createElement('thead'),
                     tbody = document.createElement('tbody');
                 wrapper.className = 'table-wrapper';
@@ -1892,7 +1912,7 @@
                 mainBoostContainer.style.gap = 'var(--spacing-sm)';
                 mainBoostContainer.style.flex = '2 1 0px';
 
-                const createMainBoostInput = (id, label, placeholder, value) => {
+                const createMainBoostInput = (id, label, placeholder, value, disabled = false) => {
                     const wrapper = document.createElement('div');
                     wrapper.className = 'level-input-wrapper';
                     const labelSpan = document.createElement('span');
@@ -1904,14 +1924,15 @@
                     input.className = 'boost-override-input';
                     input.placeholder = placeholder;
                     input.value = value;
+                    input.disabled = disabled;
                     input.addEventListener('input', () => updateView());
                     wrapper.append(labelSpan, input);
                     return wrapper;
                 };
 
-                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', 'e.g. +20%', mainDmgValue));
-                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', 'e.g. -10%', mainCdValue));
-                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', 'e.g. +5%', mainRngValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', 'e.g. +20%', mainDmgValue, isOverriding));
+                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', 'e.g. -10%', mainCdValue, isOverriding));
+                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', 'e.g. +5%', mainRngValue, isOverriding));
 
                 elementDropdownContainer.appendChild(mainBoostContainer);
                 
@@ -1995,6 +2016,14 @@
                 levelInputContainer.append(minBtn, minusBtn, levelInputWrapper, plusBtn, maxBtn);
                 elementDropdownContainer.appendChild(levelInputContainer);
                 
+                if (isOverriding) {
+                    mainBoostContainer.style.pointerEvents = 'none';
+                    mainBoostContainer.style.opacity = '0.5';
+                    levelInputContainer.style.pointerEvents = 'none';
+                    levelInputContainer.style.opacity = '0.5';
+                    levelInputContainer.querySelectorAll('input, button').forEach(el => el.disabled = true );
+                }
+                
                 elementHeaderCell.id = 'element-header-cell';
                 elementHeaderCell.className = 'dropdown-header-cell';
                 elementHeaderCell.style.borderRight = 'none';
@@ -2013,7 +2042,8 @@
                 
                 const enchantsDropdown = createCustomDropdown('enchantDropdown', 'Enchant:', enchants, selectedEnchantKey, (value) => {
                     selectedEnchantKey = value; updateView();
-                });
+                }, isOverriding);
+
                 boostHeaderRow.className = 'main-header-row';
                 boostHeaderCell.id = 'boost-header-cell';
                 boostHeaderCell.className = 'dropdown-header-cell';
@@ -2765,7 +2795,7 @@
                             window.location.href = `/${previousUnitSlug}`;
                         } else {
                             sessionStorage.setItem('scrollToTopOnLoad', 'true');
-                            window.location.href = '/unit-machine';
+                            window.location.href = '/';
                         }
                     } else {
                         resetToSingleUnitView();
@@ -2825,9 +2855,9 @@
             }
             
             function getBoostsState() {
-                const mainDmg = document.getElementById('mainDmgBoostInput');
-                const mainCd = document.getElementById('mainCdBoostInput');
-                const mainRng = document.getElementById('mainRngBoostInput');
+                const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                const mainCdInput = document.getElementById('mainCdBoostInput');
+                const mainRngInput = document.getElementById('mainRngBoostInput');
                 return {
                     version: selectedVersionKey,
                     enchant: selectedEnchantKey,
@@ -2836,9 +2866,9 @@
                     dmgOverride: document.getElementById('dmgOverrideInput').value,
                     cdOverride: document.getElementById('cdOverrideInput').value,
                     rngOverride: document.getElementById('rngOverrideInput').value,
-                    mainDmg: mainDmg ? mainDmg.value : '',
-                    mainCd: mainCd ? mainCd.value : '',
-                    mainRng: mainRng ? mainRng.value : ''
+                    mainDmg: mainDmgInput ? mainDmgInput.value : '',
+                    mainCd: mainCdInput ? mainCdInput.value : '',
+                    mainRng: mainRngInput ? mainRngInput.value : ''
                 };
             }
             
@@ -2854,13 +2884,23 @@
                 document.getElementById('cdOverrideInput').value = state.cdOverride || '';
                 document.getElementById('rngOverrideInput').value = state.rngOverride || '';
                 
-                const mainDmg = document.getElementById('mainDmgBoostInput');
-                const mainCd = document.getElementById('mainCdBoostInput');
-                const mainRng = document.getElementById('mainRngBoostInput');
-                if(mainDmg) mainDmg.value = state.mainDmg || '';
-                if(mainCd) mainCd.value = state.mainCd || '';
-                if(mainRng) mainRng.value = state.mainRng || '';
+                const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                const mainCdInput = document.getElementById('mainCdBoostInput');
+                const mainRngInput = document.getElementById('mainRngBoostInput');
 
+                if (mainDmgInput) {
+                    mainDmgInput.value = state.mainDmg || '';
+                    mainCdInput.value = state.mainCd || '';
+                    mainRngInput.value = state.mainRng || '';
+                    pendingMainBoosts = null;
+                } else {
+                    pendingMainBoosts = {
+                        dmg: state.mainDmg || '',
+                        cd: state.mainCd || '',
+                        rng: state.mainRng || ''
+                    };
+                }
+                
                 const versionTrigger = document.getElementById('versionDropdown');
                 const enchantTrigger = document.getElementById('enchantDropdown');
                 const levelInput = document.getElementById('customLevelInput');
@@ -2880,10 +2920,14 @@
                 boosterDropdownContainer.innerHTML = '';
                 boosterDropdownContainer.appendChild(createBoosterDropdown('boosterDropdown', 'Booster', boosterData, updateView));
                 
-                handleOverrideChange();
-                
                 if (triggerUpdate) {
-                    updateView();
+                    if (currentUnitName && !isDpsRankingsMode) {
+                        renderUnitTables();
+                    } else {
+                        updateView();
+                    }
+                } else {
+                    handleOverrideChange();
                 }
             }
             
