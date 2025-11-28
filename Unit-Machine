@@ -326,10 +326,10 @@
         padding: 0;
         -moz-appearance: textfield;
     }
-    #boostOverrideContainer .boost-override-input {
+    #boostOverrideContainer .boost-override-input, .main-boost-container .boost-override-input {
         text-align: left;
     }
-     #boostOverrideContainer .level-input-wrapper {
+     #boostOverrideContainer .level-input-wrapper, .main-boost-container .level-input-wrapper {
         padding: 0 var(--component-padding);
     }
     #customLevelInput::-webkit-outer-spin-button,
@@ -820,18 +820,21 @@
                 </button>
             </div>
             <div id="boosterDropdownContainer"></div>
-            <div class="dropdown-flex-container" id="boostOverrideContainer">
-                <div class="level-input-wrapper">
-                    <span class="level-input-label">DMG:</span>
-                    <input type="text" id="dmgOverrideInput" class="boost-override-input" placeholder="e.g. +20%">
-                </div>
-                <div class="level-input-wrapper">
-                    <span class="level-input-label">CD:</span>
-                    <input type="text" id="cdOverrideInput" class="boost-override-input" placeholder="e.g. -10%">
-                </div>
-                <div class="level-input-wrapper">
-                    <span class="level-input-label">RNG:</span>
-                    <input type="text" id="rngOverrideInput" class="boost-override-input" placeholder="e.g. +5%">
+             <div class="settings-section">
+                <div class="section-title">Global Boost Override</div>
+                <div class="dropdown-flex-container" id="boostOverrideContainer">
+                    <div class="level-input-wrapper">
+                        <span class="level-input-label">DMG:</span>
+                        <input type="text" id="dmgOverrideInput" class="boost-override-input" placeholder="e.g. +20%">
+                    </div>
+                    <div class="level-input-wrapper">
+                        <span class="level-input-label">CD:</span>
+                        <input type="text" id="cdOverrideInput" class="boost-override-input" placeholder="e.g. -10%">
+                    </div>
+                    <div class="level-input-wrapper">
+                        <span class="level-input-label">RNG:</span>
+                        <input type="text" id="rngOverrideInput" class="boost-override-input" placeholder="e.g. +5%">
+                    </div>
                 </div>
             </div>
             <div class="settings-section">
@@ -1271,55 +1274,101 @@
                 return allUnitData[currentUnitName];
             }
             
-            function parsePercentage(value) {
+            function parsePercentage(value, statType = 'default') {
                 if (typeof value !== 'string' || value.trim() === '') return 1.0;
-                const cleanedValue = value.replace('%', '').trim();
+                let cleanedValue = value.replace('%', '').trim();
+                
+                if (statType === 'cd' && /^[\d.]+$/.test(cleanedValue)) {
+                    cleanedValue = `-${cleanedValue}`;
+                }
+
                 const number = parseFloat(cleanedValue);
                 if (isNaN(number)) return 1.0;
                 return 1 + (number / 100);
             }
 
             function getGlobalBoostMultipliers() {
-                const boosterMultipliers = { dmg: 1.0, cd: 1.0, range: 1.0 };
+                const multipliers = { dmg: 1.0, cd: 1.0, range: 1.0, cost: 1.0 };
+                const dmgOverrideInput = document.getElementById('dmgOverrideInput');
+                const cdOverrideInput = document.getElementById('cdOverrideInput');
+                const rngOverrideInput = document.getElementById('rngOverrideInput');
                 
-                boosterSelections.forEach(selection => {
-                    const unitBoosterData = boosterData[selection.name];
-                    if (!unitBoosterData) return;
-                    
-                    const effectiveBoosts = selection.version === 'shiny' ? (unitBoosterData.shinyBoosts || unitBoosterData) : unitBoosterData;
+                const isOverriding = dmgOverrideInput && (
+                    dmgOverrideInput.value.trim() !== '' || 
+                    cdOverrideInput.value.trim() !== '' || 
+                    rngOverrideInput.value.trim() !== ''
+                );
 
-                    if (effectiveBoosts.dmg) boosterMultipliers.dmg *= effectiveBoosts.dmg;
-                    if (effectiveBoosts.cd) boosterMultipliers.cd *= effectiveBoosts.cd;
-                    if (effectiveBoosts.range) boosterMultipliers.range *= effectiveBoosts.range;
-                });
+                if (selectedVersionKey === 'shiny') {
+                    multipliers.dmg *= 1.10;
+                }
 
-                boosterMultipliers.dmg *= parsePercentage(document.getElementById('dmgOverrideInput').value);
-                boosterMultipliers.cd *= parsePercentage(document.getElementById('cdOverrideInput').value);
-                boosterMultipliers.range *= parsePercentage(document.getElementById('rngOverrideInput').value);
-                
-                return boosterMultipliers;
+                if (isOverriding) {
+                    multipliers.dmg *= parsePercentage(dmgOverrideInput.value.trim());
+                    multipliers.cd *= parsePercentage(cdOverrideInput.value.trim(), 'cd');
+                    multipliers.range *= parsePercentage(rngOverrideInput.value.trim());
+                } else {
+                    const enchant = enchantMultipliers[selectedEnchantKey];
+                    if (enchant) {
+                        multipliers.dmg *= (enchant.dmg || 1.0);
+                        multipliers.cd *= (enchant.cd || 1.0);
+                        multipliers.range *= (enchant.range || 1.0);
+                        multipliers.cost *= (enchant.cost || 1.0);
+                    }
+
+                    multipliers.dmg *= calculateLevelMultiplier(customLevel);
+
+                    boosterSelections.forEach(selection => {
+                        const unitBoosterData = boosterData[selection.name];
+                        if (unitBoosterData) {
+                            const effectiveBoosts = selection.version === 'shiny' ? (unitBoosterData.shinyBoosts || unitBoosterData) : unitBoosterData;
+                            if (effectiveBoosts.dmg) multipliers.dmg *= effectiveBoosts.dmg;
+                            if (effectiveBoosts.cd) multipliers.cd *= effectiveBoosts.cd;
+                            if (effectiveBoosts.range) multipliers.range *= effectiveBoosts.range;
+                        }
+                    });
+
+                    const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                    const mainCdInput = document.getElementById('mainCdBoostInput');
+                    const mainRngInput = document.getElementById('mainRngBoostInput');
+
+                    if (mainDmgInput) multipliers.dmg *= parsePercentage(mainDmgInput.value);
+                    if (mainCdInput) multipliers.cd *= parsePercentage(mainCdInput.value, 'cd');
+                    if (mainRngInput) multipliers.range *= parsePercentage(mainRngInput.value);
+                }
+                return multipliers;
             }
 
-            function handleOverrideChange() {
-                const dmgOverride = document.getElementById('dmgOverrideInput').value;
-                const cdOverride = document.getElementById('cdOverrideInput').value;
-                const rngOverride = document.getElementById('rngOverrideInput').value;
-                const isOverriding = dmgOverride || cdOverride || rngOverride;
-                const boosterDropdownTrigger = document.querySelector('#boosterDropdownContainer .dropdown-trigger');
 
-                if (boosterDropdownTrigger) {
-                    if (isOverriding) {
-                        boosterDropdownTrigger.style.pointerEvents = 'none';
-                        boosterDropdownTrigger.style.opacity = '0.6';
-                        boosterDropdownTrigger.style.cursor = 'not-allowed';
-                        boosterDropdownTrigger.tabIndex = -1;
-                    } else {
-                        boosterDropdownTrigger.style.pointerEvents = 'auto';
-                        boosterDropdownTrigger.style.opacity = '1';
-                        boosterDropdownTrigger.style.cursor = 'pointer';
-                        boosterDropdownTrigger.tabIndex = 0;
-                    }
-                }
+            function handleOverrideChange() {
+                const dmgOverride = document.getElementById('dmgOverrideInput').value.trim();
+                const cdOverride = document.getElementById('cdOverrideInput').value.trim();
+                const rngOverride = document.getElementById('rngOverrideInput').value.trim();
+                const isOverriding = dmgOverride || cdOverride || rngOverride;
+
+                const controlsToToggle = [
+                    document.querySelector('#boosterDropdownContainer'),
+                    document.getElementById('enchantDropdown')?.parentElement,
+                    document.getElementById('levelControlsContainer'),
+                    document.querySelector('.main-boost-container')
+                ];
+
+                controlsToToggle.forEach(control => {
+                    if (!control) return;
+                    const isEnabled = !isOverriding;
+                    control.style.pointerEvents = isEnabled ? 'auto' : 'none';
+                    control.style.opacity = isEnabled ? '1' : '0.5';
+                    control.querySelectorAll('input, button, .dropdown-trigger').forEach(el => {
+                        el.disabled = !isEnabled;
+                        el.tabIndex = isEnabled ? 0 : -1;
+                        if (!isEnabled && el.classList.contains('dropdown-trigger')) {
+                            el.classList.remove('open', 'focused');
+                            const options = el.nextElementSibling;
+                            if (options) options.classList.remove('show');
+                        }
+                    });
+                });
+                
                 updateView();
             }
 
@@ -1339,38 +1388,23 @@
                 const elementalContainer = document.getElementById('elemental-dps-container');
                 if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
 
-                const boosterMultipliers = getGlobalBoostMultipliers();
-                const enchantCostMultiplier = enchantMultipliers[selectedEnchantKey]?.cost || 1.0;
+                const multipliers = getGlobalBoostMultipliers();
                 const upgradeRows = [];
                 let maxDPS = 0;
 
                 unitData.Upgrades.forEach((upgrade, i) => {
                     const levelName = i === 0 ? 'Placement' : (i === unitData.Upgrades.length - 1 ? 'Max' : `UPG ${i}`);
                     const basePrice = i === 0 ? (unitData.PlacePrice || 0) : (upgrade.Price || 0);
-                    const price = basePrice * enchantCostMultiplier;
-                    let rowData = [levelName, price];
+                    const price = basePrice * multipliers.cost;
+                    let rowData = [levelName, price.toLocaleString()];
                     if (hasPerUpgradeTypes) {
                         rowData.push(upgrade.Type || '-');
                     }
 
                     if (hasDamageStats) {
-                        const baseDmg = upgrade.Damage;
-                        const baseCd = upgrade.Cooldown;
-                        const baseRange = upgrade.Range;
-                        
-                        let modDmg = baseDmg;
-                        if (selectedVersionKey === 'shiny') modDmg *= 1.10;
-                        modDmg *= (enchantMultipliers[selectedEnchantKey]?.dmg || 1.0); 
-                        modDmg *= calculateLevelMultiplier(customLevel);
-                        modDmg *= boosterMultipliers.dmg; 
-                        
-                        let modCd = baseCd; 
-                        modCd *= (enchantMultipliers[selectedEnchantKey]?.cd || 1.0); 
-                        modCd *= boosterMultipliers.cd; 
-                        
-                        let modRange = baseRange; 
-                        modRange *= (enchantMultipliers[selectedEnchantKey]?.range || 1.0); 
-                        modRange *= boosterMultipliers.range; 
+                        const modDmg = upgrade.Damage * multipliers.dmg;
+                        const modCd = upgrade.Cooldown * multipliers.cd;
+                        const modRange = upgrade.Range * multipliers.range;
                         
                         const dps = calculateDPS(modDmg, modCd);
                         if (dps > maxDPS) maxDPS = dps;
@@ -1422,25 +1456,11 @@
                 if (!unit.Upgrades || unit.Upgrades.length === 0 || unit.BaseStats.Damage === undefined) return null;
 
                 const maxLevelStats = unit.Upgrades[unit.Upgrades.length - 1];
-                const boosterMultipliers = getGlobalBoostMultipliers();
+                const multipliers = getGlobalBoostMultipliers();
 
-                const baseDmg = maxLevelStats.Damage;
-                const baseCd = maxLevelStats.Cooldown;
-                const baseRange = maxLevelStats.Range;
-
-                let boostedDmg = baseDmg;
-                if (selectedVersionKey === 'shiny') boostedDmg *= 1.10;
-                boostedDmg *= (enchantMultipliers[selectedEnchantKey]?.dmg || 1.0); 
-                boostedDmg *= calculateLevelMultiplier(customLevel);
-                boostedDmg *= boosterMultipliers.dmg; 
-
-                let boostedCd = baseCd; 
-                boostedCd *= (enchantMultipliers[selectedEnchantKey]?.cd || 1.0); 
-                boostedCd *= boosterMultipliers.cd; 
-
-                let boostedRange = baseRange; 
-                boostedRange *= (enchantMultipliers[selectedEnchantKey]?.range || 1.0); 
-                boostedRange *= boosterMultipliers.range; 
+                const boostedDmg = maxLevelStats.Damage * multipliers.dmg;
+                const boostedCd = maxLevelStats.Cooldown * multipliers.cd;
+                const boostedRange = maxLevelStats.Range * multipliers.range;
 
                 const unitElement = unit.Element || 'Neutral';
                 const enemyElement = selectedElementKey; 
@@ -1850,6 +1870,34 @@
                 const elementHeaderCell = document.createElement('th');
                 const elementDropdownContainer = document.createElement('div');
                 elementDropdownContainer.className = 'dropdown-flex-container';
+                
+                const mainBoostContainer = document.createElement('div');
+                mainBoostContainer.className = 'dropdown-flex-container main-boost-container';
+                mainBoostContainer.style.gap = 'var(--spacing-xs)';
+                mainBoostContainer.style.flex = '2 1 0px';
+
+                const createMainBoostInput = (id, label, placeholder) => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'level-input-wrapper';
+                    const labelSpan = document.createElement('span');
+                    labelSpan.className = 'level-input-label';
+                    labelSpan.textContent = label;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = id;
+                    input.className = 'boost-override-input';
+                    input.placeholder = placeholder;
+                    input.addEventListener('input', () => updateView());
+                    wrapper.append(labelSpan, input);
+                    return wrapper;
+                };
+
+                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', 'e.g. +20%'));
+                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', 'e.g. -10%'));
+                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', 'e.g. +5%'));
+
+                elementDropdownContainer.appendChild(mainBoostContainer);
+                
                 const dropdownLabel = isDpsRankingsMode ? 'Enemy Element:' : 'Element:';
                 const elementDropdown = createCustomDropdown('elementDropdown', dropdownLabel, elements, selectedElementKey, (value) => {
                     selectedElementKey = value; updateView();
@@ -1859,6 +1907,8 @@
                 
                 const levelInputContainer = document.createElement('div');
                 levelInputContainer.className = 'level-input-container';
+                levelInputContainer.id = 'levelControlsContainer';
+
                 const createLevelButton = (iconClass, ariaLabel) => {
                     const btn = document.createElement('button');
                     btn.className = 'action-button';
@@ -2033,6 +2083,7 @@
                 updateTablePadding();
                 setDropdownMinWidths();
                 synchronizeTableWidths();
+                handleOverrideChange();
             }
             
             function computeGlobalStatProfiles() {
@@ -2220,18 +2271,17 @@
 
                 const placements = unit.Max || 1;
                 const selectedLevelStats = unit.Upgrades[currentGraphLevelIndex];
-                const boosterMultipliers = getGlobalBoostMultipliers();
-                const costMultiplier = enchantMultipliers[selectedEnchantKey]?.cost || 1.0;
+                const multipliers = getGlobalBoostMultipliers();
                 
-                const boostedDmg = getBoostedStatValue(selectedLevelStats.Damage, 'dmg', customLevel, boosterMultipliers);
-                const boostedCd = getBoostedStatValue(selectedLevelStats.Cooldown, 'cd', customLevel, boosterMultipliers);
-                const boostedRange = getBoostedStatValue(selectedLevelStats.Range, 'range', customLevel, boosterMultipliers);
+                const boostedDmg = selectedLevelStats.Damage * multipliers.dmg;
+                const boostedCd = selectedLevelStats.Cooldown * multipliers.cd;
+                const boostedRange = selectedLevelStats.Range * multipliers.range;
 
                 const totalDamage = boostedDmg * placements;
                 const totalDPS = calculateDPS(boostedDmg, boostedCd) * placements;
                 
-                const placementCost = (unit.PlacePrice || 0) * costMultiplier;
-                const upgradeCosts = unit.Upgrades.slice(1, currentGraphLevelIndex + 1).reduce((acc, upg) => acc + ((upg.Price || 0) * costMultiplier), 0);
+                const placementCost = (unit.PlacePrice || 0) * multipliers.cost;
+                const upgradeCosts = unit.Upgrades.slice(1, currentGraphLevelIndex + 1).reduce((acc, upg) => acc + ((upg.Price || 0) * multipliers.cost), 0);
                 const costUpToSelectedLevel = placementCost + upgradeCosts;
                 const costPerDps = totalDPS > 0 ? costUpToSelectedLevel / totalDPS : Infinity;
                 
@@ -2253,7 +2303,7 @@
                     const boostRange = (baseProfile, statType) => {
                         const levelFactor = (statType === 'dmg') ? calculateLevelMultiplier(customLevel) : 1.0;
                         const enchantFactor = (enchantMultipliers[enchantKey] && enchantMultipliers[enchantKey][statType]) ? enchantMultipliers[enchantKey][statType] : 1.0;
-                        const boosterFactor = boosterMultipliers[statType] || 1.0;
+                        const boosterFactor = multipliers[statType] || 1.0;
                         const shinyFactor = (statType === 'dmg' && selectedVersionKey === 'shiny') ? 1.10 : 1.0;
 
                         const totalBoost = enchantFactor * levelFactor * boosterFactor * shinyFactor;
@@ -2272,7 +2322,7 @@
                         const costEnchantFactor = (enchantMultipliers[enchantKey]?.cost || 1.0);
                         const shinyFactor = (selectedVersionKey === 'shiny') ? 1.10 : 1.0;
                         
-                        const dpsBoostFactor = (dmgEnchantFactor * dmgLevelFactor * (boosterMultipliers.dmg || 1.0) * shinyFactor) / (cdEnchantFactor * (boosterMultipliers.cd || 1.0));
+                        const dpsBoostFactor = (dmgEnchantFactor * dmgLevelFactor * (multipliers.dmg || 1.0) * shinyFactor) / (cdEnchantFactor * (multipliers.cd || 1.0));
                         
                         const inverseDpsBoost = 1 / dpsBoostFactor;
 
@@ -2293,19 +2343,19 @@
                     let allStatsForRange = [];
                     const getStatRange = (unitData) => {
                         const stats = [];
-                        const costMult = enchantMultipliers[selectedEnchantKey]?.cost || 1.0;
-                        const placementCost = (unitData.PlacePrice || 0) * costMult;
+                        const currentMultipliers = getGlobalBoostMultipliers();
+                        const placementCost = (unitData.PlacePrice || 0) * currentMultipliers.cost;
                         let cumulativeCost = 0;
                         const cumulativeCosts = unitData.Upgrades.map((upg, i) => {
                              if (i === 0) cumulativeCost = placementCost;
-                             else cumulativeCost += (upg.Price || 0) * costMult;
+                             else cumulativeCost += (upg.Price || 0) * currentMultipliers.cost;
                              return cumulativeCost;
                         });
 
                         unitData.Upgrades.forEach((upg, i) => {
-                            const d = getBoostedStatValue(upg.Damage, 'dmg', customLevel, boosterMultipliers);
-                            const c = getBoostedStatValue(upg.Cooldown, 'cd', customLevel, boosterMultipliers);
-                            const r = getBoostedStatValue(upg.Range, 'range', customLevel, boosterMultipliers);
+                            const d = upg.Damage * currentMultipliers.dmg;
+                            const c = upg.Cooldown * currentMultipliers.cd;
+                            const r = upg.Range * currentMultipliers.range;
                             const tDmg = d * (unitData.Max || 1);
                             const tDps = calculateDPS(d, c) * (unitData.Max || 1);
                             const cpd = tDps > 0 ? cumulativeCosts[i] / tDps : Infinity;
@@ -2757,6 +2807,10 @@
             }
             
             function getBoostsState() {
+                const mainDmg = document.getElementById('mainDmgBoostInput');
+                const mainCd = document.getElementById('mainCdBoostInput');
+                const mainRng = document.getElementById('mainRngBoostInput');
+
                 return {
                     version: selectedVersionKey,
                     enchant: selectedEnchantKey,
@@ -2765,6 +2819,9 @@
                     dmgOverride: document.getElementById('dmgOverrideInput').value,
                     cdOverride: document.getElementById('cdOverrideInput').value,
                     rngOverride: document.getElementById('rngOverrideInput').value,
+                    mainDmg: mainDmg ? mainDmg.value : '',
+                    mainCd: mainCd ? mainCd.value : '',
+                    mainRng: mainRng ? mainRng.value : ''
                 };
             }
             
@@ -2780,6 +2837,13 @@
                 document.getElementById('cdOverrideInput').value = state.cdOverride || '';
                 document.getElementById('rngOverrideInput').value = state.rngOverride || '';
                 
+                const mainDmg = document.getElementById('mainDmgBoostInput');
+                const mainCd = document.getElementById('mainCdBoostInput');
+                const mainRng = document.getElementById('mainRngBoostInput');
+                if(mainDmg) mainDmg.value = state.mainDmg || '';
+                if(mainCd) mainCd.value = state.mainCd || '';
+                if(mainRng) mainRng.value = state.mainRng || '';
+
                 const versionTrigger = document.getElementById('versionDropdown');
                 const enchantTrigger = document.getElementById('enchantDropdown');
                 const levelInput = document.getElementById('customLevelInput');
@@ -2815,6 +2879,9 @@
                     dmgOverride: '',
                     cdOverride: '',
                     rngOverride: '',
+                    mainDmg: '',
+                    mainCd: '',
+                    mainRng: ''
                 }, triggerUpdate);
             }
 
@@ -2970,6 +3037,7 @@
                     loadSettings();
                     populateGallery();
                     updateSortButtonsUI();
+                    handleOverrideChange();
 
                     if (ENABLE_URL_ROUTING) {
                         const path = window.location.pathname.replace(/\/$/, '');
