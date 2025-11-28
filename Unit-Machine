@@ -509,7 +509,11 @@
                     visibility 0s;
     }
 
-    .table-wrapper { width: 100%; overflow-x: auto; }
+    .table-wrapper { 
+        width: 100%; 
+        overflow-x: auto; 
+        padding-bottom: var(--spacing-sm); 
+    }
     table {
         border-collapse: separate; border-spacing: 0; min-width: 100%;
         overflow: hidden; border: var(--border-default); border-radius: var(--border-radius);
@@ -753,6 +757,14 @@
         50% { border-color: var(--primary-accent); box-shadow: var(--focus-shadow); }
     }
     
+    @media (max-width: 767px) {
+        .table-wrapper {
+            /* Force padding on mobile to reserve space for the horizontal scrollbar 
+               and prevent layout shifts due to dynamic scrollbar appearance/disappearance */
+            padding-bottom: var(--spacing-md); 
+        }
+    }
+
     @media (max-width: 500px) {
         #galleryContainer {
             grid-template-columns: repeat(var(--gallery-cols-mobile), 1fr);
@@ -1231,7 +1243,7 @@
                     const updateOptionAppearance = (selection) => {
                         if (selection) {
                             option.classList.add('selected');
-                            if (selection.version === 'shiny') {
+                            if (selection.version === 'shiny' && options[boosterName].shinyBoosts) {
                                 option.classList.add('shiny');
                                 statsSpan.textContent = formatBoostsAsPercentString(options[boosterName].shinyBoosts);
                             } else {
@@ -2132,21 +2144,11 @@
                 elementalContainer.className = 'aux-table';
                 unitStatsContainer.appendChild(elementalContainer);
 
-                const finalizeRender = () => {
-                    updateView();
-                    updateTablePadding();
-                    setDropdownMinWidths();
-                    synchronizeTableWidths();
-                    handleOverrideChange();
-                    unitStatsContainer.style.visibility = 'visible';
-                };
-
-                if (displayedUnitImage.complete) {
-                    finalizeRender();
-                } else {
-                    displayedUnitImage.onload = finalizeRender;
-                    displayedUnitImage.onerror = finalizeRender;
-                }
+                updateView();
+                setDropdownMinWidths();
+                synchronizeTableWidths();
+                handleOverrideChange();
+                unitStatsContainer.style.visibility = 'visible';
             }
             
             function computeGlobalStatProfiles() {
@@ -2576,12 +2578,6 @@
                 else { alert('Unit Not Found'); updateSuggestions(); }
             }
 
-            function updateTablePadding() {
-                document.querySelectorAll('.table-wrapper').forEach(wrapper => {
-                    wrapper.style.paddingBottom = wrapper.scrollWidth > wrapper.clientWidth ? 'var(--spacing-sm)' : '0px';
-                });
-            }
-            
             function updateSortButtonsUI() {
                 const alphaIcon = sortAlphaButton.querySelector('i');
                 const rarityIcon = sortRarityButton.querySelector('i');
@@ -3354,7 +3350,6 @@
             });
             
             window.addEventListener('resize', () => {
-                updateTablePadding();
                 if (currentUnitName) { setDropdownMinWidths(); synchronizeTableWidths(); }
             });
 
