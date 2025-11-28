@@ -1805,7 +1805,12 @@
 
                 if (currentUnitName) {
                     const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
-                    displayedUnitImage.src = normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
+                    let imageUrl = normalImageUrl;
+                    if (selectedVersionKey === 'shiny') {
+                        const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
+                        imageUrl = shinyImageUrl || normalImageUrl;
+                    }
+                    displayedUnitImage.src = imageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
                 }
 
                 const allRarityClasses = Object.values(rarityClassMap);
@@ -2612,8 +2617,8 @@
                 const img = document.createElement('img');
                 img.className = 'gallery-image';
                 
-                const normalizedUnitName = normalizeUnitName(unitName);
-                const normalImageUrl = unitImages[normalizedUnitName];
+                const normalImageUrl = unitImages[normalizeUnitName(unitName)];
+                const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${unitName}`)];
 
                 let isShiny = false;
                 if (isSearched) {
@@ -2624,7 +2629,12 @@
                     imageContainer.classList.add('shiny-border', 'shiny-overlay');
                 }
 
-                img.src = normalImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
+                let initialImageUrl = normalImageUrl;
+                if (isShiny) {
+                    initialImageUrl = shinyImageUrl || normalImageUrl;
+                }
+
+                img.src = initialImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
                 img.alt = unitName;
                 img.loading = 'lazy';
                 img.dataset.isShiny = isShiny;
@@ -2677,6 +2687,8 @@
                     triggerAnimation(shinyBtn);
                     const isNowShiny = img.dataset.isShiny !== 'true';
                     img.dataset.isShiny = isNowShiny;
+                    
+                    img.src = isNowShiny ? (shinyImageUrl || normalImageUrl) : normalImageUrl;
                     
                     imageContainer.classList.toggle('shiny-border', isNowShiny);
                     imageContainer.classList.toggle('shiny-overlay', isNowShiny);
