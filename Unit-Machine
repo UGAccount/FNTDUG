@@ -2515,6 +2515,7 @@
                     const currentSlugOrPage = currentPath.substring(1);
                     
                     if (!isPageLoad && unitSlug !== currentSlugOrPage) {
+                        sessionStorage.setItem('selectedVersion', version);
                         window.location.href = `${window.location.origin}/${unitSlug}`;
                         return;
                     }
@@ -2628,11 +2629,8 @@
                 if (isShiny) {
                     imageContainer.classList.add('shiny-border', 'shiny-overlay');
                 }
-
-                let initialImageUrl = normalImageUrl;
-                if (isShiny) {
-                    initialImageUrl = shinyImageUrl || normalImageUrl;
-                }
+                
+                const initialImageUrl = isShiny ? (shinyImageUrl || normalImageUrl) : normalImageUrl;
 
                 img.src = initialImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
                 img.alt = unitName;
@@ -3127,12 +3125,12 @@
                                 name => createUnitSlug(name) === pathSlug
                             );
                             if (unitNameFromUrl) {
+                                const versionFromStorage = sessionStorage.getItem('selectedVersion') || selectedVersionKey;
+                                sessionStorage.removeItem('selectedVersion');
                                 setTimeout(() => {
-                                    selectAndDisplayUnit(unitNameFromUrl, selectedVersionKey, true);
+                                    selectAndDisplayUnit(unitNameFromUrl, versionFromStorage, true);
                                 }, 0);
                             }
-                        } else {
-
                         }
                     }
 
