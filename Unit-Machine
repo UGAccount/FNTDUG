@@ -1738,12 +1738,18 @@
             }
 
             function synchronizeTableWidths() {
-                if (window.innerWidth < 768) return document.querySelectorAll('#unitStatsContainer table').forEach(table => table.style.minWidth = '');
                 const tables = document.querySelectorAll('#unitStatsContainer table');
                 if (tables.length < 2) return;
                 let maxWidth = 0;
-                tables.forEach(table => { table.style.minWidth = 'auto'; maxWidth = Math.max(maxWidth, table.offsetWidth); });
-                tables.forEach(table => table.style.minWidth = `${maxWidth}px`);
+                tables.forEach(table => {
+                    table.style.minWidth = 'auto';
+                });
+                tables.forEach(table => {
+                    maxWidth = Math.max(maxWidth, table.offsetWidth);
+                });
+                tables.forEach(table => {
+                    table.style.minWidth = `${maxWidth}px`;
+                });
             }
 
             function setDropdownMinWidths() {
