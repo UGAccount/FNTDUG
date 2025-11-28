@@ -300,7 +300,7 @@
     .level-input-container {
         display: flex;
         align-items: center;
-        gap: var(--spacing-xs);
+        gap: var(--spacing-sm);
         flex: 1;
     }
     .level-input-wrapper {
@@ -912,7 +912,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const ENABLE_URL_ROUTING = true;
+            const ENABLE_URL_ROUTING = false;
 
             const GITHUB_URL = 'https://raw.githubusercontent.com/UGAccount/FNTDUG/main/Info';
             const unitSearchInput = document.getElementById('unitSearchInput'), searchButton = document.getElementById('searchButton'),
@@ -1339,7 +1339,6 @@
                 return multipliers;
             }
 
-
             function handleOverrideChange() {
                 const dmgOverride = document.getElementById('dmgOverrideInput').value.trim();
                 const cdOverride = document.getElementById('cdOverrideInput').value.trim();
@@ -1359,7 +1358,9 @@
                     control.style.pointerEvents = isEnabled ? 'auto' : 'none';
                     control.style.opacity = isEnabled ? '1' : '0.5';
                     control.querySelectorAll('input, button, .dropdown-trigger').forEach(el => {
-                        el.disabled = !isEnabled;
+                        if (el.tagName === 'BUTTON' || el.tagName === 'INPUT') {
+                            el.disabled = !isEnabled;
+                        }
                         el.tabIndex = isEnabled ? 0 : -1;
                         if (!isEnabled && el.classList.contains('dropdown-trigger')) {
                             el.classList.remove('open', 'focused');
@@ -1758,15 +1759,30 @@
             }
 
             function renderUnitTables() {
+                const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                const mainCdInput = document.getElementById('mainCdBoostInput');
+                const mainRngInput = document.getElementById('mainRngBoostInput');
+                const mainDmgValue = mainDmgInput ? mainDmgInput.value : '';
+                const mainCdValue = mainCdInput ? mainCdInput.value : '';
+                const mainRngValue = mainRngInput ? mainRngInput.value : '';
+
+                unitStatsContainer.style.visibility = 'hidden';
                 unitStatsContainer.innerHTML = '';
+                
                 const stats = getCurrentUnitData();
-                if (!stats && !isDpsRankingsMode) return;
+                if (!stats && !isDpsRankingsMode) {
+                    unitStatsContainer.style.visibility = 'visible';
+                    return;
+                }
                 
                 if (isDpsRankingsMode && !stats) {
                     currentUnitName = 'Freddy';
                 }
                 const currentStats = getCurrentUnitData();
-                if (!currentStats) return;
+                if (!currentStats) {
+                    unitStatsContainer.style.visibility = 'visible';
+                    return;
+                }
 
                 const baseUnitStats = allUnitData[currentUnitName];
                 
@@ -1873,10 +1889,10 @@
                 
                 const mainBoostContainer = document.createElement('div');
                 mainBoostContainer.className = 'dropdown-flex-container main-boost-container';
-                mainBoostContainer.style.gap = 'var(--spacing-xs)';
+                mainBoostContainer.style.gap = 'var(--spacing-sm)';
                 mainBoostContainer.style.flex = '2 1 0px';
 
-                const createMainBoostInput = (id, label, placeholder) => {
+                const createMainBoostInput = (id, label, placeholder, value) => {
                     const wrapper = document.createElement('div');
                     wrapper.className = 'level-input-wrapper';
                     const labelSpan = document.createElement('span');
@@ -1887,14 +1903,15 @@
                     input.id = id;
                     input.className = 'boost-override-input';
                     input.placeholder = placeholder;
+                    input.value = value;
                     input.addEventListener('input', () => updateView());
                     wrapper.append(labelSpan, input);
                     return wrapper;
                 };
 
-                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', 'e.g. +20%'));
-                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', 'e.g. -10%'));
-                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', 'e.g. +5%'));
+                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', 'e.g. +20%', mainDmgValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', 'e.g. -10%', mainCdValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', 'e.g. +5%', mainRngValue));
 
                 elementDropdownContainer.appendChild(mainBoostContainer);
                 
@@ -1908,6 +1925,7 @@
                 const levelInputContainer = document.createElement('div');
                 levelInputContainer.className = 'level-input-container';
                 levelInputContainer.id = 'levelControlsContainer';
+                levelInputContainer.style.gap = 'var(--spacing-sm)';
 
                 const createLevelButton = (iconClass, ariaLabel) => {
                     const btn = document.createElement('button');
@@ -2084,6 +2102,7 @@
                 setDropdownMinWidths();
                 synchronizeTableWidths();
                 handleOverrideChange();
+                unitStatsContainer.style.visibility = 'visible';
             }
             
             function computeGlobalStatProfiles() {
@@ -2261,7 +2280,6 @@
                 
                 return costLower + (costUpper - costUpper) * fraction;
             }
-
 
             function renderStatGraph() {
                 if (currentUnitName === null || currentGraphLevelIndex === -1) return;
@@ -2810,7 +2828,6 @@
                 const mainDmg = document.getElementById('mainDmgBoostInput');
                 const mainCd = document.getElementById('mainCdBoostInput');
                 const mainRng = document.getElementById('mainRngBoostInput');
-
                 return {
                     version: selectedVersionKey,
                     enchant: selectedEnchantKey,
@@ -2975,7 +2992,6 @@
                 return processed;
             }
 
-
             (async function fetchData() {
                 try {
                     const GITHUB_IMAGES_URL = 'https://raw.githubusercontent.com/UGAccount/FNTDUG/main/Images';
@@ -3037,6 +3053,8 @@
                     loadSettings();
                     populateGallery();
                     updateSortButtonsUI();
+                    
+                    document.getElementById('boostOverrideContainer').style.gap = 'var(--spacing-sm)';
                     handleOverrideChange();
 
                     if (ENABLE_URL_ROUTING) {
@@ -3068,16 +3086,16 @@
                 }
             })();
 
-                            if (ENABLE_URL_ROUTING && sessionStorage.getItem('scrollToTopOnLoad') === 'true') {
-                                sessionStorage.removeItem('scrollToTopOnLoad');
-                                requestAnimationFrame(() => {
-                                    const searchContainer = document.querySelector('.search-container');
-                                    if (searchContainer) {
-                                        const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
-                                        window.scrollTo({ top: topPos - 15, behavior: 'instant' });
-                                    }
-                                });
-                            }
+            if (ENABLE_URL_ROUTING && sessionStorage.getItem('scrollToTopOnLoad') === 'true') {
+                sessionStorage.removeItem('scrollToTopOnLoad');
+                requestAnimationFrame(() => {
+                    const searchContainer = document.querySelector('.search-container');
+                    if (searchContainer) {
+                        const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                        window.scrollTo({ top: topPos - 15, behavior: 'instant' });
+                    }
+                });
+            }
 
             graphButton.disabled = true;
             dpsRankingsButton.disabled = false;
