@@ -138,12 +138,11 @@
         padding: var(--border-width);
         border-radius: var(--border-radius);
         width: 100%;
-        aspect-ratio: 1 / 1;
     }
 
     #displayedUnitImage {
         width: 100%;
-        height: 100%;
+        aspect-ratio: 1 / 1;
         object-fit: cover;
         border-radius: calc(var(--border-radius) - var(--border-width));
         display: block;
@@ -686,18 +685,13 @@
     }
     .gallery-item { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); }
     .gallery-image-container {
-        position: relative;
-        width: 100%;
-        padding: var(--border-width);
+        position: relative; width: 100%; padding: var(--border-width);
         border-radius: var(--border-radius);
         cursor: pointer;
-        aspect-ratio: 1 / 1;
     }
 
     .gallery-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+        width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
         border-radius: calc(var(--border-radius) - var(--border-width));
         display: block;
         background: var(--unit-background);
@@ -1773,6 +1767,36 @@
                 document.body.removeChild(ruler);
             }
 
+            function updateUnitImage(unitName, version) {
+                if (!unitName || !allUnitData[unitName]) return;
+
+                const baseUnitStats = allUnitData[unitName];
+                const normalImageUrl = unitImages[normalizeUnitName(unitName)];
+                const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${unitName}`)];
+                const targetUrl = version === 'shiny' ? (shinyImageUrl || normalImageUrl) : normalImageUrl;
+
+                const allRarityClasses = Object.values(rarityClassMap);
+                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
+
+                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
+                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
+                }
+
+                if (version === 'shiny') {
+                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
+                }
+
+                if (targetUrl) {
+                    const tempImg = new Image();
+                    tempImg.onload = () => {
+                        displayedUnitImage.src = tempImg.src;
+                    };
+                    tempImg.src = targetUrl;
+                } else {
+                    displayedUnitImage.src = `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
+                }
+            }
+
             function renderUnitTables() {
                 const currentBoosts = getBoostsState();
                 let mainDmgValue = currentBoosts.mainDmg;
@@ -1804,31 +1828,10 @@
                     unitStatsContainer.style.visibility = 'visible';
                     return;
                 }
-
-                const baseUnitStats = allUnitData[currentUnitName];
                 
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (currentStats.Element || 'Neutral');
-
-                if (currentUnitName) {
-                    const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
-                    let imageUrl = normalImageUrl;
-                    if (selectedVersionKey === 'shiny') {
-                        const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
-                        imageUrl = shinyImageUrl || normalImageUrl;
-                    }
-                    displayedUnitImage.src = imageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
-                }
-
-                const allRarityClasses = Object.values(rarityClassMap);
-                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
                 
-                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
-                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
-                }
-
-                if (selectedVersionKey === 'shiny') {
-                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
-                }
+                updateUnitImage(currentUnitName, selectedVersionKey);
 
                 if (currentStats.BackendNote) {
                     const noteWrapper = document.createElement('div');
@@ -2163,7 +2166,7 @@
                         cumulativeCosts[i] = cumulativeCosts[i - 1] + (unit.Upgrades[i].Price || 0);
                     }
 
-                    const pStats = unit.Upgrades, pCost = cumulativeCosts, pTotalDamage = pStats.Damage * placements;
+                    const pStats = unit.Upgrades[0], pCost = cumulativeCosts[0], pTotalDamage = pStats.Damage * placements;
                     const pTotalDps = calculateDPS(pStats.Damage, pStats.Cooldown) * placements;
                     const pCostPerDps = pTotalDps > 0 ? pCost / pTotalDps : Infinity;
                     profiles.totalDamage.placement.min = Math.min(profiles.totalDamage.placement.min, pTotalDamage);
@@ -2283,7 +2286,7 @@
                 const lastUpgradeIndex = numUpgrades - 1;
                 
                 if (numUpgrades <= 1) {
-                    return unit.Upgrades[statKey];
+                    return unit.Upgrades[0][statKey];
                 }
 
                 const floatIndex = index / 100 * lastUpgradeIndex;
@@ -2569,7 +2572,7 @@
                 const versionToUse = settings.saveBoosts ? selectedVersionKey : 'normal';
                 if (allUnitData[searchTerm]) return selectAndDisplayUnit(searchTerm, versionToUse);
                 const result = fuse.search(searchTerm);
-                if (result.length > 0) selectAndDisplayUnit(result.item, versionToUse);
+                if (result.length > 0) selectAndDisplayUnit(result[0].item, versionToUse);
                 else { alert('Unit Not Found'); updateSuggestions(); }
             }
 
@@ -3039,7 +3042,7 @@
                 }
                 processed.Upgrades = upgrades;
 
-                const typesInOrder = [upgrades.Type];
+                const typesInOrder = [upgrades[0].Type];
                 for (let i = 1; i < upgrades.length; i++) {
                     const currentType = upgrades[i].Type;
                     if (currentType && currentType !== typesInOrder[typesInOrder.length - 1]) {
