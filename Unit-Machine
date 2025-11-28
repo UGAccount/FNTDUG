@@ -2490,7 +2490,7 @@
 
             function unsearchUnit() {
                 if (ENABLE_URL_ROUTING && window.location.pathname !== '/' && window.location.pathname !== '') {
-                    window.location.href = '/';
+                    window.location.href = '/unit-machine';
                 } else {
                     currentUnitName = null;
                     unitSearchInput.value = '';
@@ -2795,7 +2795,7 @@
                             window.location.href = `/${previousUnitSlug}`;
                         } else {
                             sessionStorage.setItem('scrollToTopOnLoad', 'true');
-                            window.location.href = '/';
+                            window.location.href = '/unit-machine';
                         }
                     } else {
                         resetToSingleUnitView();
