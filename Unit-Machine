@@ -3115,7 +3115,7 @@
                         const path = window.location.pathname.replace(/\/$/, '');
                         const pathSlug = decodeURIComponent(path.substring(1));
 
-                        if (pathSlug === 'dps-chart') {
+                        if (pathSlug === 'dps-list') {
                             setTimeout(() => {
                                 selectAndDisplayUnit("Freddy", selectedVersionKey, true);
                                 setupDpsRankingsView();
@@ -3223,7 +3223,7 @@
                     } else {
                         sessionStorage.removeItem('previousUnitSlug');
                     }
-                    window.location.href = '/dps-chart';
+                    window.location.href = '/dps-list';
                 } else {
                     const tableExists = !!document.getElementById('main-stats-table');
                     if (!tableExists) {
