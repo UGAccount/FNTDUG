@@ -1775,12 +1775,30 @@
                 createTableInWrapper(['Rarity', 'Attack Type', 'Element', 'Placements'], [[currentStats.Rarity || 'N/A', currentStats.Type || 'N/A', currentStats.Element || 'Neutral', currentStats.Max || 'N/A']], rarityWrapper);
                 unitStatsContainer.appendChild(rarityWrapper);
                 
+                const obtainabilityMethods = currentStats.Obtainability && currentStats.Obtainability.length > 0 ? currentStats.Obtainability : [];
                 const obtainabilityWrapper = document.createElement('div');
                 obtainabilityWrapper.className = 'aux-table';
-                const obtainabilityText = (currentStats.Obtainability && currentStats.Obtainability.length > 0)
-                    ? currentStats.Obtainability.join(', ')
-                    : "Data Not Available";
-                createTableInWrapper(['Obtainability'], [[obtainabilityText]], obtainabilityWrapper);
+                if (obtainabilityMethods.length > 0) {
+                    const tableWrapper = document.createElement('div');
+                    tableWrapper.className = 'table-wrapper';
+                    const table = document.createElement('table');
+                    const thead = document.createElement('thead');
+                    const tbody = document.createElement('tbody');
+                    thead.appendChild(createTableRow('th', ['Obtainability']));
+                    obtainabilityMethods.forEach(method => {
+                        const tr = document.createElement('tr');
+                        const td = document.createElement('td');
+                        td.textContent = method;
+                        td.classList.add('note-cell');
+                        tr.appendChild(td);
+                        tbody.appendChild(tr);
+                    });
+                    table.append(thead, tbody);
+                    tableWrapper.appendChild(table);
+                    obtainabilityWrapper.appendChild(tableWrapper);
+                } else {
+                    createTableInWrapper(['Obtainability'], [['Data Not Available']], obtainabilityWrapper);
+                }
                 unitStatsContainer.appendChild(obtainabilityWrapper);
 
                 const passives = currentStats.Passives || {};
@@ -1848,8 +1866,7 @@
                 
                 const mainBoostContainer = document.createElement('div');
                 mainBoostContainer.className = 'dropdown-flex-container main-boost-container';
-                mainBoostContainer.style.gap = 'var(--spacing-sm)';
-                mainBoostContainer.style.flex = '2 1 0px';
+                mainBoostContainer.style.gap = 'var(--spacing-xs)';
 
                 const createMainBoostInput = (id, label, placeholder, value) => {
                     const wrapper = document.createElement('div');
@@ -1867,12 +1884,36 @@
                     wrapper.append(labelSpan, input);
                     return wrapper;
                 };
+                
+                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', '+20%', mainDmgValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', '-10%', mainCdValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', '+5%', mainRngValue));
+                
+                const clearBoostsBtn = document.createElement('button');
+                clearBoostsBtn.className = 'action-button';
+                clearBoostsBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                clearBoostsBtn.setAttribute('aria-label', 'Clear custom boosts');
+                clearBoostsBtn.onclick = () => {
+                    triggerAnimation(clearBoostsBtn);
+                    const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                    const mainCdInput = document.getElementById('mainCdBoostInput');
+                    const mainRngInput = document.getElementById('mainRngBoostInput');
+                    if (mainDmgInput) mainDmgInput.value = '';
+                    if (mainCdInput) mainCdInput.value = '';
+                    if (mainRngInput) mainRngInput.value = '';
+                    updateView();
+                };
 
-                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', 'e.g. +20%', mainDmgValue));
-                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', 'e.g. -10%', mainCdValue));
-                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', 'e.g. +5%', mainRngValue));
+                const mainBoostWrapper = document.createElement('div');
+                mainBoostWrapper.style.display = 'flex';
+                mainBoostWrapper.style.gap = 'var(--spacing-xs)';
+                mainBoostWrapper.style.alignItems = 'center';
+                mainBoostWrapper.style.flex = '2 1 0px';
+                
+                mainBoostWrapper.appendChild(mainBoostContainer);
+                mainBoostWrapper.appendChild(clearBoostsBtn);
 
-                elementDropdownContainer.appendChild(mainBoostContainer);
+                elementDropdownContainer.appendChild(mainBoostWrapper);
                 
                 const dropdownLabel = isDpsRankingsMode ? 'Enemy Element:' : 'Element:';
                 const elementDropdown = createCustomDropdown('elementDropdown', dropdownLabel, elements, selectedElementKey, (value) => {
@@ -1884,7 +1925,7 @@
                 const levelInputContainer = document.createElement('div');
                 levelInputContainer.className = 'level-input-container';
                 levelInputContainer.id = 'levelControlsContainer';
-                levelInputContainer.style.gap = 'var(--spacing-sm)';
+                levelInputContainer.style.gap = 'var(--spacing-xs)';
 
                 const createLevelButton = (iconClass, ariaLabel) => {
                     const btn = document.createElement('button');
