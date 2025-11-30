@@ -40,7 +40,7 @@
     "Merchant 150 Coins",
     "Summons (50%)"
   ],
-  "Trading": {
+  "Value": {
     "Normal": "TEST",
     "Shiny": "TEST"
   }
