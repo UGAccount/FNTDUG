@@ -124,7 +124,7 @@
         gap: var(--spacing-md);
         max-width: var(--container-max-width);
         margin: 0 auto;
-        padding: 0 var(--spacing-md);
+        padding: var(--spacing-md);
     }
 
     #unitImageDisplayContainer {
@@ -509,7 +509,15 @@
                     visibility 0s;
     }
 
-    .table-wrapper { width: 100%; overflow-x: auto; }
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .table-wrapper::-webkit-scrollbar {
+        display: none;
+    }
     table {
         border-collapse: separate; border-spacing: 0; min-width: 100%;
         overflow: hidden; border: var(--border-default); border-radius: var(--border-radius);
@@ -726,19 +734,18 @@
     }
     .gallery-name { color: var(--text-light); }
 
-    .table-wrapper::-webkit-scrollbar, #galleryContainer::-webkit-scrollbar, .presets-list::-webkit-scrollbar, .modal-panel-content::-webkit-scrollbar { 
+    #galleryContainer::-webkit-scrollbar, .presets-list::-webkit-scrollbar, .modal-panel-content::-webkit-scrollbar { 
         height: var(--scrollbar-size); width: var(--scrollbar-size);
     }
-    .table-wrapper::-webkit-scrollbar-track, #galleryContainer::-webkit-scrollbar-track, .presets-list::-webkit-scrollbar-track, .modal-panel-content::-webkit-scrollbar-track { 
+    #galleryContainer::-webkit-scrollbar-track, .presets-list::-webkit-scrollbar-track, .modal-panel-content::-webkit-scrollbar-track { 
         background: var(--bg-dark); border: var(--border-default); 
         border-radius: var(--border-radius); 
     }
-    .table-wrapper::-webkit-scrollbar-thumb, #galleryContainer::-webkit-scrollbar-thumb, .presets-list::-webkit-scrollbar-thumb, .modal-panel-content::-webkit-scrollbar-thumb { 
+    #galleryContainer::-webkit-scrollbar-thumb, .presets-list::-webkit-scrollbar-thumb, .modal-panel-content::-webkit-scrollbar-thumb { 
         background-color: var(--primary-accent); border-radius: var(--border-radius); 
         border: var(--border-default); 
     }
     @media (hover: hover) {
-        .table-wrapper::-webkit-scrollbar-thumb:hover,
         #galleryContainer::-webkit-scrollbar-thumb:hover,
         .presets-list::-webkit-scrollbar-thumb:hover,
         .modal-panel-content::-webkit-scrollbar-thumb:hover {
@@ -770,7 +777,7 @@
 
     @media (min-width: 768px) {
         .main-container {
-            padding: 0;
+            padding: var(--spacing-md);
         }
         #unitImageWrapper {
             width: auto;
@@ -780,17 +787,11 @@
         .input-container { flex-grow: 0; }
         #unitSearchInput { width: var(--search-bar-width-lg); }
         #unitStatsContainer { display: grid; justify-content: center; }
-        .table-wrapper { width: auto; overflow: visible; padding-bottom: 0; }
     }
 </style>
 </head>
 <body>
     <div class="main-container">
-        <div id="unitImageDisplayContainer" class="hidden">
-            <div id="unitImageWrapper">
-                <img id="displayedUnitImage" src="" alt="Selected Unit">
-            </div>
-        </div>
         <div class="search-container">
             <div class="input-container">
                 <input type="text" id="unitSearchInput" placeholder="Search for a unit...">
@@ -806,6 +807,11 @@
                     <button id="dpsRankingsButton" class="action-button" aria-label="DPS Rankings"><i class="fas fa-trophy"></i></button>
                     <button id="settingsButton" class="action-button" aria-label="Settings" disabled><i class="fas fa-cog"></i></button>
                 </div>
+            </div>
+        </div>
+        <div id="unitImageDisplayContainer" class="hidden">
+            <div id="unitImageWrapper">
+                <img id="displayedUnitImage" src="" alt="Selected Unit">
             </div>
         </div>
         <div id="unitStatsContainer"></div>
@@ -1567,6 +1573,15 @@
 
                 if (!document.getElementById('main-stats-table') && !isDpsRankingsMode) return;
                 
+                const rarityInfoWrapper = document.getElementById('rarity-info-table-wrapper');
+                if (rarityInfoWrapper && currentUnitName && allUnitData[currentUnitName]) {
+                    const unitData = allUnitData[currentUnitName];
+                    const valueCell = rarityInfoWrapper.querySelector('tbody td:nth-child(2)');
+                    if (valueCell && unitData.Value) {
+                        valueCell.textContent = (selectedVersionKey === 'shiny' ? unitData.Value.Shiny : unitData.Value.Normal) || 'N/A';
+                    }
+                }
+
                 if (isDpsRankingsMode && !document.getElementById('main-stats-table')) {
                     renderUnitTables();
                 }
@@ -1668,17 +1683,37 @@
                     elementHeaderCell.colSpan = columnCount;
                     boostHeaderCell.colSpan = columnCount;
                 }
-
-                synchronizeTableWidths();
             }
 
-            function synchronizeTableWidths() {
-                if (window.innerWidth < 768) return document.querySelectorAll('#unitStatsContainer table').forEach(table => table.style.minWidth = '');
-                const tables = document.querySelectorAll('#unitStatsContainer table');
-                if (tables.length < 2) return;
-                let maxWidth = 0;
-                tables.forEach(table => { table.style.minWidth = 'auto'; maxWidth = Math.max(maxWidth, table.offsetWidth); });
-                tables.forEach(table => table.style.minWidth = `${maxWidth}px`);
+            function adjustObtainabilityLayout() {
+                const wrapper = document.getElementById('obtainability-wrapper');
+                if (!wrapper) return;
+                
+                const table = wrapper.querySelector('table');
+                if (!table || !table.dataset.methods) return;
+
+                const methods = JSON.parse(table.dataset.methods);
+                const thead = table.querySelector('thead');
+                const tbody = table.querySelector('tbody');
+                
+                if (!thead || !tbody || methods.length === 0) return;
+
+                thead.innerHTML = '';
+                tbody.innerHTML = '';
+
+                const isMobileView = window.innerWidth < 768;
+
+                if (isMobileView || methods.length === 1) {
+                    thead.appendChild(createTableRow('th', ['Obtainability']));
+                    methods.forEach(method => {
+                        tbody.appendChild(createTableRow('td', [method], 'note-row'));
+                    });
+                } else {
+                    const headerRow = createTableRow('th', ['Obtainability']);
+                    headerRow.firstElementChild.colSpan = methods.length;
+                    thead.appendChild(headerRow);
+                    tbody.appendChild(createTableRow('td', methods, 'note-row'));
+                }
             }
 
             function setDropdownMinWidths() {
@@ -1769,37 +1804,51 @@
                     createTableInWrapper(['Note'], [[currentStats.BackendNote]], noteWrapper, 'note-table-wrapper');
                     unitStatsContainer.appendChild(noteWrapper);
                 }
-
+                
                 const rarityWrapper = document.createElement('div');
                 rarityWrapper.className = 'aux-table';
-                createTableInWrapper(['Rarity', 'Attack Type', 'Element', 'Placements'], [[currentStats.Rarity || 'N/A', currentStats.Type || 'N/A', currentStats.Element || 'Neutral', currentStats.Max || 'N/A']], rarityWrapper);
-                unitStatsContainer.appendChild(rarityWrapper);
+                rarityWrapper.id = 'rarity-info-table-wrapper';
                 
+                const tradingValueData = currentStats.Value;
+                let displayValue = 'N/A';
+                if (tradingValueData) {
+                    displayValue = (selectedVersionKey === 'shiny' ? tradingValueData.Shiny : tradingValueData.Normal) || 'N/A';
+                }
+
+                createTableInWrapper(
+                    ['Rarity', 'Value', 'Attack Type', 'Element', 'Placements'],
+                    [[
+                        currentStats.Rarity || 'N/A',
+                        displayValue,
+                        currentStats.Type || 'N/A',
+                        currentStats.Element || 'Neutral',
+                        currentStats.Max || 'N/A'
+                    ]],
+                    rarityWrapper
+                );
+                unitStatsContainer.appendChild(rarityWrapper);
+
                 const obtainabilityMethods = currentStats.Obtainability && currentStats.Obtainability.length > 0 ? currentStats.Obtainability : [];
                 const obtainabilityWrapper = document.createElement('div');
                 obtainabilityWrapper.className = 'aux-table';
+                obtainabilityWrapper.id = 'obtainability-wrapper';
+
                 if (obtainabilityMethods.length > 0) {
                     const tableWrapper = document.createElement('div');
                     tableWrapper.className = 'table-wrapper';
                     const table = document.createElement('table');
-                    const thead = document.createElement('thead');
-                    const tbody = document.createElement('tbody');
-                    thead.appendChild(createTableRow('th', ['Obtainability']));
-                    obtainabilityMethods.forEach(method => {
-                        const tr = document.createElement('tr');
-                        const td = document.createElement('td');
-                        td.textContent = method;
-                        td.classList.add('note-cell');
-                        tr.appendChild(td);
-                        tbody.appendChild(tr);
-                    });
-                    table.append(thead, tbody);
+                    table.dataset.methods = JSON.stringify(obtainabilityMethods);
+                    
+                    table.appendChild(document.createElement('thead'));
+                    table.appendChild(document.createElement('tbody'));
+                    
                     tableWrapper.appendChild(table);
                     obtainabilityWrapper.appendChild(tableWrapper);
                 } else {
                     createTableInWrapper(['Obtainability'], [['Data Not Available']], obtainabilityWrapper);
                 }
                 unitStatsContainer.appendChild(obtainabilityWrapper);
+
 
                 const passives = currentStats.Passives || {};
                 const actives = currentStats.Actives || [];
@@ -2100,9 +2149,8 @@
                 unitStatsContainer.appendChild(elementalContainer);
 
                 updateView();
-                updateTablePadding();
                 setDropdownMinWidths();
-                synchronizeTableWidths();
+                adjustObtainabilityLayout();
                 unitStatsContainer.style.visibility = 'visible';
             }
             
@@ -2533,12 +2581,6 @@
                 else { alert('Unit Not Found'); updateSuggestions(); }
             }
 
-            function updateTablePadding() {
-                document.querySelectorAll('.table-wrapper').forEach(wrapper => {
-                    wrapper.style.paddingBottom = wrapper.scrollWidth > wrapper.clientWidth ? 'var(--spacing-sm)' : '0px';
-                });
-            }
-            
             function updateSortButtonsUI() {
                 const alphaIcon = sortAlphaButton.querySelector('i');
                 const rarityIcon = sortRarityButton.querySelector('i');
@@ -3051,6 +3093,7 @@
                             Passives: unit.Passives || {},
                             Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
+                            Value: unit.Value,
                             BackendNote: backendNotes[unit.Name] || undefined,
                         };
                     });
@@ -3294,8 +3337,10 @@
             });
             
             window.addEventListener('resize', () => {
-                updateTablePadding();
-                if (currentUnitName) { setDropdownMinWidths(); synchronizeTableWidths(); }
+                if (currentUnitName) { 
+                    setDropdownMinWidths(); 
+                    adjustObtainabilityLayout();
+                }
             });
 
             galleryFilterInput.addEventListener('input', () => {
