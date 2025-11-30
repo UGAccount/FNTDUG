@@ -1,50 +1,46 @@
 {
   "Units": [
     {
-  "Name": "Bonnie",
-  "Rarity": "Uncommon",
-  "PlacementPrice": 375,
-  "Type": "Circle",
-  "Element": "Electricity",
-  "MaxPlaced": 4,
-  "BaseStats": {
-    "Range": 25,
-    "Damage": 25,
-    "Cooldown": 2.5
-  },
-  "UpgradeStats": [
-    {
-      "Range": 27.5,
-      "Damage": 25,
-      "Cooldown": 2,
-      "UpgradePrice": 450
+      "Name": "Bonnie",
+      "Rarity": "Uncommon",
+      "PlacementPrice": 375,
+      "Type": "Circle",
+      "Element": "Electricity",
+      "MaxPlaced": 4,
+      "BaseStats": {
+        "Range": 25,
+        "Damage": 25,
+        "Cooldown": 2.5
+      },
+      "UpgradeStats": [
+        {
+          "Range": 27.5,
+          "Damage": 25,
+          "Cooldown": 2,
+          "UpgradePrice": 450
+        },
+        {
+          "Range": 30,
+          "Damage": 30,
+          "Cooldown": 1.5,
+          "UpgradePrice": 800
+        },
+        {
+          "Range": 35,
+          "Damage": 35,
+          "Cooldown": 1.5,
+          "UpgradePrice": 1200
+        }
+      ],
+      "Passives": {
+        "NO PASSIVE": "This unit has no active passive :("
+      },
+      "Obtainability": [
+        "Uncommon Present (25%)",
+        "Merchant 150 Coins",
+        "Summons (50%)"
+      ]
     },
-    {
-      "Range": 30,
-      "Damage": 30,
-      "Cooldown": 1.5,
-      "UpgradePrice": 800
-    },
-    {
-      "Range": 35,
-      "Damage": 35,
-      "Cooldown": 1.5,
-      "UpgradePrice": 1200
-    }
-  ],
-  "Passives": {
-    "NO PASSIVE": "This unit has no active passive :("
-  },
-  "Obtainability": [
-    "Uncommon Present (25%)",
-    "Merchant 150 Coins",
-    "Summons (50%)"
-  ],
-  "Value": {
-    "Normal": "TEST",
-    "Shiny": "TEST2"
-  }
-},
     {
       "Name": "Chica",
       "Rarity": "Uncommon",
@@ -290,51 +286,6 @@
       ]
     },
     {
-      "Name": "Balloon Boy",
-      "Rarity": "Epic",
-      "PlacementPrice": 400,
-      "Type": "Single",
-      "Element": "Neutral",
-      "MaxPlaced": 2,
-      "BaseStats": {
-        "Range": 15,
-        "Damage": 0,
-        "Cooldown": 0
-      },
-      "UpgradeStats": [
-        {
-          "Range": 15,
-          "Damage": 0,
-          "Cooldown": 0,
-          "UpgradePrice": 450
-        },
-        {
-          "Range": 16,
-          "Damage": 0,
-          "Cooldown": 0,
-          "UpgradePrice": 650
-        },
-        {
-          "Range": 17,
-          "Damage": 0,
-          "Cooldown": 0,
-          "UpgradePrice": 850
-        },
-        {
-          "Range": 18,
-          "Damage": 0,
-          "Cooldown": 0,
-          "UpgradePrice": 1050
-        }
-      ],
-      "Passives": {
-        "Stolen Batteries": "Every upgrade provides a 2% RNG boost to all units in range"
-      },
-      "Obtainability": [
-        "Premium Pass T1"
-      ]
-    },
-    {
       "Name": "Cupcake",
       "Rarity": "Epic",
       "PlacementPrice": 400,
@@ -565,7 +516,10 @@
       },
       "Obtainability": [
         "Halloween Event Summons Craftable"
-      ]
+      ],
+      "Value": {
+        "Shiny": "0.15-0.2 Mangles"
+      }
     },
     {
       "Name": "Endo 01",
@@ -705,7 +659,11 @@
       },
       "Obtainability": [
         "Halloween Event Free Pass T30"
-      ]
+      ],
+      "Value": {
+        "Normal": "0.40-0.50 Mangles",
+        "Shiny": "6.5 Mangles"
+      }
     },
     {
       "Name": "Toy Chica",
@@ -868,7 +826,11 @@
       },
       "Obtainability": [
         "Free Pass T30"
-      ]
+      ],
+      "Value": {
+        "Normal": "0.40-0.50 Mangles",
+        "Shiny": "5.5-6 Mangles"
+      }
     },
     {
       "Name": "Party Glock Freddy",
@@ -920,7 +882,11 @@
       },
       "Obtainability": [
         "Exclusive 599R$ / 12500 Coins"
-      ]
+      ],
+      "Value": {
+        "Normal": "0.02 Mangles",
+        "Shiny": "1.1-1.2 Mangles"
+      }
     },
     {
       "Name": "Party Packer Cupcake",
@@ -979,7 +945,11 @@
       },
       "Obtainability": [
         "Exclusive 249R$ Pack"
-      ]
+      ],
+      "Value": {
+        "Normal": "0.15-0.18 Mangles",
+        "Shiny": "2.2+ Mangles"
+      }
     },
     {
       "Name": "Puppet's Alliance",
@@ -1030,7 +1000,11 @@
       },
       "Obtainability": [
         "Exclusive 799R$ / 35000 Coins"
-      ]
+      ],
+      "Value": {
+        "Normal": "0.02 Mangles",
+        "Shiny": "1.1-1.2 Mangles"
+      }
     },
     {
       "Name": "Scarecrow Freddy",
@@ -1082,7 +1056,10 @@
       },
       "Obtainability": [
         "Halloween Event Exclusive 1299R$ / 35000 Pumpkins"
-      ]
+      ],
+      "Value": {
+        "Shiny": "2.4 Mangles"
+      }
     },
     {
       "Name": "Shadow Bonnie",
@@ -1146,7 +1123,11 @@
       },
       "Obtainability": [
         "Premium Pass T30"
-      ]
+      ],
+      "Value": {
+        "Normal": "0.6",
+        "Shiny": "16-19 Mangles"
+      }
     },
     {
       "Name": "Shadow Freddy",
@@ -1268,6 +1249,60 @@
       },
       "Obtainability": [
         "Halloween Event Exclusive 799R$ / 15000 Pumpkins"
+      ],
+      "Value": {
+        "Shiny": "0.8 Mangles"
+      }
+    },
+    {
+      "Name": "Turkey Chica",
+      "Rarity": "Secret",
+      "PlacementPrice": 750,
+      "Type": "Line",
+      "Element": "Fire",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 16,
+        "Damage": 50,
+        "Cooldown": 3.5
+      },
+      "UpgradeStats": [
+        {
+          "Range": 18,
+          "Damage": 55,
+          "Cooldown": 3.5,
+          "UpgradePrice": 1200
+        },
+        {
+          "Range": 20,
+          "Damage": 65,
+          "Cooldown": 3.2,
+          "UpgradePrice": 1250
+        },
+        {
+          "Range": 21,
+          "Damage": 80,
+          "Cooldown": 3,
+          "UpgradePrice": 1900
+        },
+        {
+          "Range": 21,
+          "Damage": 100,
+          "Cooldown": 2.8,
+          "UpgradePrice": 2450
+        },
+        {
+          "Range": 22,
+          "Damage": 115,
+          "Cooldown": 2.7,
+          "UpgradePrice": 2750
+        }
+      ],
+      "Passives": {
+        "Horn of Plenty": "Every 7 seconds, the cornucopia this unit holds will give itself a random buff from the “Blessing of Abundance” list found here. Blessing of Abundance: Nuts: 50% damage buff for 5s Produce: 30% cooldown buff for 5s Flowers: 80% range buff for 5s"
+      },
+      "Obtainability": [
+        "Exclusive 799R$ / 35000 Coins"
       ]
     },
     {
@@ -1458,11 +1493,16 @@
         }
       ],
       "Passives": {
-        "Curse of Dreadbear": "Upon placement, this unit receives a 30% damage, 10% cooldown, and 20% range boost. If another Dreadbear unit is placed within this unit’s range, this unit will lose all of these boosts."
+        "Curse of Dreadbear": "Upon placement, this unit receives a 30% damage, 10% cooldown, and 20% range boost. If another Dreadbear unit is placed within this unit’s range, this unit will lose all of these boosts.",
+        "Heartbeat Current": "Every 60 seconds an electric shock spreads from Dreadbear’s heart throughout the rest of his body, decreasing his cooldown by 15% for 20 seconds."
       },
       "Obtainability": [
         "Halloween Event Premium Pass T30"
-      ]
+      ],
+      "Value": {
+        "Normal": "1.2 Mangles",
+        "Shiny": "18+ Mangles"
+      }
     },
     {
       "Name": "Mangle",
@@ -1533,7 +1573,11 @@
       },
       "Obtainability": [
         "Exclusive 2500R$ Pack"
-      ]
+      ],
+      "Value": {
+        "Normal": "1:1 Mangle",
+        "Shiny": "15-17+ Mangles"
+      }
     },
     {
       "Name": "Purple Guy",
@@ -1608,7 +1652,11 @@
       },
       "Obtainability": [
         "Season 1 Present Craftable"
-      ]
+      ],
+      "Value": {
+        "Normal": "0.17 Mangles",
+        "Shiny": "6.4+ Mangles"
+      }
     },
     {
       "Name": "Withered Golden Freddy",
@@ -1755,7 +1803,11 @@
       ],
       "Obtainability": [
         "Halloween Endless Shop | 150K Bones"
-      ]
+      ],
+      "Value": {
+        "Normal": "0.17 Mangles",
+        "Shiny": "4.25+ Mangles"
+      }
     },
     {
       "Name": "Golden Freddy",
@@ -1894,8 +1946,16 @@
       "Passives": {
         "Vengeful Spirit": "Every 20s, this hero's damage and range doubles, and cooldown halves, for 5s.",
         "Restless Soul [Upgrade 5+]": "Every wave this hero receives a 2% damage boost. In endless modes, this boost is reduced to 0.8%. [100% max buff]",
-        "The one you should not have killed. [Active Ability] [Upgrade 18+]": "Upon activation, this hero deals damage to all enemies on the track for 50% of its current damage. [30s Local CD]"
+        "It's Me! [Upgrade 12+]": "Every 30s this hero stuns all enemies in range for 2s. While stunned, enemies take 20% more damage (20% wither)."
       },
+      "Actives": [
+        {
+          "Name": "The one you should not have killed",
+          "Description": "Upon activation, this hero deals damage to all enemies on the track for 50% of its current damage.",
+          "Cooldown": 30,
+          "Upgrade": 18
+        }
+      ],
       "Obtainability": [
         "Golden Freddy Hero Quests"
       ]
@@ -2036,13 +2096,28 @@
       ],
       "Passives": {
         "Music Box": "Every 10s this hero does damage to all enemies in range based on the number of units placed. Starting at 0%, scales by 5% of this hero's damage per unit placed. [150% max]",
-        "Soul Calling [Upgrade 5+]": "Every 15s summons a soul on the track that will walk through every enemy dealing 60% of this hero's current damage, does not damage bosses. Enemies hit by this soul are slowed by 20% for 5s.",
-        "Protector [Upgrade 12+]": "Every 30s this hero slows all enemies in range by 10% for 7.5s. Additionally this will upgrade the tower on the track (cannot upgrade a Hero) with the lowest current upgrade, if multiple units share an upgrade level; chooses randomly.",
-        "Happiest Day [Active Ability] [Upgrade 18+]": "Upon activation, this hero boosts the damage of all placed units by 25% for 15s. [45s Global CD]"
+        "Soul Calling [Upgrade 5+]": "Every 15s summons a soul on the track that will walk through every enemy dealing 60% of this hero's current damage, does not damage bosses. Enemies hit by this soul are slowed by 20% for 5s."
       },
+      "Actives": [
+        {
+          "Name": "Happiest Day",
+          "Description": "Upon activation, this hero boosts the damage of all placed units by 25% for 15s.",
+          "Cooldown": 45,
+          "Upgrade": 18
+        }
+      ],
       "Obtainability": [
         "Puppet Hero Quests"
       ]
+    },
+    {
+      "Name": "Balloon Boy",
+      "Obtainability": [
+        "Premium Pass T1"
+      ],
+      "Value": {
+        "Shiny": "6-6.7 Mangles"
+      }
     }
   ],
   "Enchants": {
