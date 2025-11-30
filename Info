@@ -1,46 +1,50 @@
 {
   "Units": [
     {
-      "Name": "Bonnie",
-      "Rarity": "Uncommon",
-      "PlacementPrice": 375,
-      "Type": "Circle",
-      "Element": "Electricity",
-      "MaxPlaced": 4,
-      "BaseStats": {
-        "Range": 25,
-        "Damage": 25,
-        "Cooldown": 2.5
-      },
-      "UpgradeStats": [
-        {
-          "Range": 27.5,
-          "Damage": 25,
-          "Cooldown": 2,
-          "UpgradePrice": 450
-        },
-        {
-          "Range": 30,
-          "Damage": 30,
-          "Cooldown": 1.5,
-          "UpgradePrice": 800
-        },
-        {
-          "Range": 35,
-          "Damage": 35,
-          "Cooldown": 1.5,
-          "UpgradePrice": 1200
-        }
-      ],
-      "Passives": {
-        "NO PASSIVE": "This unit has no active passive :("
-      },
-      "Obtainability": [
-        "Uncommon Present (25%)",
-        "Merchant 150 Coins",
-        "Summons (50%)"
-      ]
+  "Name": "Bonnie",
+  "Rarity": "Uncommon",
+  "PlacementPrice": 375,
+  "Type": "Circle",
+  "Element": "Electricity",
+  "MaxPlaced": 4,
+  "BaseStats": {
+    "Range": 25,
+    "Damage": 25,
+    "Cooldown": 2.5
+  },
+  "UpgradeStats": [
+    {
+      "Range": 27.5,
+      "Damage": 25,
+      "Cooldown": 2,
+      "UpgradePrice": 450
     },
+    {
+      "Range": 30,
+      "Damage": 30,
+      "Cooldown": 1.5,
+      "UpgradePrice": 800
+    },
+    {
+      "Range": 35,
+      "Damage": 35,
+      "Cooldown": 1.5,
+      "UpgradePrice": 1200
+    }
+  ],
+  "Passives": {
+    "NO PASSIVE": "This unit has no active passive :("
+  },
+  "Obtainability": [
+    "Uncommon Present (25%)",
+    "Merchant 150 Coins",
+    "Summons (50%)"
+  ],
+  "Trading": {
+    "Normal": "TEST",
+    "Shiny": "TEST"
+  }
+},
     {
       "Name": "Chica",
       "Rarity": "Uncommon",
