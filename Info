@@ -2112,6 +2112,45 @@
     },
     {
       "Name": "Balloon Boy",
+      "Rarity": "Epic",
+      "PlacementPrice": 400,
+      "Type": "Single",
+      "Element": "Neutral",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 15,
+        "Damage": 0,
+        "Cooldown": 0
+      },
+      "UpgradeStats": [
+        {
+          "Range": 15,
+          "Damage": 0,
+          "Cooldown": 0,
+          "UpgradePrice": 450
+        },
+        {
+          "Range": 16,
+          "Damage": 0,
+          "Cooldown": 0,
+          "UpgradePrice": 650
+        },
+        {
+          "Range": 17,
+          "Damage": 0,
+          "Cooldown": 0,
+          "UpgradePrice": 850
+        },
+        {
+          "Range": 18,
+          "Damage": 0,
+          "Cooldown": 0,
+          "UpgradePrice": 1050
+        }
+      ],
+      "Passives": {
+        "Stolen Batteries": "Every upgrade provides a 2% RNG boost to all units in range"
+      },
       "Obtainability": [
         "Premium Pass T1"
       ],
