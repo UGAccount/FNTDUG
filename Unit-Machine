@@ -1934,9 +1934,9 @@
                     return wrapper;
                 };
                 
-                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', '+20%', mainDmgValue));
-                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', '-10%', mainCdValue));
-                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', '+5%', mainRngValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', '+%', mainDmgValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', '-%', mainCdValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', '+%', mainRngValue));
                 
                 const clearBoostsBtn = document.createElement('button');
                 clearBoostsBtn.className = 'action-button';
