@@ -2398,6 +2398,16 @@
           "value": "6 Mangles",
           "demand": "N/A"
         }
+      },
+      "Turkey Chica": {
+        "Normal": {
+          "value": "0.02 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "1 Mangle",
+          "demand": "N/A"
+        }
       }
     },
     "Pets": {
