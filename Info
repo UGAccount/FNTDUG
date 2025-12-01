@@ -2332,10 +2332,14 @@
       "test": "test"
     },
     "Pets": {
-      "test": "test"
+      "Golden Freddy": "0.2 Mangles"
     },
     "Gamepasses": {
-      "test": "test"
+      "Shiny Hunter": "0.8-1.3 Mangles",
+      "VIP": "0.4 Mangles",
+      "Premium": "0.9 Mangles",
+      "Event Premium": "1.3 Mangles",
+      "Quick Open": "0.25 Mangles"
     },
     "Banners": {
       "test": "test"
