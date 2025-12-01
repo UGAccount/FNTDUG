@@ -18,6 +18,35 @@
     "Premium": "https://iili.io/KtqM8EN.png",
     "VIP": "https://iili.io/KtqMS4I.png"
   },
+  "Elements": {
+    "Water": "https://iili.io/KtqM6ps.png",
+    "Rust": "https://iili.io/KtqMiTG.png",
+    "Dark": "https://iili.io/KtqMsjf.png",
+    "Neutral": "https://iili.io/KtqMtG2.png",
+    "Light": "https://iili.io/KtqMD4S.png",
+    "Fire": "https://iili.io/KtqMm37.png",
+    "Electricity": "https://iili.io/KtqMpa9.png"
+  },
+"Enchants": {
+    "Damage I": "https://iili.io/fxdEags.png",
+    "Damage II": "https://iili.io/fxdEldG.png",
+    "Damage III": "https://iili.io/fxdE1e4.png",
+    "Range I": "https://iili.io/fxdEx5v.png",
+    "Range II": "https://iili.io/fxdEuzN.png",
+    "Range III": "https://iili.io/fxdERst.png",
+    "Speed I": "https://iili.io/fxdE7qX.png",
+    "Speed II": "https://iili.io/fxdEY1n.png",
+    "Speed III": "https://iili.io/fxdEodJ.png",
+    "Engineer": "https://iili.io/fxdEFWP.png",
+    "PuppetNightmare": "https://iili.io/fxdEB0g.png",
+    "Investor": "https://iili.io/fxdEKs1.png",
+    "Haywire": "https://iili.io/fxdEJOQ.png",
+    "Phantom": "https://iili.io/fxdEdbV.png",
+    "Blighted": "https://iili.io/fxd1m0u.png",
+    "Shadow": "https://iili.io/fxdE3zB.png",
+    "SpringLocked": "https://iili.io/fxdEH5x.png",
+    "Vengeance": "https://iili.io/fxd1pUb.png"
+  },
     "Banners": {
       "Halloween 2025": "https://iili.io/KtqETZl.png",
       "VIP": "https://iili.io/KtqEAn2.png",
