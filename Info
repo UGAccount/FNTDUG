@@ -328,10 +328,7 @@
       },
       "Obtainability": [
         "Premium Pass T1"
-      ],
-      "Value": {
-        "Shiny": "6-6.7 Mangles"
-      }
+      ]
     },
     {
       "Name": "Cupcake",
@@ -564,10 +561,7 @@
       },
       "Obtainability": [
         "Halloween Event Summons Craftable"
-      ],
-      "Value": {
-        "Shiny": "0.15-0.2 Mangles"
-      }
+      ]
     },
     {
       "Name": "Endo 01",
@@ -707,11 +701,7 @@
       },
       "Obtainability": [
         "Halloween Event Free Pass T30"
-      ],
-      "Value": {
-        "Normal": "0.40-0.50 Mangles",
-        "Shiny": "6.5 Mangles"
-      }
+      ]
     },
     {
       "Name": "Toy Chica",
@@ -874,11 +864,7 @@
       },
       "Obtainability": [
         "Free Pass T30"
-      ],
-      "Value": {
-        "Normal": "0.40-0.50 Mangles",
-        "Shiny": "5.5-6 Mangles"
-      }
+      ]
     },
     {
       "Name": "Party Glock Freddy",
@@ -930,11 +916,7 @@
       },
       "Obtainability": [
         "Exclusive 599R$ / 12500 Coins"
-      ],
-      "Value": {
-        "Normal": "0.02 Mangles",
-        "Shiny": "1.1-1.2 Mangles"
-      }
+      ]
     },
     {
       "Name": "Party Packer Cupcake",
@@ -993,11 +975,7 @@
       },
       "Obtainability": [
         "Exclusive 249R$ Pack"
-      ],
-      "Value": {
-        "Normal": "0.15-0.18 Mangles",
-        "Shiny": "2.2+ Mangles"
-      }
+      ]
     },
     {
       "Name": "Puppet's Alliance",
@@ -1048,11 +1026,7 @@
       },
       "Obtainability": [
         "Exclusive 799R$ / 35000 Coins"
-      ],
-      "Value": {
-        "Normal": "0.02 Mangles",
-        "Shiny": "1.1-1.2 Mangles"
-      }
+      ]
     },
     {
       "Name": "Scarecrow Freddy",
@@ -1104,10 +1078,7 @@
       },
       "Obtainability": [
         "Halloween Event Exclusive 1299R$ / 35000 Pumpkins"
-      ],
-      "Value": {
-        "Shiny": "2.4 Mangles"
-      }
+      ]
     },
     {
       "Name": "Shadow Bonnie",
@@ -1171,11 +1142,7 @@
       },
       "Obtainability": [
         "Premium Pass T30"
-      ],
-      "Value": {
-        "Normal": "0.6",
-        "Shiny": "16-19 Mangles"
-      }
+      ]
     },
     {
       "Name": "Shadow Freddy",
@@ -1297,10 +1264,7 @@
       },
       "Obtainability": [
         "Halloween Event Exclusive 799R$ / 15000 Pumpkins"
-      ],
-      "Value": {
-        "Shiny": "0.8 Mangles"
-      }
+      ]
     },
     {
       "Name": "Turkey Chica",
@@ -1546,11 +1510,7 @@
       },
       "Obtainability": [
         "Halloween Event Premium Pass T30"
-      ],
-      "Value": {
-        "Normal": "1.2 Mangles",
-        "Shiny": "18+ Mangles"
-      }
+      ]
     },
     {
       "Name": "Mangle",
@@ -1621,11 +1581,7 @@
       },
       "Obtainability": [
         "Exclusive 2500R$ Pack"
-      ],
-      "Value": {
-        "Normal": "1:1 Mangle",
-        "Shiny": "15-17+ Mangles"
-      }
+      ]
     },
     {
       "Name": "Purple Guy",
@@ -1700,11 +1656,7 @@
       },
       "Obtainability": [
         "Season 1 Present Craftable"
-      ],
-      "Value": {
-        "Normal": "0.17 Mangles",
-        "Shiny": "6.4+ Mangles"
-      }
+      ]
     },
     {
       "Name": "Withered Golden Freddy",
@@ -1851,11 +1803,7 @@
       ],
       "Obtainability": [
         "Halloween Endless Shop | 150K Bones"
-      ],
-      "Value": {
-        "Normal": "0.17 Mangles",
-        "Shiny": "4.25+ Mangles"
-      }
+      ]
     },
     {
       "Name": "Golden Freddy",
@@ -2323,6 +2271,89 @@
         "Range": 1.1,
         "Cooldown": 0.95
       }
+    }
+  },
+  "Values": {
+    "Units": {
+      "Scarecrow Freddy": {
+        "Shiny": "2.4 Mangles"
+      },
+      "BBnJ": {
+        "Shiny": "0.15-0.2 Mangles"
+      },
+      "Balloon Boy": {
+        "Shiny": "6-6.7 Mangles"
+      },
+      "Slasher Bonnie": {
+        "Shiny": "0.8 Mangles"
+      },
+      "Dreadbear": {
+        "Normal": "1.2 Mangles",
+        "Shiny": "18+ Mangles"
+      },
+      "Mangle": {
+        "Normal": "1:1 Mangle",
+        "Shiny": "15-17+ Mangles"
+      },
+      "Shadow Bonnie": {
+        "Normal": "0.6",
+        "Shiny": "16-19 Mangles"
+      },
+      "Headless Horseman Mangle": {
+        "Normal": "0.17 Mangles",
+        "Shiny": "4.25+ Mangles"
+      },
+      "Purple Guy": {
+        "Normal": "0.17 Mangles",
+        "Shiny": "6.4+ Mangles"
+      },
+      "Party Glock Freddy": {
+        "Normal": "0.02 Mangles",
+        "Shiny": "1.1-1.2 Mangles"
+      },
+      "Puppet's Alliance": {
+        "Normal": "0.02 Mangles",
+        "Shiny": "1.1-1.2 Mangles"
+      },
+      "Party Packer Cupcake": {
+        "Normal": "0.15-0.18 Mangles",
+        "Shiny": "2.2+ Mangles"
+      },
+      "Endo 02": {
+        "Normal": "0.40-0.50 Mangles",
+        "Shiny": "5.5-6 Mangles"
+      },
+      "Jack'O Bonnie": {
+        "Normal": "0.40-0.50 Mangles",
+        "Shiny": "6.5 Mangles"
+      }
+    },
+    "Presents": {
+      "test": "test"
+    },
+    "Pets": {
+      "test": "test"
+    },
+    "Gamepasses": {
+      "test": "test"
+    },
+    "Banners": {
+      "test": "test"
+    },
+    "Materials": {
+      "test": "test"
+    },
+    "Food": {
+      "test": "test"
+    },
+    "Establishments": {
+      "test": "test"
+    },
+    "Potions": {
+      "test": "test"
+    },
+    "Currency": {
+      "test": "test"
     }
   }
 }
