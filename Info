@@ -2276,88 +2276,157 @@
   "Values": {
     "Units": {
       "Scarecrow Freddy": {
-        "Shiny": "2.6+ Mangles"
+        "Shiny": {
+          "value": "2.6+ Mangles",
+          "demand": "N/A"
+        }
       },
       "BBnJ": {
-        "Shiny": "0.10-0.14 Mangles"
+        "Shiny": {
+          "value": "0.10-0.14 Mangles",
+          "demand": "N/A"
+        }
       },
       "Balloon Boy": {
-        "Shiny": "5.5-6+ Mangles"
+        "Shiny": {
+          "value": "5.5-6+ Mangles",
+          "demand": "N/A"
+        }
       },
       "Slasher Bonnie": {
-        "Shiny": "0.75 Mangles"
+        "Shiny": {
+          "value": "0.75 Mangles",
+          "demand": "N/A"
+        }
       },
       "Dreadbear": {
-        "Normal": "1.4 Mangles",
-        "Shiny": "17+ Mangles"
+        "Normal": {
+          "value": "1.4 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "17+ Mangles",
+          "demand": "N/A"
+        }
       },
       "Mangle": {
-        "Normal": "1:1 Mangle",
-        "Shiny": "15-17+ Mangles"
+        "Normal": {
+          "value": "1:1 Mangle",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "15-17+ Mangles",
+          "demand": "N/A"
+        }
       },
       "Shadow Bonnie": {
-        "Normal": "0.6",
-        "Shiny": "16-19 Mangles"
+        "Normal": {
+          "value": "0.6 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "16-19 Mangles",
+          "demand": "N/A"
+        }
       },
       "Headless Horseman Mangle": {
-        "Normal": "0.14 Mangles",
-        "Shiny": "4.1+ Mangles"
+        "Normal": {
+          "value": "0.14 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "4.1+ Mangles",
+          "demand": "N/A"
+        }
       },
       "Purple Guy": {
-        "Normal": "0.14 Mangles",
-        "Shiny": "5+ Mangles"
+        "Normal": {
+          "value": "0.14 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "5+ Mangles",
+          "demand": "N/A"
+        }
       },
       "Party Glock Freddy": {
-        "Normal": "0.02 Mangles",
-        "Shiny": "1.0-1.2 Mangles"
+        "Normal": {
+          "value": "0.02 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "1.0-1.2 Mangles",
+          "demand": "N/A"
+        }
       },
       "Puppet's Alliance": {
-        "Normal": "0.02 Mangles",
-        "Shiny": "1.5-2 Mangles"
+        "Normal": {
+          "value": "0.02 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "1.5-2 Mangles",
+          "demand": "N/A"
+        }
       },
       "Party Packer Cupcake": {
-        "Normal": "0.15-0.18 Mangles",
-        "Shiny": "1.5+ Mangles"
+        "Normal": {
+          "value": "0.15-0.18 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "1.5+ Mangles",
+          "demand": "N/A"
+        }
       },
       "Endo 02": {
-        "Normal": "0.40-0.50 Mangles",
-        "Shiny": "6+ Mangles"
+        "Normal": {
+          "value": "0.40-0.50 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "6+ Mangles",
+          "demand": "N/A"
+        }
       },
       "Jack'O Bonnie": {
-        "Normal": "0.40-0.50 Mangles",
-        "Shiny": "6 Mangles"
+        "Normal": {
+          "value": "0.40-0.50 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "6 Mangles",
+          "demand": "N/A"
+        }
       }
     },
-    "Presents": {
-      "test": "test"
-    },
     "Pets": {
-      "Golden Freddy": "0.2 Mangles"
+      "Golden Freddy": {
+        "value": "0.2 Mangles",
+        "demand": "N/A"
+      }
     },
     "Gamepasses": {
-      "Shiny Hunter": "0.8-1.3 Mangles",
-      "VIP": "0.4 Mangles",
-      "Premium": "0.9 Mangles",
-      "Event Premium": "1.3 Mangles",
-      "Quick Open": "0.25 Mangles"
-    },
-    "Banners": {
-      "test": "test"
-    },
-    "Materials": {
-      "test": "test"
-    },
-    "Food": {
-      "test": "test"
-    },
-    "Establishments": {
-      "test": "test"
-    },
-    "Potions": {
-      "test": "test"
-    },
-    "Currency": {
-      "test": "test"
+      "Shiny Hunter": {
+        "value": "0.8-1.3 Mangles",
+        "demand": "N/A"
+      },
+      "VIP": {
+        "value": "0.4 Mangles",
+        "demand": "N/A"
+      },
+      "Premium": {
+        "value": "0.9 Mangles",
+        "demand": "N/A"
+      },
+      "Event Premium": {
+        "value": "1.3 Mangles",
+        "demand": "N/A"
+      },
+      "Quick Open": {
+        "value": "0.25 Mangles",
+        "demand": "N/A"
+      }
     }
   }
 }
