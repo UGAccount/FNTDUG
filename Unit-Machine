@@ -3081,6 +3081,7 @@
                     }
                     enchants = generateOptionsObject(enchantMultipliers);
 
+                    const unitValues = responseData.Values.Units || {};
                     const rawUnitData = responseData.Units;
                     const finalUnitData = {};
                     rawUnitData.forEach(unit => {
@@ -3093,7 +3094,7 @@
                             Passives: unit.Passives || {},
                             Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
-                            Value: unit.Value,
+                            Value: unitValues[unit.Name] || null,
                             BackendNote: backendNotes[unit.Name] || undefined,
                         };
                     });
