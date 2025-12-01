@@ -2276,20 +2276,20 @@
   "Values": {
     "Units": {
       "Scarecrow Freddy": {
-        "Shiny": "2.4 Mangles"
+        "Shiny": "2.6+ Mangles"
       },
       "BBnJ": {
-        "Shiny": "0.15-0.2 Mangles"
+        "Shiny": "0.10-0.14 Mangles"
       },
       "Balloon Boy": {
-        "Shiny": "6-6.7 Mangles"
+        "Shiny": "5.5-6+ Mangles"
       },
       "Slasher Bonnie": {
-        "Shiny": "0.8 Mangles"
+        "Shiny": "0.75 Mangles"
       },
       "Dreadbear": {
-        "Normal": "1.2 Mangles",
-        "Shiny": "18+ Mangles"
+        "Normal": "1.4 Mangles",
+        "Shiny": "17+ Mangles"
       },
       "Mangle": {
         "Normal": "1:1 Mangle",
@@ -2300,32 +2300,32 @@
         "Shiny": "16-19 Mangles"
       },
       "Headless Horseman Mangle": {
-        "Normal": "0.17 Mangles",
-        "Shiny": "4.25+ Mangles"
+        "Normal": "0.14 Mangles",
+        "Shiny": "4.1+ Mangles"
       },
       "Purple Guy": {
-        "Normal": "0.17 Mangles",
-        "Shiny": "6.4+ Mangles"
+        "Normal": "0.14 Mangles",
+        "Shiny": "5+ Mangles"
       },
       "Party Glock Freddy": {
         "Normal": "0.02 Mangles",
-        "Shiny": "1.1-1.2 Mangles"
+        "Shiny": "1.0-1.2 Mangles"
       },
       "Puppet's Alliance": {
         "Normal": "0.02 Mangles",
-        "Shiny": "1.1-1.2 Mangles"
+        "Shiny": "1.5-2 Mangles"
       },
       "Party Packer Cupcake": {
         "Normal": "0.15-0.18 Mangles",
-        "Shiny": "2.2+ Mangles"
+        "Shiny": "1.5+ Mangles"
       },
       "Endo 02": {
         "Normal": "0.40-0.50 Mangles",
-        "Shiny": "5.5-6 Mangles"
+        "Shiny": "6+ Mangles"
       },
       "Jack'O Bonnie": {
         "Normal": "0.40-0.50 Mangles",
-        "Shiny": "6.5 Mangles"
+        "Shiny": "6 Mangles"
       }
     },
     "Presents": {
