@@ -1576,11 +1576,32 @@
                 const rarityInfoWrapper = document.getElementById('rarity-info-table-wrapper');
                 if (rarityInfoWrapper && currentUnitName && allUnitData[currentUnitName]) {
                     const unitData = allUnitData[currentUnitName];
-                    const valueCell = rarityInfoWrapper.querySelector('tbody td:nth-child(2)');
-                    if (valueCell && unitData.Value) {
-                        valueCell.textContent = (selectedVersionKey === 'shiny' ? unitData.Value.Shiny : unitData.Value.Normal) || 'N/A';
+                    if (unitData.Value) {
+                        const headers = Array.from(rarityInfoWrapper.querySelectorAll('thead th'));
+                        const valueIndex = headers.findIndex(th => th.textContent === 'Value');
+                        const demandIndex = headers.findIndex(th => th.textContent === 'Demand');
+
+                        if (valueIndex > -1 && demandIndex > -1) {
+                            const dataCells = rarityInfoWrapper.querySelectorAll('tbody td');
+                            const valueCell = dataCells[valueIndex];
+                            const demandCell = dataCells[demandIndex];
+
+                            const versionValueData = selectedVersionKey === 'shiny' ? unitData.Value.Shiny : unitData.Value.Normal;
+                            
+                            let displayValue = 'N/A';
+                            let displayDemand = 'N/A';
+
+                            if (versionValueData) {
+                                displayValue = versionValueData.value || 'N/A';
+                                displayDemand = versionValueData.demand || 'N/A';
+                            }
+
+                            if (valueCell) valueCell.textContent = displayValue;
+                            if (demandCell) demandCell.textContent = displayDemand;
+                        }
                     }
                 }
+
 
                 if (isDpsRankingsMode && !document.getElementById('main-stats-table')) {
                     renderUnitTables();
@@ -1809,23 +1830,32 @@
                 rarityWrapper.className = 'aux-table';
                 rarityWrapper.id = 'rarity-info-table-wrapper';
                 
+                const headers = ['Rarity', 'Attack Type', 'Element', 'Placements'];
+                const rowData = [
+                    currentStats.Rarity || 'N/A',
+                    currentStats.Type || 'N/A',
+                    currentStats.Element || 'Neutral',
+                    currentStats.Max || 'N/A'
+                ];
+
                 const tradingValueData = currentStats.Value;
-                let displayValue = 'N/A';
                 if (tradingValueData) {
-                    displayValue = (selectedVersionKey === 'shiny' ? tradingValueData.Shiny : tradingValueData.Normal) || 'N/A';
+                    headers.splice(1, 0, 'Value', 'Demand');
+
+                    const versionValueData = selectedVersionKey === 'shiny' ? tradingValueData.Shiny : tradingValueData.Normal;
+                    
+                    let displayValue = 'N/A';
+                    let displayDemand = 'N/A';
+                    
+                    if (versionValueData) {
+                        displayValue = versionValueData.value || 'N/A';
+                        displayDemand = versionValueData.demand || 'N/A';
+                    }
+
+                    rowData.splice(1, 0, displayValue, displayDemand);
                 }
 
-                createTableInWrapper(
-                    ['Rarity', 'Value', 'Attack Type', 'Element', 'Placements'],
-                    [[
-                        currentStats.Rarity || 'N/A',
-                        displayValue,
-                        currentStats.Type || 'N/A',
-                        currentStats.Element || 'Neutral',
-                        currentStats.Max || 'N/A'
-                    ]],
-                    rarityWrapper
-                );
+                createTableInWrapper(headers, [rowData], rarityWrapper);
                 unitStatsContainer.appendChild(rarityWrapper);
 
                 const obtainabilityMethods = currentStats.Obtainability && currentStats.Obtainability.length > 0 ? currentStats.Obtainability : [];
