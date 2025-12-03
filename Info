@@ -2284,18 +2284,22 @@
       "BBnJ": {
         "Shiny": {
           "value": "0.10-0.14 Mangles",
-          "demand": "N/A"
+          "demand": "5/10"
         }
       },
       "Balloon Boy": {
+        "Normal": {
+          "value": "0.14+ Mangles",
+          "demand": "7/10"
+        },
         "Shiny": {
           "value": "5.5-6+ Mangles",
-          "demand": "N/A"
+          "demand": "7.5/10"
         }
       },
       "Slasher Bonnie": {
         "Shiny": {
-          "value": "0.75 Mangles",
+          "value": "0.75-0.8 Mangles",
           "demand": "N/A"
         }
       },
@@ -2335,7 +2339,7 @@
           "demand": "8.5/10"
         },
         "Shiny": {
-          "value": "4.5+ Mangles",
+          "value": "4.7-5 Mangles",
           "demand": "10/10"
         }
       },
@@ -2376,7 +2380,7 @@
         },
         "Shiny": {
           "value": "1.5 Mangles",
-          "demand": "N/A"
+          "demand": "6/10"
         }
       },
       "Endo 02": {
@@ -2386,7 +2390,7 @@
         },
         "Shiny": {
           "value": "7+ Mangles",
-          "demand": "9+/10"
+          "demand": "8+/10"
         }
       },
       "Jack'O Bonnie": {
@@ -2395,8 +2399,8 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "6 Mangles",
-          "demand": "N/A"
+          "value": "5.8-6 Mangles",
+          "demand": "8/10"
         }
       },
       "Turkey Chica": {
@@ -2407,6 +2411,46 @@
         "Shiny": {
           "value": "1-1.2 Mangles",
           "demand": "N/A"
+        }
+      },
+      "Withered Freddy": {
+        "Normal": {
+          "value": "0.005 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "0.18-0.2 Mangles",
+          "demand": "8.5/10"
+        }
+      },
+      "Withered Golden Freddy": {
+        "Normal": {
+          "value": "0.005 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "0.1-0.15 Mangles",
+          "demand": "N/A"
+        }
+      },
+      "Shadow Freddy": {
+        "Normal": {
+          "value": "0.0025 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "0.12+ Mangles",
+          "demand": "N/A"
+        }
+      },
+      "Undead Chica": {
+        "Normal": {
+          "value": "0.001 Mangles",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "0.14+ Mangles",
+          "demand": "7/10"
         }
       }
     },
@@ -2426,7 +2470,7 @@
         "demand": "N/A"
       },
       "VIP": {
-        "value": "0.25-0.4 Mangles",
+        "value": "0.15-0.3+ Mangles",
         "demand": "N/A"
       },
       "Premium": {
