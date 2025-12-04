@@ -2298,6 +2298,10 @@
         }
       },
       "Slasher Bonnie": {
+        "Normal": {
+          "value": "0.05 Mangles",
+          "demand": "N/A"
+        },
         "Shiny": {
           "value": "0.75-0.8 Mangles",
           "demand": "N/A"
@@ -2309,18 +2313,18 @@
           "demand": "9.5/10"
         },
         "Shiny": {
-          "value": "20+ Mangles",
+          "value": "20-23+ Mangles",
           "demand": "10/10"
         }
       },
       "Mangle": {
         "Normal": {
           "value": "1:1 Mangle",
-          "demand": "8.5/10"
+          "demand": "9/10"
         },
         "Shiny": {
           "value": "15-17+ Mangles",
-          "demand": "N/A"
+          "demand": "9.9/10"
         }
       },
       "Shadow Bonnie": {
@@ -2330,7 +2334,7 @@
         },
         "Shiny": {
           "value": "16-19 Mangles",
-          "demand": "N/A"
+          "demand": "9.9/10"
         }
       },
       "Headless Horseman Mangle": {
@@ -2369,7 +2373,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "1.5+ Mangles",
+          "value": "1.75+ Mangles",
           "demand": "N/A"
         }
       },
@@ -2400,16 +2404,16 @@
         },
         "Shiny": {
           "value": "5.8-6 Mangles",
-          "demand": "8/10"
+          "demand": "7/10"
         }
       },
       "Turkey Chica": {
         "Normal": {
           "value": "0.02 Mangles",
-          "demand": "N/A"
+          "demand": "5.5/10"
         },
         "Shiny": {
-          "value": "1-1.2 Mangles",
+          "value": "1.3-1.4 Mangles",
           "demand": "N/A"
         }
       },
@@ -2460,7 +2464,7 @@
         "demand": "N/A"
       },
       "Gang Freddy": {
-        "value": "1.5-2 Mangles",
+        "value": "1.6+ Mangles",
         "demand": "N/A"
       }
     },
@@ -2483,6 +2487,12 @@
       },
       "Quick Open": {
         "value": "0.25 Mangles",
+        "demand": "N/A"
+      }
+    },
+    "Banners": {
+      "The Brick Incident": {
+        "value": "1-1.2 Mangle",
         "demand": "N/A"
       }
     }
