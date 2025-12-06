@@ -327,7 +327,7 @@
         "Stolen Batteries": "Every upgrade provides a 2% RNG boost to all units in range"
       },
       "Obtainability": [
-        "Premium Pass T1"
+        "Season 1 Premium Pass T1"
       ]
     },
     {
@@ -369,6 +369,39 @@
         "Epic Present (25%)",
         "Merchant 1250 Coins",
         "Summons (18%)"
+      ]
+    },
+    {
+      "Name": "Santa Freddy",
+      "Rarity": "Epic",
+      "PlacementPrice": 450,
+      "Type": "Circle",
+      "Element": "Neutral",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 20.5,
+        "Damage": 65,
+        "Cooldown": 3
+      },
+      "UpgradeStats": [
+        {
+          "Range": 22.5,
+          "Damage": 100,
+          "Cooldown": 3,
+          "UpgradePrice": 650
+        },
+        {
+          "Range": 24.5,
+          "Damage": 125,
+          "Cooldown": 2.5,
+          "UpgradePrice": 1150
+        }
+      ],
+      "Passives": {
+        "NO PASSIVE": "This unit has no active passive :("
+      },
+      "Obtainability": [
+        "Christmas Movie Event Summons 89%"
       ]
     },
     {
@@ -704,6 +737,63 @@
       ]
     },
     {
+      "Name": "Mrs Claus Toy Chica",
+      "Rarity": "Mythical",
+      "PlacementPrice": 1250,
+      "Type": "Cone",
+      "Element": "Neutral",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 23,
+        "Damage": 100,
+        "Cooldown": 2.5
+      },
+      "UpgradeStats": [
+        {
+          "Range": 23.5,
+          "Damage": 125,
+          "Cooldown": 2.5,
+          "UpgradePrice": 650
+        },
+        {
+          "Range": 23.5,
+          "Damage": 130,
+          "Cooldown": 2.4,
+          "UpgradePrice": 850
+        },
+        {
+          "Range": 24,
+          "Damage": 135,
+          "Cooldown": 2.3,
+          "UpgradePrice": 950
+        },
+        {
+          "Range": 24.5,
+          "Damage": 140,
+          "Cooldown": 2.2,
+          "UpgradePrice": 1000
+        },
+        {
+          "Range": 24.5,
+          "Damage": 140,
+          "Cooldown": 2.2,
+          "UpgradePrice": 1150
+        },
+        {
+          "Range": 25,
+          "Damage": 170,
+          "Cooldown": 2.1,
+          "UpgradePrice": 1250
+        }
+      ],
+      "Passives": {
+        "NO PASSIVE": "This unit has no active passive :("
+      },
+      "Obtainability": [
+        "Christmas Movie Event Summons 10%"
+      ]
+    },
+    {
       "Name": "Toy Chica",
       "Rarity": "Mythical",
       "PlacementPrice": 1200,
@@ -810,6 +900,57 @@
       ]
     },
     {
+      "Name": "Conductor Toy Freddy",
+      "Rarity": "Secret",
+      "PlacementPrice": 550,
+      "Type": "Line",
+      "Element": "Rust",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 15.5,
+        "Damage": 45,
+        "Cooldown": 3.5
+      },
+      "UpgradeStats": [
+        {
+          "Range": 16.5,
+          "Damage": 50,
+          "Cooldown": 3.5,
+          "UpgradePrice": 400
+        },
+        {
+          "Range": 17,
+          "Damage": 60,
+          "Cooldown": 3.5,
+          "UpgradePrice": 450
+        },
+        {
+          "Range": 17.5,
+          "Damage": 65,
+          "Cooldown": 3.5,
+          "UpgradePrice": 500
+        },
+        {
+          "Range": 18.5,
+          "Damage": 70,
+          "Cooldown": 3.5,
+          "UpgradePrice": 1000
+        },
+        {
+          "Range": 20,
+          "Damage": 75,
+          "Cooldown": 3.5,
+          "UpgradePrice": 1250
+        }
+      ],
+      "Passives": {
+        "All Aboard!": "On this unit's cooldown, summons a train on the track with 120% damage as health. While a train is currently on the track, boosts this unit’s damage by 10% (capped at 1)."
+      },
+      "Obtainability": [
+        "Christmas Movie Event Exclusive 1299R$ / 25000 Gingerbread"
+      ]
+    },
+    {
       "Name": "Endo 02",
       "Rarity": "Secret",
       "PlacementPrice": 2750,
@@ -863,7 +1004,223 @@
         "Engineer": "This unit places turrets that do Single Target attacks equal to this units damage and cooldown. Places a turret every 15s, turrets last 60s. Maximum of 3 turrets per Endo 02 placed. [Places somewhere randomly within range]"
       },
       "Obtainability": [
-        "Free Pass T30"
+        "Season 1 Free Pass T30"
+      ]
+    },
+    {
+      "Name": "Frostmancer Withered Bonnie",
+      "Rarity": "Secret",
+      "PlacementPrice": 3000,
+      "Type": "Circle",
+      "Element": "Water",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 19,
+        "Damage": 350,
+        "Cooldown": 5.2
+      },
+      "UpgradeStats": [
+        {
+          "Range": 20.5,
+          "Damage": 450,
+          "Cooldown": 5.2,
+          "UpgradePrice": 2500
+        },
+        {
+          "Range": 21,
+          "Damage": 500,
+          "Cooldown": 5.2,
+          "UpgradePrice": 2750
+        },
+        {
+          "Range": 21,
+          "Damage": 550,
+          "Cooldown": 5.2,
+          "UpgradePrice": 3250
+        },
+        {
+          "Range": 21.5,
+          "Damage": 650,
+          "Cooldown": 5.2,
+          "UpgradePrice": 2800
+        },
+        {
+          "Range": 22,
+          "Damage": 700,
+          "Cooldown": 5.2,
+          "UpgradePrice": 3000
+        },
+        {
+          "Range": 22.5,
+          "Damage": 750,
+          "Cooldown": 5.2,
+          "UpgradePrice": 6250
+        }
+      ],
+      "Passives": {
+        "Herald of Winter": "This unit summons Snow Bonnies around itself (cap of 3) that provide 1 of 2 following buffs to itself: 10% DMG and RNG increase 15% slowing to all enemies in range While a Snow Bonnie is present, attacks freeze enemies for 1s."
+      },
+      "Obtainability": [
+        "Christmas Movie Event Summons .35%"
+      ]
+    },
+    {
+      "Name": "Grinch Foxy",
+      "Rarity": "Secret",
+      "PlacementPrice": 2750,
+      "Type": "Cone",
+      "Element": "Neutral",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 18,
+        "Damage": 150,
+        "Cooldown": 2
+      },
+      "UpgradeStats": [
+        {
+          "Range": 20,
+          "Damage": 150,
+          "Cooldown": 1.9,
+          "UpgradePrice": 1750
+        },
+        {
+          "Range": 22,
+          "Damage": 150,
+          "Cooldown": 1.8,
+          "UpgradePrice": 2250
+        },
+        {
+          "Range": 24,
+          "Damage": 150,
+          "Cooldown": 1.7,
+          "UpgradePrice": 2650
+        },
+        {
+          "Range": 24,
+          "Damage": 175,
+          "Cooldown": 1.5,
+          "UpgradePrice": 2500
+        },
+        {
+          "Range": 24,
+          "Damage": 200,
+          "Cooldown": 1.5,
+          "UpgradePrice": 5000
+        }
+      ],
+      "Passives": {
+        "Broken Ornaments": "When attacking an enemy, has a 33% chance to apply a 2 second bleed dealing 10% damage every second"
+      },
+      "Obtainability": [
+        "Christmas Movie Event Premium Pass T30"
+      ]
+    },
+    {
+      "Name": "Krampus Purple Guy",
+      "Rarity": "Secret",
+      "PlacementPrice": 3250,
+      "Type": "Circle",
+      "Element": "Dark",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 20,
+        "Damage": 650,
+        "Cooldown": 6
+      },
+      "UpgradeStats": [
+        {
+          "Range": 20,
+          "Damage": 700,
+          "Cooldown": 6,
+          "UpgradePrice": 2250
+        },
+        {
+          "Range": 20,
+          "Damage": 750,
+          "Cooldown": 6,
+          "UpgradePrice": 2500
+        },
+        {
+          "Range": 20,
+          "Damage": 800,
+          "Cooldown": 6,
+          "UpgradePrice": 2550
+        },
+        {
+          "Range": 20,
+          "Damage": 800,
+          "Cooldown": 5.6,
+          "UpgradePrice": 2600
+        },
+        {
+          "Range": 20,
+          "Damage": 815,
+          "Cooldown": 5.5,
+          "UpgradePrice": 3000
+        },
+        {
+          "Range": 20,
+          "Damage": 815,
+          "Cooldown": 5.4,
+          "UpgradePrice": 3250
+        }
+      ],
+      "Passives": {
+        "Punishment of Evil": "This unit stuns enemies it attacks for 1.8s. When attacking a stunned enemy, deal 35% more damage."
+      },
+      "Obtainability": [
+        "Christmas Movie Event Free Pass T30"
+      ]
+    },
+    {
+      "Name": "Movie Director Freddy",
+      "Rarity": "Secret",
+      "PlacementPrice": 350,
+      "Type": "Single",
+      "Element": "Light",
+      "MaxPlaced": 1,
+      "BaseStats": {
+        "Range": 20,
+        "Damage": 0,
+        "Cooldown": 0
+      },
+      "UpgradeStats": [
+        {
+          "Range": 21,
+          "Damage": 0,
+          "Cooldown": 0,
+          "UpgradePrice": 400
+        },
+        {
+          "Range": 22,
+          "Damage": 0,
+          "Cooldown": 0,
+          "UpgradePrice": 450
+        },
+        {
+          "Range": 23,
+          "Damage": 0,
+          "Cooldown": 0,
+          "UpgradePrice": 500
+        },
+        {
+          "Range": 24,
+          "Damage": 0,
+          "Cooldown": 0,
+          "UpgradePrice": 550
+        },
+        {
+          "Range": 25,
+          "Damage": 0,
+          "Cooldown": 0,
+          "UpgradePrice": 600
+        }
+      ],
+      "Passives": {
+        "Eye for Talent": "This unit boosts all forms of income by 10%, scaling by 2% per upgrade. [ends at 20%] This unit boosts the damage of the unit with the highest damage number in range by 25%."
+      },
+      "Obtainability": [
+        "Christmas Movie Event Exclusive 799R$ / 15000 Gingerbread"
       ]
     },
     {
@@ -915,7 +1272,7 @@
         "Party Poppers": "Every 15 seconds, spawns in 2 Party Poppers anywhere in this unit's range that aim at the enemy currently being targeted by the unit. Party Poppers deal 120% of this unit's current damage in a 70 degree Cone AOE."
       },
       "Obtainability": [
-        "Exclusive 599R$ / 12500 Coins"
+        "1st Bi-Weekly Exclusive 599R$ / 12500 Coins"
       ]
     },
     {
@@ -974,7 +1331,7 @@
         "Fallout [Active Ability] [Upgrade 6+]": "Upon activation, for the next 17s I.C.B.C.M's are launched every 3.4s dealing 140% of this unit's current damage. After this for 3s, releases a wave of steam hitting 3 times for 120% of this unit's current damage (Cone AOE) applying burn for 3s dealing 40% of the damage dealt by the steam [13.3% dmg/tick]. [20s Duration] [120s Global CD]"
       },
       "Obtainability": [
-        "Exclusive 249R$ Pack"
+        "1st Starter Pack 249R$"
       ]
     },
     {
@@ -1025,7 +1382,7 @@
         "Soul Shock": "[Unstable] is applied to every 8th Enemy that enters the map. [Unstable] results in an explosion that deals 50% damage of the unit that killed it."
       },
       "Obtainability": [
-        "Exclusive 799R$ / 35000 Coins"
+        "2nd Bi-Weekly Exclusive 799R$ / 35000 Coins"
       ]
     },
     {
@@ -1141,7 +1498,7 @@
         "Blackout [Active Ability] [Upgrade 6+]": "Upon activation, darkens the map for 15s. Every enemy taken down by this unit during these 15s grants a 0.2% increase to damage and range. [20% max buff] [60s Local CD]"
       },
       "Obtainability": [
-        "Premium Pass T30"
+        "Season 1 Premium Pass T30"
       ]
     },
     {
@@ -1275,37 +1632,37 @@
       "MaxPlaced": 3,
       "BaseStats": {
         "Range": 16,
-        "Damage": 50,
+        "Damage": 70,
         "Cooldown": 3.5
       },
       "UpgradeStats": [
         {
           "Range": 18,
-          "Damage": 55,
+          "Damage": 75,
           "Cooldown": 3.5,
           "UpgradePrice": 1200
         },
         {
           "Range": 20,
-          "Damage": 65,
+          "Damage": 85,
           "Cooldown": 3.2,
           "UpgradePrice": 1250
         },
         {
           "Range": 21,
-          "Damage": 80,
+          "Damage": 90,
           "Cooldown": 3,
           "UpgradePrice": 1900
         },
         {
           "Range": 21,
-          "Damage": 100,
+          "Damage": 120,
           "Cooldown": 2.8,
           "UpgradePrice": 2450
         },
         {
           "Range": 22,
-          "Damage": 115,
+          "Damage": 145,
           "Cooldown": 2.7,
           "UpgradePrice": 2750
         }
@@ -1314,7 +1671,7 @@
         "Horn of Plenty": "Every 7 seconds, the cornucopia this unit holds will give itself a random buff from the “Blessing of Abundance” list found here. Blessing of Abundance: Nuts: 50% damage buff for 5s Produce: 30% cooldown buff for 5s Flowers: 80% range buff for 5s"
       },
       "Obtainability": [
-        "Exclusive 799R$ / 35000 Coins"
+        "3rd Bi-Weekly Exclusive 799R$ / 35000 Coins"
       ]
     },
     {
@@ -1580,7 +1937,7 @@
         "Radio Static": "When an enemy is within 50% of this unit's range for more than 6 seconds, this unit stuns the enemy for 0.75s. [10s stun CD]"
       },
       "Obtainability": [
-        "Exclusive 2500R$ Pack"
+        "1st Exclusive Pack 2500R$"
       ]
     },
     {
