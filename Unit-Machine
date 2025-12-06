@@ -1,0 +1,3400 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Unit Stats Viewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+    :root {
+        --font-family-base: sans-serif;
+        --font-family-icons: "Font Awesome 6 Free";
+        --font-size-base: 16px;
+        --font-size-sm: 12px;
+        --font-size-md: 14px;
+        --font-size-lg: 20px;
+        --font-size-hd: 24px;
+        --font-weight-normal: normal;
+        --font-weight-bold: bold;
+        --icon-font-weight: 900;
+        --line-height-tight: 1;
+        --line-height-loose: 1.4;
+
+        --bg-dark: #121212;
+        --bg-medium: #1c1c1c;
+        --primary-accent: #7161d0;
+        --primary-accent-hover: #594bad;
+        --text-light: white;
+        --text-muted: #d3d3d3;
+        --disabled-bg: #4a4a4a;
+        --disabled-text: #888;
+        --modal-overlay-bg: rgba(0, 0, 0, 0.7);
+        --shadow-color: rgba(0, 0, 0, 0.5);
+
+        --rarity-uncommon-gradient: linear-gradient(to bottom right, rgb(92, 255, 77), rgb(63, 255, 143));
+        --rarity-rare-gradient: linear-gradient(to bottom right, rgb(88, 166, 255), rgb(28, 58, 160));
+        --rarity-epic-gradient: linear-gradient(to bottom right, rgb(255, 53, 255), rgb(102, 16, 159));
+        --rarity-mythic-gradient: linear-gradient(to bottom right, rgb(255, 184, 31), rgb(255, 255, 0));
+        --rarity-secret-gradient: linear-gradient(to bottom right, rgb(255, 136, 0), rgb(255, 12, 12));
+        --rarity-nightmare-gradient: linear-gradient(to bottom right, rgb(70, 89, 255), rgb(48, 53, 74));
+        --rarity-apex-gradient: linear-gradient(to bottom right, rgb(189, 97, 255) 0%, rgb(56, 0, 22) 50%, rgb(255, 56, 106) 100%);
+        --rarity-hero-gradient: linear-gradient(to bottom right, rgb(255, 205, 25) 0%, rgb(53, 56, 21) 50%, rgb(255, 251, 133) 100%);
+        --rarity-shiny-gradient: linear-gradient(to bottom right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+        --rarity-shiny-background-overlay: linear-gradient(to bottom right, rgba(255, 0, 0, 0.15), rgba(255, 165, 0, 0.15), rgba(255, 255, 0, 0.15), rgba(0, 128, 0, 0.15), rgba(0, 0, 255, 0.15), rgba(75, 0, 130, 0.15), rgba(238, 130, 238, 0.15));
+        --shiny-overlay-image: url('https://iili.io/fJHLgHb.png');
+        --unit-background: var(--bg-dark);
+
+        --spacing-xs: 5px;
+        --spacing-sm: 7.5px;
+        --spacing-md: 15px;
+        --spacing-lg: 20px;
+        --container-max-width: 1200px;
+        --component-height: 38px;
+        --component-padding: 10px;
+        --modal-max-width: 500px;
+        --modal-content-max-height: 90vh;
+        --gallery-content-max-height: 70vh;
+        
+        --border-radius: 5px;
+        --border-width: 2px;
+        --border-default: var(--border-width) solid var(--text-light);
+        --border-accent: var(--border-width) solid var(--primary-accent);
+        --focus-shadow-width: 2px;
+        --focus-shadow: 0 0 0 var(--focus-shadow-width) var(--text-light);
+        --modal-shadow: var(--focus-shadow), 0 var(--spacing-xs) var(--spacing-md) var(--shadow-color);
+        
+        --transition-timing: ease;
+        --transition-fastest: 0.1s;
+        --transition-fast: 0.2s;
+        --transition-medium: 0.3s;
+        --transition-slow: 0.7s;
+        --transition-default: var(--transition-medium) var(--transition-timing);
+        
+        --z-dropdown: 100;
+        --z-suggestions: 101;
+        --z-modal: 1000;
+        --z-image: 1;
+        --z-shiny-overlay: 2;
+        
+        --button-small-size: 24px;
+        --search-bar-width-factor: 7.5;
+        --search-bar-width-lg: calc(var(--component-height) * var(--search-bar-width-factor));
+        --dropdown-arrow-size: 6px;
+        --dropdown-arrow-offset: 12px;
+        --dropdown-item-height: var(--component-height);
+        --selected-item-indent: 36px;
+        --shiny-item-offset: 24px;
+        --scrollbar-size: var(--spacing-md);
+        --graph-col-width: 80px;
+        --graph-bar-height: calc(var(--component-height) * 0.55);
+        --gallery-cols-desktop: 4;
+        --gallery-cols-mobile: 3;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: var(--bg-medium);
+        font-family: var(--font-family-base);
+        color: var(--text-light);
+        margin: 0;
+    }
+
+    p {
+        color: var(--text-muted);
+        margin: 0;
+        text-align: center;
+    }
+    
+    .hidden {
+        display: none !important;
+    }
+
+    .section-title {
+        padding-bottom: var(--spacing-xs);
+        border-bottom: var(--border-default);
+        font-size: var(--font-size-lg);
+        text-align: center;
+    }
+
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        max-width: var(--container-max-width);
+        margin: 0 auto;
+        padding: var(--spacing-md);
+    }
+
+    #unitImageDisplayContainer {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    #unitImageWrapper {
+        position: relative;
+        padding: var(--border-width);
+        border-radius: var(--border-radius);
+        width: 100%;
+    }
+
+    #displayedUnitImage {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: calc(var(--border-radius) - var(--border-width));
+        display: block;
+        background: var(--unit-background);
+        position: relative;
+        z-index: var(--z-image);
+    }
+
+    #unitImageWrapper.rarity-uncommon, .gallery-image-container.rarity-uncommon { 
+        background: var(--rarity-uncommon-gradient);
+        --unit-background: radial-gradient(circle, rgb(46, 128, 38) 30%, rgb(5, 25, 10) 70%);
+    }
+    #unitImageWrapper.rarity-rare, .gallery-image-container.rarity-rare {
+        background: var(--rarity-rare-gradient);
+        --unit-background: radial-gradient(circle, rgb(44, 83, 128) 30%, rgb(2, 5, 15) 70%);
+    }
+    #unitImageWrapper.rarity-epic, .gallery-image-container.rarity-epic {
+        background: var(--rarity-epic-gradient);
+        --unit-background: radial-gradient(circle, rgb(128, 26, 128) 30%, rgb(15, 2, 20) 70%);
+    }
+    #unitImageWrapper.rarity-mythic, .gallery-image-container.rarity-mythic {
+        background: var(--rarity-mythic-gradient);
+        --unit-background: radial-gradient(circle, rgb(128, 128, 0) 30%, rgb(40, 25, 0) 70%);
+    }
+    #unitImageWrapper.rarity-secret, .gallery-image-container.rarity-secret {
+        background: var(--rarity-secret-gradient);
+        --unit-background: radial-gradient(circle, rgb(128, 68, 0) 30%, rgb(30, 0, 0) 70%);
+    }
+    #unitImageWrapper.rarity-nightmare, .gallery-image-container.rarity-nightmare {
+        background: var(--rarity-nightmare-gradient);
+        --unit-background: radial-gradient(circle, rgb(35, 44, 128) 30%, rgb(5, 5, 8) 70%);
+    }
+    #unitImageWrapper.rarity-apex, .gallery-image-container.rarity-apex {
+        background: var(--rarity-apex-gradient);
+        --unit-background: radial-gradient(circle, rgb(94, 48, 128) 30%, rgb(15, 0, 5) 70%);
+    }
+    #unitImageWrapper.rarity-hero, .gallery-image-container.rarity-hero {
+        background: var(--rarity-hero-gradient);
+        --unit-background: radial-gradient(circle, rgb(128, 125, 66) 30%, rgb(15, 15, 5) 70%);
+    }
+    
+    #unitImageWrapper.shiny-border, .gallery-image-container.shiny-border {
+        background: var(--rarity-shiny-gradient);
+    }
+    .shiny-border #displayedUnitImage, .shiny-border .gallery-image {
+        background: var(--rarity-shiny-background-overlay), var(--unit-background);
+    }
+
+    .shiny-overlay::after {
+        content: '';
+        position: absolute;
+        top: var(--border-width);
+        left: var(--border-width);
+        right: var(--border-width);
+        bottom: var(--border-width);
+        background-image: var(--shiny-overlay-image);
+        background-size: cover;
+        background-position: center;
+        border-radius: calc(var(--border-radius) - var(--border-width));
+        z-index: var(--z-shiny-overlay);
+        pointer-events: none;
+    }
+
+    #unitStatsContainer {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .action-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: var(--component-height);
+        width: var(--component-height);
+        padding: 0;
+        flex-shrink: 0;
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-tight);
+        border: var(--border-default);
+        border-radius: var(--border-radius);
+        color: var(--text-light);
+        background-color: var(--primary-accent);
+        cursor: pointer;
+        text-align: center;
+        touch-action: manipulation;
+        user-select: none;
+        transition: background-color var(--transition-fast), color var(--transition-fast), opacity var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .action-button:disabled {
+        background-color: var(--disabled-bg);
+        color: var(--disabled-text);
+        cursor: not-allowed;
+    }
+
+    .action-button--small {
+        width: var(--button-small-size);
+        height: var(--button-small-size);
+        font-size: var(--font-size-md);
+    }
+    
+    .action-button--return {
+        font-size: var(--font-size-sm);
+    }
+    
+    .gallery-sort-buttons .action-button {
+        background-color: var(--bg-dark);
+    }
+    .gallery-sort-buttons .action-button.active {
+        background-color: var(--primary-accent);
+    }
+
+    @media (hover: hover) {
+        .action-button:not(:disabled):hover,
+        .gallery-sort-buttons .action-button:not(.active):hover {
+            background-color: var(--primary-accent-hover);
+        }
+    }
+
+    .search-container {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .input-container {
+        position: relative;
+        flex-grow: 1;
+    }
+
+    #unitSearchInput, #galleryFilterInput, .level-input-wrapper, #presetNameInput {
+        height: var(--component-height);
+        width: 100%;
+        padding: 0 var(--component-padding);
+        font-size: var(--font-size-base);
+        border: var(--border-default);
+        border-radius: var(--border-radius);
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        transition: border-color var(--transition-default), box-shadow var(--transition-default);
+    }
+    
+    #unitSearchInput { cursor: pointer; }
+    #galleryFilterInput { flex-shrink: 1; flex-grow: 1; }
+    
+    #unitSearchInput:focus, #galleryFilterInput:focus, .level-input-wrapper:focus-within, #presetNameInput:focus {
+        outline: none;
+        border-color: var(--primary-accent);
+        box-shadow: var(--focus-shadow);
+    }
+    
+    .level-input-container {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        flex: 1;
+    }
+    .level-input-wrapper {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        font-weight: var(--font-weight-normal);
+    }
+    .level-input-label {
+        user-select: none;
+        padding-right: var(--spacing-xs);
+    }
+    #customLevelInput, .boost-override-input {
+        flex-grow: 1;
+        width: 100%;
+        min-width: calc(var(--component-height) * 0.75);
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--text-light);
+        font-size: var(--font-size-base);
+        text-align: center;
+        padding: 0;
+        -moz-appearance: textfield;
+    }
+    .main-boost-container .boost-override-input {
+        text-align: left;
+    }
+     .main-boost-container .level-input-wrapper {
+        padding: 0 var(--component-padding);
+    }
+    #customLevelInput::-webkit-outer-spin-button,
+    #customLevelInput::-webkit-inner-spin-button {
+        -webkit-appearance: none; margin: 0;
+    }
+    
+    .custom-checkbox {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: var(--component-height);
+        padding: 0 var(--spacing-xs);
+        background-color: var(--bg-dark);
+        border: var(--border-default);
+        border-radius: var(--border-radius);
+    }
+    .custom-checkbox input[type="checkbox"] {
+        position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0;
+    }
+    .custom-checkbox label {
+        display: flex; align-items: center; gap: var(--spacing-xs);
+        color: var(--text-light); cursor: pointer; user-select: none;
+        white-space: nowrap; width: 100%;
+        position: relative; font-size: var(--font-size-base);
+    }
+    .custom-checkbox label span {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #globalCompareWrapper label span {
+        position: static;
+        width: auto;
+        height: auto;
+    }
+    #globalCompareWrapper label {
+        justify-content: flex-start;
+    }
+    .custom-checkbox label::before {
+        content: ''; display: inline-block; flex-shrink: 0;
+        width: var(--spacing-lg); height: var(--spacing-lg);
+        background-color: var(--bg-dark); border: var(--border-default);
+        border-radius: var(--border-radius);
+        transition: background-color var(--transition-fast);
+        font-family: var(--font-family-icons); font-weight: var(--icon-font-weight);
+        font-size: var(--font-size-sm); color: var(--text-light);
+        text-align: center; line-height: var(--spacing-lg);
+    }
+    .custom-checkbox input:checked+label::before {
+        content: '\f00c'; background-color: var(--primary-accent);
+    }
+
+    .dropdown-flex-container {
+        display: flex; gap: var(--spacing-md); width: 100%;
+    }
+    .dropdown-flex-container .custom-dropdown { flex: 1; }
+    
+    .custom-dropdown, .menu-container { position: relative; }
+    .custom-dropdown { flex-grow: 1; }
+
+    .dropdown-trigger {
+        position: relative; display: flex; align-items: center; width: 100%;
+        height: var(--component-height); padding: 0 var(--component-padding);
+        padding-right: calc(var(--component-padding) * 3);
+        font-weight: var(--font-weight-normal);
+        font-size: var(--font-size-base);
+        border: var(--border-default); border-radius: var(--border-radius);
+        background-color: var(--bg-dark); color: var(--text-light);
+        cursor: pointer; text-align: left; user-select: none;
+        transition: border-color var(--transition-default), box-shadow var(--transition-default);
+    }
+    .dropdown-trigger:focus, .dropdown-trigger.focused {
+        outline: none; border-color: var(--primary-accent); box-shadow: var(--focus-shadow);
+    }
+    .dropdown-trigger-text {
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+    }
+    .dropdown-trigger::after {
+        content: ''; position: absolute; right: var(--dropdown-arrow-offset); top: 50%;
+        width: 0; height: 0; border-left: var(--dropdown-arrow-size) solid transparent;
+        border-right: var(--dropdown-arrow-size) solid transparent;
+        border-top: var(--dropdown-arrow-size) solid var(--text-light);
+        transform: translateY(-50%); transition: transform var(--transition-default);
+    }
+    .dropdown-trigger.open::after { transform: translateY(-50%) rotate(180deg); }
+
+    #unitSearchSuggestions, .dropdown-options {
+        position: absolute; left: 0; top: calc(100% + var(--spacing-sm));
+        overflow-y: auto; background-color: var(--bg-dark);
+        border: var(--border-default); border-radius: var(--border-radius);
+        padding: 0; scrollbar-width: none; -ms-overflow-style: none;
+        max-height: calc(4.5 * var(--dropdown-item-height));
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: opacity var(--transition-fast) var(--transition-timing), 
+                    transform var(--transition-fast) var(--transition-timing), 
+                    visibility 0s var(--transition-fast);
+    }
+    #unitSearchSuggestions.show, .dropdown-options.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        transition: opacity var(--transition-fast) var(--transition-timing), 
+                    transform var(--transition-fast) var(--transition-timing), 
+                    visibility 0s;
+    }
+    #unitSearchSuggestions { right: 0; z-index: var(--z-suggestions); }
+    .dropdown-options { width: 100%; z-index: var(--z-dropdown); }
+    #unitSearchSuggestions::-webkit-scrollbar, .dropdown-options::-webkit-scrollbar { display: none; }
+
+    #unitSearchSuggestions div, .dropdown-options div {
+        display: flex; align-items: center; position: relative;
+        min-height: var(--dropdown-item-height); padding: var(--component-padding);
+        font-size: var(--font-size-base); font-weight: var(--font-weight-normal);
+        line-height: var(--line-height-tight); background-color: var(--bg-dark);
+        color: var(--text-light); border: 0; border-top: var(--border-default);
+        cursor: pointer; text-align: left; user-select: none;
+        transition: padding-left var(--transition-fast) ease-in-out, background-color var(--transition-fast);
+    }
+    #unitSearchSuggestions div:first-child, .dropdown-options div:first-child { border-top: none; }
+    
+    .booster-option { 
+        white-space: normal; 
+        line-height: var(--line-height-loose); 
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0 var(--spacing-xs);
+    }
+
+    .dropdown-options div.selected:not(.booster-option), .booster-option.selected {
+        background-color: var(--primary-accent); padding-left: var(--selected-item-indent);
+    }
+    .booster-option.shiny { 
+        padding-left: calc(var(--selected-item-indent) + var(--shiny-item-offset)); 
+    }
+    .dropdown-options div.selected:not(.booster-option)::before,
+    .booster-option.selected::before,
+    .booster-option.shiny::after {
+        font-family: var(--font-family-icons); font-weight: var(--icon-font-weight);
+        position: absolute; top: 50%; transform: translateY(-50%);
+    }
+    .dropdown-options div.selected:not(.booster-option)::before,
+    .booster-option.selected::before { content: "\f00c"; left: var(--dropdown-arrow-offset); }
+    .booster-option.shiny::after { content: "\f005"; left: var(--selected-item-indent); }
+    
+    @media (hover: hover) {
+        #unitSearchSuggestions div:hover, .dropdown-options div:hover {
+            background-color: var(--primary-accent-hover);
+            padding-left: var(--spacing-lg);
+        }
+        .dropdown-options div.selected:not(.booster-option):hover { padding-left: var(--selected-item-indent); }
+        .booster-option:hover { background-color: var(--primary-accent-hover); }
+        .booster-option.selected:hover { padding-left: var(--selected-item-indent); }
+        .booster-option.shiny:hover { padding-left: calc(var(--selected-item-indent) + var(--shiny-item-offset)); }
+    }
+
+    .menu-flyout {
+        position: absolute; top: calc(100% + var(--spacing-sm)); right: 0;
+        display: flex; flex-direction: column; gap: var(--spacing-sm);
+        z-index: var(--z-dropdown); transform: translateY(calc(-1 * var(--spacing-md)));
+        opacity: 0; visibility: hidden;
+        transition: transform var(--transition-fast) var(--transition-timing), 
+                    opacity var(--transition-fast) var(--transition-timing), 
+                    visibility 0s var(--transition-fast);
+    }
+    .menu-flyout.show {
+        transform: translateY(0); opacity: 1; visibility: visible;
+        transition: transform var(--transition-fast) var(--transition-timing), 
+                    opacity var(--transition-fast) var(--transition-timing), 
+                    visibility 0s;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .table-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+    table {
+        border-collapse: separate; border-spacing: 0; min-width: 100%;
+        overflow: hidden; border: var(--border-default); border-radius: var(--border-radius);
+    }
+    th, td {
+        padding: var(--component-padding); font-size: var(--font-size-base);
+        line-height: var(--line-height-tight); white-space: nowrap;
+        text-align: center; vertical-align: middle;
+    }
+    th {
+        background-color: var(--primary-accent); color: var(--text-light); font-weight: var(--font-weight-bold);
+    }
+    td { color: var(--text-light); border-top: var(--border-default); }
+    th:not(:last-child), td:not(:last-child) { border-right: var(--border-default); }
+    .main-header-row th { border-top: var(--border-default); }
+    th:not(.dropdown-header-cell):not(.sortable-header) {
+        padding-top: var(--spacing-sm); padding-bottom: var(--spacing-sm);
+    }
+    
+   td.note-cell {
+        white-space: normal;
+    }
+
+      td.passive-name-cell {
+        white-space: normal;
+    }
+
+    th.sortable-header {
+        cursor: pointer; user-select: none; padding: 0;
+        transition: background-color var(--transition-fast);
+    }
+    .sortable-header-content {
+        display: flex; justify-content: center; align-items: center;
+        padding: var(--spacing-sm) var(--component-padding); width: 100%; height: 100%;
+    }
+    .sort-indicator {
+        font-size: var(--font-size-sm); width: 0; opacity: 0;
+        overflow: hidden; margin-left: 0; display: flex;
+        align-items: center; justify-content: center;
+        transition: opacity var(--transition-fast), width var(--transition-fast), margin-left var(--transition-fast);
+    }
+    .sort-indicator.visible { opacity: 1; width: 1em; margin-left: var(--spacing-xs); }
+    .sort-indicator i { transition: transform var(--transition-medium) var(--transition-timing); }
+    .sort-indicator i.descending { transform: rotate(180deg); }
+    @media (hover: hover) {
+        th.sortable-header:hover { background-color: var(--primary-accent-hover); }
+    }
+    
+    td.clickable-unit-name {
+        cursor: pointer; font-weight: var(--font-weight-normal);
+        transition: background-color var(--transition-fast);
+    }
+    @media (hover: hover) {
+        td.clickable-unit-name:hover { background-color: var(--primary-accent-hover); }
+    }
+
+    .modal-panel {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: var(--modal-overlay-bg); display: flex;
+        justify-content: center; align-items: center;
+        z-index: var(--z-modal); opacity: 0; visibility: hidden;
+        transition: opacity var(--transition-default), visibility 0s var(--transition-default);
+        padding: var(--spacing-lg);
+    }
+    .modal-panel.show {
+        opacity: 1; visibility: visible;
+        transition-delay: 0s;
+    }
+    .modal-panel-content {
+        display: flex; flex-direction: column; gap: var(--spacing-md);
+        position: relative; width: 100%; max-width: var(--modal-max-width);
+        max-height: var(--modal-content-max-height); background-color: var(--bg-dark);
+        border: var(--border-accent); border-radius: var(--border-radius);
+        padding: var(--spacing-lg); box-shadow: var(--modal-shadow);
+        overflow-y: auto;
+    }
+    .panel-header {
+        display: flex; justify-content: space-between; align-items: baseline;
+        gap: var(--spacing-md); flex-shrink: 0;
+    }
+    .modal-header-title {
+        color: var(--text-light); margin: 0; font-size: var(--font-size-hd);
+    }
+    .settings-section {
+        display: flex; flex-direction: column; gap: var(--spacing-sm);
+    }
+    .settings-buttons-container {
+        display: flex; gap: var(--spacing-sm);
+    }
+    .settings-buttons-container .action-button {
+        flex: 1; width: auto;
+        background-color: var(--bg-dark);
+    }
+    #presetSaveForm .action-button {
+        flex: 0 0 var(--component-height);
+        background-color: var(--primary-accent);
+    }
+    #presetSaveForm #presetNameInput {
+        flex-grow: 1;
+        min-width: 0;
+    }
+    .presets-list {
+        display: flex; flex-direction: column; gap: var(--spacing-sm);
+        max-height: calc(2 * var(--component-height) + 1 * var(--spacing-sm));
+        overflow-y: scroll;
+        padding-right: var(--spacing-sm);
+    }
+    .preset-item {
+        display: flex; align-items: center; gap: var(--spacing-xs);
+        height: var(--component-height);
+        padding: 0 var(--spacing-xs) 0 var(--component-padding);
+        background-color: var(--bg-dark);
+        border-radius: var(--border-radius);
+        border: var(--border-default);
+        flex-shrink: 0;
+    }
+    .preset-item-placeholder {
+        border-style: dashed;
+        border-color: var(--primary-accent);
+        background-color: transparent;
+    }
+    .preset-name {
+        flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        font-size: var(--font-size-base);
+    }
+    .preset-action-btn {
+        background-color: var(--primary-accent);
+        width: var(--button-small-size);
+        height: var(--button-small-size);
+        font-size: var(--font-size-md);
+    }
+
+    .graph-controls {
+        display: flex; align-items: center; gap: var(--spacing-md);
+        height: var(--component-height); flex-shrink: 0;
+    }
+    #graphLevelDropdownContainer { flex-grow: 1; }
+    #graphLevelDropdownContainer .custom-dropdown, #graphLevelDropdownContainer .dropdown-trigger { height: var(--component-height); }
+    #comparisonControl #globalCompareWrapper { display: contents; }
+    #unitComparisonDisplay {
+        display: flex; align-items: center; gap: var(--spacing-xs);
+        width: 100%; color: var(--text-light); user-select: none;
+        white-space: nowrap;
+    }
+    #unitComparisonDisplay span {
+        overflow: hidden; text-overflow: ellipsis; flex-grow: 1; text-align: center;
+    }
+    #graphContainer {
+        display: flex; flex-direction: column; gap: var(--spacing-md);
+    }
+    .stat-row {
+        display: grid; grid-template-columns: var(--graph-col-width) 1fr var(--graph-col-width);
+        align-items: center; gap: var(--component-padding);
+    }
+    .stat-label { font-weight: var(--font-weight-bold); text-align: right; user-select: none; }
+    .stat-bar-container {
+        background: var(--bg-medium); border-radius: var(--border-radius);
+        overflow: hidden; border: var(--border-width) solid var(--text-light);
+        height: var(--graph-bar-height);
+    }
+    .stat-bar {
+        height: 100%; width: 0; background-color: var(--primary-accent);
+        transition: width var(--transition-slow) cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .stat-value { text-align: left; user-select: none; }
+
+    #galleryPanel .modal-panel-content { max-height: var(--gallery-content-max-height); }
+    .gallery-controls { display: flex; gap: var(--spacing-sm); align-items: center; }
+    .gallery-sort-buttons { display: flex; flex-shrink: 0; gap: var(--spacing-xs); }
+    #galleryContainer {
+        display: grid; grid-template-columns: repeat(var(--gallery-cols-desktop), 1fr); gap: var(--spacing-md);
+        overflow-y: scroll; padding-right: var(--spacing-md);
+    }
+    .gallery-item { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); }
+    .gallery-image-container {
+        position: relative; width: 100%; padding: var(--border-width);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+    }
+
+    .gallery-image {
+        width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+        border-radius: calc(var(--border-radius) - var(--border-width));
+        display: block;
+        background: var(--unit-background);
+        position: relative;
+        z-index: var(--z-image);
+    }
+    .gallery-action-button {
+        position: absolute; right: var(--spacing-xs); z-index: 1; opacity: 0;
+        transition: opacity var(--transition-fast);
+        cursor: pointer;
+        pointer-events: none;
+    }
+    .gallery-search-button { top: var(--spacing-xs); }
+    .gallery-unsearch-button { top: var(--spacing-xs); }
+    .gallery-shiny-button {
+        top: var(--spacing-xs);
+        left: var(--spacing-xs);
+        right: auto;
+    }
+    .gallery-compare-button { top: calc(var(--spacing-xs) * 2 + var(--button-small-size)); display: none; }
+
+    .gallery-image-container.buttons-visible .gallery-action-button {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    @media (hover: hover) {
+        .gallery-image-container:hover .gallery-action-button,
+        .gallery-image-container:focus-within .gallery-action-button {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
+    .gallery-name { color: var(--text-light); }
+
+    #galleryContainer::-webkit-scrollbar, .presets-list::-webkit-scrollbar, .modal-panel-content::-webkit-scrollbar { 
+        height: var(--scrollbar-size); width: var(--scrollbar-size);
+    }
+    #galleryContainer::-webkit-scrollbar-track, .presets-list::-webkit-scrollbar-track, .modal-panel-content::-webkit-scrollbar-track { 
+        background: var(--bg-dark); border: var(--border-default); 
+        border-radius: var(--border-radius); 
+    }
+    #galleryContainer::-webkit-scrollbar-thumb, .presets-list::-webkit-scrollbar-thumb, .modal-panel-content::-webkit-scrollbar-thumb { 
+        background-color: var(--primary-accent); border-radius: var(--border-radius); 
+        border: var(--border-default); 
+    }
+    @media (hover: hover) {
+        #galleryContainer::-webkit-scrollbar-thumb:hover,
+        .presets-list::-webkit-scrollbar-thumb:hover,
+        .modal-panel-content::-webkit-scrollbar-thumb:hover {
+            background-color: var(--primary-accent-hover);
+        }
+    }
+
+    .animate-pulse {
+        animation: button-focus-pulse var(--transition-fastest) ease-in-out;
+    }
+    @keyframes button-focus-pulse {
+        50% { border-color: var(--primary-accent); box-shadow: var(--focus-shadow); }
+    }
+    
+    @media (max-width: 500px) {
+        #galleryContainer {
+            grid-template-columns: repeat(var(--gallery-cols-mobile), 1fr);
+        }
+
+        #galleryContainer, .presets-list {
+            padding-right: 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        #galleryContainer::-webkit-scrollbar, .presets-list::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .main-container {
+            padding: var(--spacing-md);
+        }
+        #unitImageWrapper {
+            width: auto;
+            max-width: 250px;
+        }
+        .search-container { justify-content: center; }
+        .input-container { flex-grow: 0; }
+        #unitSearchInput { width: var(--search-bar-width-lg); }
+        #unitStatsContainer { display: grid; justify-content: center; }
+    }
+</style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="search-container">
+            <div class="input-container">
+                <input type="text" id="unitSearchInput" placeholder="Search for a unit...">
+                <div id="unitSearchSuggestions"></div>
+            </div>
+            <button id="searchButton" class="action-button" aria-label="Search"><i class="fas fa-search"></i></button>
+            <button id="boostsButton" class="action-button" aria-label="Boosts"><i class="fas fa-star"></i></button>
+            <div class="menu-container">
+                <button id="menuButton" class="action-button" aria-label="Menu"><i class="fas fa-bars"></i></button>
+                <div id="menuFlyout" class="menu-flyout">
+                    <button id="galleryButton" class="action-button" aria-label="Gallery"><i class="fas fa-images"></i></button>
+                    <button id="graphButton" class="action-button" aria-label="Graph"><i class="fas fa-chart-bar"></i></button>
+                    <button id="dpsRankingsButton" class="action-button" aria-label="DPS Rankings"><i class="fas fa-trophy"></i></button>
+                    <button id="settingsButton" class="action-button" aria-label="Settings" disabled><i class="fas fa-cog"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="unitImageDisplayContainer" class="hidden">
+            <div id="unitImageWrapper">
+                <img id="displayedUnitImage" src="" alt="Selected Unit">
+            </div>
+        </div>
+        <div id="unitStatsContainer"></div>
+    </div>
+
+    <div id="boostsPanel" class="modal-panel">
+        <div class="modal-panel-content">
+            <div class="panel-header">
+                <div class="modal-header-title">Boosts</div>
+                <button id="closeBoostsButton" class="action-button" aria-label="Close boosts">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="boosterDropdownContainer"></div>
+            <div class="settings-section">
+                <div class="section-title">Boost Saving & Presets</div>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="saveBoostsCheckbox" name="saveBoosts">
+                    <label for="saveBoostsCheckbox"><span>Save Boosts</span></label>
+                </div>
+                <div class="settings-buttons-container">
+                    <button id="resetBoostsButton" class="action-button">Reset Boosts</button>
+                    <button id="savePresetButton" class="action-button">Save Preset</button>
+                </div>
+                <div id="presetSaveForm" class="settings-buttons-container hidden">
+                    <input type="text" id="presetNameInput" placeholder="Preset Name...">
+                    <button id="confirmSavePresetButton" class="action-button"><i class="fas fa-check"></i></button>
+                    <button id="cancelSavePresetButton" class="action-button"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="presetsListContainer" class="presets-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="graphPanel" class="modal-panel">
+        <div class="modal-panel-content">
+            <div class="panel-header">
+                <div class="modal-header-title" id="graphPanelHeader">Unit Stat Graph</div>
+                <button id="closeGraphButton" class="action-button" aria-label="Close graph">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="graph-controls">
+                 <div id="graphLevelDropdownContainer"></div>
+                 <div class="custom-checkbox" id="comparisonControl">
+                    <div id="globalCompareWrapper">
+                        <input type="checkbox" id="globalCompareCheckbox" name="globalCompare">
+                        <label for="globalCompareCheckbox"><span>Compare Globally</span></label>
+                    </div>
+                    <div id="unitComparisonDisplay" class="hidden"></div>
+                 </div>
+            </div>
+            <div id="graphContainer"></div>
+        </div>
+    </div>
+
+    <div id="galleryPanel" class="modal-panel">
+        <div class="modal-panel-content">
+            <div class="panel-header">
+                <div class="modal-header-title">Gallery</div>
+                <button id="closeGalleryButton" class="action-button" aria-label="Close gallery">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="gallery-controls">
+                <input type="text" id="galleryFilterInput" placeholder="Filter units...">
+                <div class="gallery-sort-buttons">
+                    <button id="sortAlphaButton" class="action-button" aria-label="Sort alphabetically"><i class="fas fa-sort-alpha-down"></i></button>
+                    <button id="sortRarityButton" class="action-button active" aria-label="Sort by rarity"><i class="fas fa-gem"></i></button>
+                </div>
+            </div>
+            <div id="galleryContainer"></div>
+        </div>
+    </div>
+
+    <div id="settingsPanel" class="modal-panel">
+        <div class="modal-panel-content">
+            <div class="panel-header">
+                <div class="modal-header-title">Settings</div>
+                <button id="closeSettingsButton" class="action-button" aria-label="Close settings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ENABLE_URL_ROUTING = true;
+
+            const GITHUB_URL = 'https://raw.githubusercontent.com/UGAccount/FNTDUG/main/Info';
+            const unitSearchInput = document.getElementById('unitSearchInput'), searchButton = document.getElementById('searchButton'),
+                boostsButton = document.getElementById('boostsButton'), unitSearchSuggestions = document.getElementById('unitSearchSuggestions'),
+                unitStatsContainer = document.getElementById('unitStatsContainer'), boostsPanel = document.getElementById('boostsPanel'),
+                closeBoostsButton = document.getElementById('closeBoostsButton'), boosterDropdownContainer = document.getElementById('boosterDropdownContainer'),
+                graphButton = document.getElementById('graphButton'), graphPanel = document.getElementById('graphPanel'),
+                closeGraphButton = document.getElementById('closeGraphButton'), graphContainer = document.getElementById('graphContainer'),
+                graphLevelDropdownContainer = document.getElementById('graphLevelDropdownContainer'),
+                menuButton = document.getElementById('menuButton'), menuFlyout = document.getElementById('menuFlyout'),
+                globalCompareCheckbox = document.getElementById('globalCompareCheckbox'),
+                globalCompareWrapper = document.getElementById('globalCompareWrapper'),
+                unitComparisonDisplay = document.getElementById('unitComparisonDisplay'),
+                galleryButton = document.getElementById('galleryButton'), galleryPanel = document.getElementById('galleryPanel'),
+                closeGalleryButton = document.getElementById('closeGalleryButton'), galleryContainer = document.getElementById('galleryContainer'),
+                galleryFilterInput = document.getElementById('galleryFilterInput'),
+                sortAlphaButton = document.getElementById('sortAlphaButton'), sortRarityButton = document.getElementById('sortRarityButton'),
+                dpsRankingsButton = document.getElementById('dpsRankingsButton'),
+                settingsButton = document.getElementById('settingsButton'), settingsPanel = document.getElementById('settingsPanel'),
+                closeSettingsButton = document.getElementById('closeSettingsButton'), saveBoostsCheckbox = document.getElementById('saveBoostsCheckbox'),
+                resetBoostsButton = document.getElementById('resetBoostsButton'), savePresetButton = document.getElementById('savePresetButton'),
+                presetSaveForm = document.getElementById('presetSaveForm'), presetNameInput = document.getElementById('presetNameInput'),
+                confirmSavePresetButton = document.getElementById('confirmSavePresetButton'), cancelSavePresetButton = document.getElementById('cancelSavePresetButton'),
+                presetsListContainer = document.getElementById('presetsListContainer'),
+                unitImageDisplayContainer = document.getElementById('unitImageDisplayContainer'),
+                unitImageWrapper = document.getElementById('unitImageWrapper'),
+                displayedUnitImage = document.getElementById('displayedUnitImage');
+
+
+            let allUnitData = {}, fuse, currentUnitName = null, previousUnitName = null, comparisonUnitName = null, customLevel = 1, currentGraphLevelIndex = -1,
+                selectedVersionKey = 'normal', selectedEnchantKey = 'None', selectedElementKey = 'Neutral', boosterSelections = [],
+                globalStatProfiles = {}, currentSort = { mode: 'rarity', direction: 'asc' }, isDpsRankingsMode = false,
+                dpsRankingsSort = { key: 'fullDps', direction: 'desc' },
+                settings = { saveBoosts: false, savedBoosts: null, presets: [] },
+                boosterData = {},
+                enchantMultipliers = {},
+                enchants = {},
+                unitImages = {};
+            
+            let pendingMainBoosts = null;
+            
+            const MAX_LEVEL = 60;
+       
+            const backendNotes = {};
+
+            const elementalAdvantages = {
+                "Electricity": { "Boosts": { "Water": 1.3, "Rust": 0.7 } },
+                "Fire": { "Boosts": { "Rust": 1.3, "Water": 0.7 } },
+                "Light": { "Boosts": { "Dark": 1.3, "Light": 0.7 } },
+                "Neutral": {},
+                "Dark": { "Boosts": { "Light": 1.3, "Dark": 0.7 } },
+                "Rust": { "Boosts": { "Electricity": 1.3, "Fire": 0.7 } },
+                "Water": { "Boosts": { "Fire": 1.3, "Electricity": 0.7 } }
+            };
+
+            const rarityClassMap = {
+                'Uncommon': 'rarity-uncommon',
+                'Rare': 'rarity-rare',
+                'Epic': 'rarity-epic',
+                'Mythic': 'rarity-mythic',
+                'Secret': 'rarity-secret',
+                'Nightmare': 'rarity-nightmare',
+                'Apex': 'rarity-apex',
+                'Hero': 'rarity-hero'
+            };
+            
+            const formatMangleValue = (valueString) => {
+                if (valueString !== 'N/A' && valueString && /[\d]/.test(valueString)) {
+                    const lastNumberMatch = valueString.match(/(\d+)$/);
+                    const suffix = (lastNumberMatch && parseInt(lastNumberMatch[1], 10) === 1) ? ' Mangle' : ' Mangles';
+                    return valueString + suffix;
+                }
+                return valueString;
+            };
+
+            const createUnitSlug = (name) => {
+                if (typeof name !== 'string') return '';
+                return name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+            };
+
+            const normalizeUnitName = (name) => {
+                if (typeof name !== 'string') return '';
+                return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            };
+            
+            const calculateLevelMultiplier = (level) => {
+                const core = (1 + 0.007 * level) * (1.003 ** level);
+                return Math.max(1, Math.min(core, 2));
+            };
+
+            const handleMenuClick = (e) => {
+                e.stopPropagation();
+                triggerAnimation(menuButton);
+                menuFlyout.classList.toggle('show');
+            };
+
+            const triggerAnimation = (button) => {
+                button.classList.remove('animate-pulse');
+                void button.offsetWidth;
+                button.classList.add('animate-pulse');
+            };
+            
+            const formatBoostsAsPercentString = (boosts) => {
+                if (!boosts || Object.keys(boosts).length === 0) return "N/A";
+                const parts = [];
+                const formatPercent = (val) => `${val > 0 ? '+' : ''}${val.toFixed(1)}%`;
+
+                if (boosts.dmg && boosts.dmg !== 1.0) {
+                    parts.push(`${formatPercent((boosts.dmg - 1) * 100)} DMG`);
+                }
+                if (boosts.cd && boosts.cd !== 1.0) {
+                    parts.push(`${formatPercent((boosts.cd - 1) * 100)} CD`);
+                }
+                if (boosts.range && boosts.range !== 1.0) {
+                    parts.push(`${formatPercent((boosts.range - 1) * 100)} Range`);
+                }
+                if (boosts.cost && boosts.cost !== 1.0) {
+                    parts.push(`${formatPercent((boosts.cost - 1) * 100)} Cost`);
+                }
+                
+                return parts.length > 0 ? `(${parts.join(', ')})` : '';
+            };
+
+            const generateOptionsObject = (multipliersObject) => {
+                const options = {};
+                for (const key in multipliersObject) {
+                    const name = key.charAt(0).toUpperCase() + key.slice(1);
+                    const percentString = formatBoostsAsPercentString(multipliersObject[key]);
+                    options[key] = `${name} ${percentString}`.trim();
+                }
+                return options;
+            };
+            
+            const versions = { normal: "Normal", shiny: "Shiny" };
+            const elements = Object.keys(elementalAdvantages).reduce((acc, key) => { acc[key] = key; return acc; }, {});
+            const calculateDPS = (damage, cooldown) => cooldown === 0 ? damage : (damage / cooldown);
+
+            const createTableRow = (cellType, data, rowClass = null) => {
+                const tr = document.createElement('tr');
+                if (rowClass) tr.className = rowClass;
+                data.forEach((item, index) => {
+                    const cell = document.createElement(cellType);
+                    cell.textContent = item;
+                    if (isDpsRankingsMode && index === 1 && cellType === 'td') {
+                        cell.classList.add('clickable-unit-name');
+                    }
+                    if (rowClass === 'note-row') {
+                        cell.classList.add('note-cell');
+                    }
+                    tr.appendChild(cell);
+                });
+                return tr;
+            };
+
+            const createTableInWrapper = (headers, rows, container, wrapperId = null) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'table-wrapper';
+                if (wrapperId) wrapper.id = wrapperId;
+                const table = document.createElement('table');
+                const thead = document.createElement('thead');
+                const tbody = document.createElement('tbody');
+                thead.appendChild(createTableRow('th', headers));
+                rows.forEach((rowData, index) => {
+                    let rowClass = null;
+                    if (wrapperId === 'note-table-wrapper') {
+                        rowClass = 'note-row';
+                    }
+                    tbody.appendChild(createTableRow('td', rowData, rowClass));
+                });
+                table.append(thead, tbody);
+                wrapper.appendChild(table);
+                container.appendChild(wrapper);
+            };
+            
+            function makeButtonHoldable(button, action, initialDelay = 400, repeatDelay = 100) {
+                let timer, interval;
+                const repeatedAction = () => {
+                    action();
+                    triggerAnimation(button);
+                };
+                const startAction = (e) => {
+                    e.preventDefault();
+                    repeatedAction();
+                    timer = setTimeout(() => {
+                        interval = setInterval(repeatedAction, repeatDelay);
+                    }, initialDelay);
+                };
+                const stopAction = () => {
+                    clearTimeout(timer);
+                    clearInterval(interval);
+                };
+                button.addEventListener('mousedown', startAction);
+                button.addEventListener('mouseup', stopAction);
+                button.addEventListener('mouseleave', stopAction);
+                button.addEventListener('touchstart', startAction, { passive: false });
+                button.addEventListener('touchend', stopAction);
+                button.addEventListener('touchcancel', stopAction);
+            }
+
+            const toggleDropdownHandler = (trigger, optionsDiv, e) => {
+                e?.stopPropagation();
+                document.querySelectorAll('.dropdown-trigger.open').forEach(t => {
+                    if (t !== trigger) {
+                        t.classList.remove('open', 'focused');
+                        const otherOptions = t.nextElementSibling;
+                        if (otherOptions) {
+                           otherOptions.classList.remove('show');
+                        }
+                    }
+                });
+                
+                const isOpen = optionsDiv.classList.toggle('show');
+                trigger.classList.toggle('open', isOpen);
+                trigger.classList.toggle('focused', isOpen);
+
+                if (!isOpen) {
+                    trigger.blur();
+                }
+                return isOpen;
+            };
+
+            const createCustomDropdown = (id, label, options, defaultValue, onChange, disabled = false) => {
+                const container = document.createElement('div'), trigger = document.createElement('div'), optionsDiv = document.createElement('div'),
+                      triggerText = document.createElement('span');
+                triggerText.className = 'dropdown-trigger-text';
+                container.className = 'custom-dropdown';
+                trigger.id = id;
+                trigger.className = 'dropdown-trigger';
+                trigger.tabIndex = disabled ? -1 : 0;
+                trigger.appendChild(triggerText);
+                const labelText = label ? `${label} ` : '';
+                triggerText.textContent = `${labelText}${options[defaultValue]}`;
+                trigger.dataset.value = defaultValue;
+                optionsDiv.className = 'dropdown-options';
+                Object.entries(options).forEach(([value, text]) => {
+                    const option = document.createElement('div');
+                    option.textContent = text;
+                    option.dataset.value = value;
+                    option.addEventListener('click', () => {
+                        triggerText.textContent = `${labelText}${text}`;
+                        trigger.dataset.value = value;
+                        optionsDiv.classList.remove('show');
+                        trigger.classList.remove('open', 'focused');
+                        onChange(value);
+                    });
+                    optionsDiv.appendChild(option);
+                });
+                const toggle = (e) => {
+                    const isOpen = toggleDropdownHandler(trigger, optionsDiv, e);
+                    if (isOpen) {
+                        const currentValue = trigger.dataset.value;
+                        optionsDiv.querySelectorAll('div').forEach(opt => {
+                            opt.classList.toggle('selected', opt.dataset.value === currentValue);
+                        });
+                    }
+                };
+                if (!disabled) {
+                    trigger.addEventListener('click', toggle);
+                    trigger.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); } });
+                }
+                container.append(trigger, optionsDiv);
+                
+                if (disabled) {
+                    container.style.pointerEvents = 'none';
+                    container.style.opacity = '0.5';
+                }
+                return container;
+            };
+
+            const createBoosterDropdown = (id, label, options, onChange) => {
+                const container = document.createElement('div'), trigger = document.createElement('div'), optionsDiv = document.createElement('div'),
+                      triggerText = document.createElement('span');
+                triggerText.className = 'dropdown-trigger-text';
+                container.className = 'custom-dropdown';
+                trigger.id = id;
+                trigger.className = 'dropdown-trigger';
+                trigger.tabIndex = 0;
+                trigger.appendChild(triggerText);
+                optionsDiv.className = 'dropdown-options';
+
+                const updateTriggerText = () => {
+                    const textParts = boosterSelections.map(b => b.version === 'shiny' ? `Shiny ${b.name}` : b.name);
+                    triggerText.textContent = textParts.length > 0 ? `${label}: ${textParts.join(', ')}` : `${label}: None`;
+                };
+
+                const boosterOptionElements = [];
+
+                const reorderBoosterOptions = () => {
+                    const firstPositions = {};
+                    boosterOptionElements.forEach(el => { firstPositions[el.dataset.value] = el.getBoundingClientRect(); });
+                    boosterOptionElements.sort((a, b) => {
+                        const aName = a.dataset.value, bName = b.dataset.value, 
+                              aIsSelected = boosterSelections.some(sel => sel.name === aName), 
+                              bIsSelected = boosterSelections.some(sel => sel.name === bName);
+                        if (aIsSelected && !bIsSelected) return -1;
+                        if (!aIsSelected && bIsSelected) return 1;
+                        return aName.localeCompare(bName);
+                    });
+                    boosterOptionElements.forEach(el => {
+                        optionsDiv.appendChild(el);
+                        const lastPos = el.getBoundingClientRect(), firstPos = firstPositions[el.dataset.value];
+                        const dy = firstPos.top - lastPos.top;
+                        if (dy !== 0) {
+                            el.style.transform = `translateY(${dy}px)`;
+                            el.style.transition = 'transform 0s';
+                            requestAnimationFrame(() => {
+                                el.style.transition = 'transform var(--transition-medium) ease-in-out';
+                                el.style.transform = 'translateY(0)';
+                                el.addEventListener('transitionend', () => { el.style.transform = ''; el.style.transition = ''; }, { once: true });
+                            });
+                        }
+                    });
+                };
+
+                Object.keys(options).forEach((boosterName) => {
+                    const option = document.createElement('div'), nameSpan = document.createElement('span'), statsSpan = document.createElement('span');
+                    option.className = 'booster-option';
+                    option.dataset.value = boosterName;
+                    nameSpan.textContent = boosterName;
+                    statsSpan.className = 'booster-stats';
+                    
+                    const updateOptionAppearance = (selection) => {
+                        if (selection) {
+                            option.classList.add('selected');
+                            if (selection.version === 'shiny') {
+                                option.classList.add('shiny');
+                                statsSpan.textContent = formatBoostsAsPercentString(options[boosterName].shinyBoosts);
+                            } else {
+                                option.classList.remove('shiny');
+                                statsSpan.textContent = formatBoostsAsPercentString(options[boosterName]);
+                            }
+                        } else {
+                             option.classList.remove('selected', 'shiny');
+                             statsSpan.textContent = formatBoostsAsPercentString(options[boosterName]);
+                        }
+                    };
+
+                    const existingSelection = boosterSelections.find(b => b.name === boosterName);
+                    updateOptionAppearance(existingSelection);
+                    
+                    option.append(nameSpan, statsSpan);
+
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const currentSelection = boosterSelections.find(b => b.name === boosterName);
+                        if (currentSelection) {
+                            if (currentSelection.version === 'normal' && options[boosterName].shinyBoosts) {
+                                currentSelection.version = 'shiny';
+                            } else {
+                                boosterSelections = boosterSelections.filter(b => b.name !== boosterName);
+                            }
+                        } else {
+                            boosterSelections.push({ name: boosterName, version: 'normal' });
+                        }
+                        
+                        updateOptionAppearance(boosterSelections.find(b => b.name === boosterName));
+                        updateTriggerText();
+                        onChange();
+                    });
+                    boosterOptionElements.push(option);
+                });
+                
+                reorderBoosterOptions();
+                const toggle = (e) => { if (!toggleDropdownHandler(trigger, optionsDiv, e)) reorderBoosterOptions(); };
+                trigger.addEventListener('click', toggle);
+                trigger.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); } });
+                container.append(trigger, optionsDiv);
+                updateTriggerText();
+                return container;
+            };
+            
+            function getCurrentUnitData() {
+                if (!currentUnitName || !allUnitData[currentUnitName]) return null;
+                return allUnitData[currentUnitName];
+            }
+            
+            function parsePercentage(value, statType = 'default') {
+                if (typeof value !== 'string' || value.trim() === '') return 1.0;
+                let cleanedValue = value.replace('%', '').trim();
+                
+                if (statType === 'cd' && /^[\d.]+$/.test(cleanedValue)) {
+                    cleanedValue = `-${cleanedValue}`;
+                }
+
+                const number = parseFloat(cleanedValue);
+                if (isNaN(number)) return 1.0;
+                return 1 + (number / 100);
+            }
+
+            function getGlobalBoostMultipliers() {
+                const multipliers = { dmg: 1.0, cd: 1.0, range: 1.0, cost: 1.0 };
+                
+                if (selectedVersionKey === 'shiny') {
+                    multipliers.dmg *= 1.10;
+                }
+                
+                const enchant = enchantMultipliers[selectedEnchantKey];
+                if (enchant) {
+                    multipliers.dmg *= (enchant.dmg || 1.0);
+                    multipliers.cd *= (enchant.cd || 1.0);
+                    multipliers.range *= (enchant.range || 1.0);
+                    multipliers.cost *= (enchant.cost || 1.0);
+                }
+
+                multipliers.dmg *= calculateLevelMultiplier(customLevel);
+
+                boosterSelections.forEach(selection => {
+                    const unitBoosterData = boosterData[selection.name];
+                    if (unitBoosterData) {
+                        const effectiveBoosts = selection.version === 'shiny' ? (unitBoosterData.shinyBoosts || unitBoosterData) : unitBoosterData;
+                        if (effectiveBoosts.dmg) multipliers.dmg *= effectiveBoosts.dmg;
+                        if (effectiveBoosts.cd) multipliers.cd *= effectiveBoosts.cd;
+                        if (effectiveBoosts.range) multipliers.range *= effectiveBoosts.range;
+                    }
+                });
+
+                const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                const mainCdInput = document.getElementById('mainCdBoostInput');
+                const mainRngInput = document.getElementById('mainRngBoostInput');
+
+                if (mainDmgInput) multipliers.dmg *= parsePercentage(mainDmgInput.value);
+                if (mainCdInput) multipliers.cd *= parsePercentage(mainCdInput.value, 'cd');
+                if (mainRngInput) multipliers.range *= parsePercentage(mainRngInput.value);
+                
+                return multipliers;
+            }
+
+            function populateSingleUnitTbody() {
+                const unitData = getCurrentUnitData();
+                if (!unitData) return;
+
+                const tbody = document.getElementById('upgrades-tbody');
+                if (!tbody) return;
+
+                const hasDamageStats = unitData.Upgrades.some(upg => upg.Damage !== undefined);
+                const hasBoostStats = unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
+                const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
+                const hasRangeStat = unitData.Upgrades.some(upg => upg.Range !== undefined);
+                const hasPerUpgradeTypes = unitData.hasPerUpgradeTypes;
+                
+                const elementalContainer = document.getElementById('elemental-dps-container');
+                if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
+
+                const multipliers = getGlobalBoostMultipliers();
+                const upgradeRows = [];
+                let maxDPS = 0;
+
+                unitData.Upgrades.forEach((upgrade, i) => {
+                    const levelName = i === 0 ? 'Placement' : (i === unitData.Upgrades.length - 1 ? 'Max' : `UPG ${i}`);
+                    const basePrice = i === 0 ? (unitData.PlacePrice || 0) : (upgrade.Price || 0);
+                    const price = basePrice * multipliers.cost;
+                    let rowData = [levelName, price.toLocaleString()];
+                    if (hasPerUpgradeTypes) {
+                        rowData.push(upgrade.Type || '-');
+                    }
+
+                    if (hasDamageStats) {
+                        const modDmg = upgrade.Damage * multipliers.dmg;
+                        const modCd = upgrade.Cooldown * multipliers.cd;
+                        const modRange = upgrade.Range * multipliers.range;
+                        
+                        const dps = calculateDPS(modDmg, modCd);
+                        if (dps > maxDPS) maxDPS = dps;
+                        rowData.push(dps.toFixed(2), modDmg.toFixed(2), modCd.toFixed(3), modRange.toFixed(1));
+                    }
+                    if (hasDpsBoost) {
+                        const dmgBoost = upgrade.DamageBoost || 1.0;
+                        const cdBoost = upgrade.CooldownBoost || 1.0;
+                        const dpsBoostPercent = (((dmgBoost / cdBoost) - 1) * 100).toFixed(1);
+                        rowData.push(`${dpsBoostPercent}%`);
+                    }
+                    if (hasBoostStats) {
+                        const boostParts = [];
+                        if (upgrade.DamageBoost) boostParts.push(`${upgrade.DamageBoost}x DMG`);
+                        if (upgrade.CooldownBoost) boostParts.push(`${upgrade.CooldownBoost}x CD`);
+                        if (upgrade.RangeBoost) boostParts.push(`${upgrade.RangeBoost}x Range`);
+                        rowData.push(boostParts.join(', '));
+                    }
+                    if (hasRangeStat && !hasDamageStats) {
+                        rowData.push(upgrade.Range);
+                    }
+                    upgradeRows.push(rowData);
+                });
+
+                tbody.replaceChildren(...upgradeRows.map(rowData => createTableRow('td', rowData)));
+
+                if (hasDamageStats) {
+                    const totalDPS = maxDPS * (unitData.Max || 1);
+                    const summaryWrapper = document.getElementById('summary-table-wrapper');
+                    const totalDpsCell = summaryWrapper?.querySelector('td');
+                    if (totalDpsCell) totalDpsCell.textContent = totalDPS.toFixed(2);
+                    
+                    if (elementalContainer) {
+                        elementalContainer.innerHTML = '';
+                        const advantages = elementalAdvantages[selectedElementKey]?.Boosts;
+                        if (selectedElementKey !== 'Neutral' && advantages) {
+                            const boosts = Object.entries(advantages).filter(([, val]) => val !== 1.0);
+                            if (boosts.length > 0) {
+                                const headers = boosts.map(([key]) => `${key} DPS`);
+                                const data = [boosts.map(([, val]) => (totalDPS * val).toFixed(2))];
+                                createTableInWrapper(headers, data, elementalContainer);
+                            }
+                        }
+                    }
+                }
+            }
+
+            function calculateBoostedMaxStats(unit) {
+                if (!unit.Upgrades || unit.Upgrades.length === 0 || unit.BaseStats.Damage === undefined) return null;
+
+                const maxLevelStats = unit.Upgrades[unit.Upgrades.length - 1];
+                const multipliers = getGlobalBoostMultipliers();
+
+                const boostedDmg = maxLevelStats.Damage * multipliers.dmg;
+                const boostedCd = maxLevelStats.Cooldown * multipliers.cd;
+                const boostedRange = maxLevelStats.Range * multipliers.range;
+
+                const unitElement = unit.Element || 'Neutral';
+                const enemyElement = selectedElementKey; 
+                let elementalMultiplier = 1.0;
+                if (elementalAdvantages[unitElement] && elementalAdvantages[unitElement].Boosts && elementalAdvantages[unitElement].Boosts[enemyElement] !== undefined) {
+                    elementalMultiplier = elementalAdvantages[unitElement].Boosts[enemyElement];
+                }
+
+                const finalDmg = boostedDmg * elementalMultiplier;
+                const placements = unit.Max || 1;
+                const fullDps = calculateDPS(finalDmg, boostedCd) * placements;
+
+                return {
+                    name: unit.Name,
+                    type: unit.Type || 'N/A',
+                    maxUpgradeType: unit.maxUpgradeType || 'N/A',
+                    element: unitElement,
+                    placements: placements,
+                    fullDps: fullDps,
+                    damage: finalDmg,
+                    cd: boostedCd,
+                    range: boostedRange
+                };
+            }
+
+            function filterDpsRankings() {
+                const filterText = unitSearchInput.value.toLowerCase().trim();
+                const tableBody = document.getElementById('upgrades-tbody');
+                if (!tableBody) return;
+
+                const rows = tableBody.getElementsByTagName('tr');
+                for (const row of rows) {
+                    const unitName = row.dataset.unitName;
+                    if (unitName && unitName.includes(filterText)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            }
+            
+            function renderRankingsTbody(rankingsData) {
+                const upgradesTbody = document.getElementById('upgrades-tbody');
+                if (!upgradesTbody) return;
+                
+                const rowsFragment = document.createDocumentFragment();
+                rankingsData.forEach((stats, index) => {
+                    const rowData = [
+                        index + 1,
+                        stats.name,
+                        stats.type,
+                        stats.element,
+                        stats.placements,
+                        stats.fullDps.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+                        stats.damage.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+                        stats.cd.toFixed(3),
+                        stats.range.toFixed(1)
+                    ];
+                    const tr = createTableRow('td', rowData);
+                    tr.dataset.unitName = stats.name.toLowerCase();
+                    rowsFragment.appendChild(tr);
+                });
+                upgradesTbody.replaceChildren(rowsFragment);
+                filterDpsRankings();
+            }
+
+            function populateRankingsTbody() {
+                const rankingsData = [];
+                for (const unitName in allUnitData) {
+                    let unitData = allUnitData[unitName];
+                    const boostedStats = calculateBoostedMaxStats(unitData);
+                    if (boostedStats && boostedStats.fullDps > 0) {
+                        rankingsData.push(boostedStats);
+                    }
+                }
+
+                const typeOrder = { 'Full': 1, 'Cone': 2, 'Circle': 3, 'Line': 4, 'Single': 5 };
+                const getTypeRank = (typeStr) => {
+                    if (!typeStr) return 6;
+                    return typeOrder[typeStr] || 6;
+                };
+
+                const defaultCriteria = [
+                    { key: 'fullDps', direction: 'desc' },
+                    { key: 'type', direction: 'asc' },
+                    { key: 'range', direction: 'desc' },
+                    { key: 'cd', direction: 'asc' },
+                    { key: 'damage', direction: 'desc' },
+                    { key: 'placements', direction: 'desc' },
+                ];
+                
+                const primaryCriterion = { key: dpsRankingsSort.key, direction: dpsRankingsSort.direction };
+
+                const sortCriteria = [
+                    primaryCriterion,
+                    ...defaultCriteria.filter(c => c.key !== primaryCriterion.key),
+                    { key: 'name', direction: 'asc' }
+                ];
+                
+                rankingsData.sort((a, b) => {
+                    for (const { key, direction } of sortCriteria) {
+                        let valA = a[key];
+                        let valB = b[key];
+
+                        if (key === 'type') {
+                            valA = getTypeRank(a.maxUpgradeType);
+                            valB = getTypeRank(b.maxUpgradeType);
+                        }
+
+                        let comparison = 0;
+                        if (valA < valB) {
+                            comparison = -1;
+                        } else if (valA > valB) {
+                            comparison = 1;
+                        }
+
+                        if (comparison !== 0) {
+                            return direction === 'asc' ? comparison : -comparison;
+                        }
+                    }
+                    return 0;
+                });
+                
+                renderRankingsTbody(rankingsData);
+                updateRankingsHeaderUI();
+            }
+
+            function updateRankingsHeaderUI() {
+                const headerRow = document.getElementById('stats-header-row');
+                if (!headerRow) return;
+
+                headerRow.querySelectorAll('th.sortable-header').forEach(th => {
+                    const indicator = th.querySelector('.sort-indicator');
+                    const icon = indicator ? indicator.querySelector('i') : null;
+                    if (!indicator || !icon) return;
+
+                    if (th.dataset.sortKey === dpsRankingsSort.key) {
+                        indicator.classList.add('visible');
+                        icon.classList.toggle('descending', dpsRankingsSort.direction === 'desc');
+                    } else {
+                        indicator.classList.remove('visible');
+                    }
+                });
+            }
+            
+            function persistBoostsIfEnabled() {
+                if (settings.saveBoosts) {
+                    settings.savedBoosts = getBoostsState();
+                    saveSettings();
+                }
+            }
+
+            function updateView() {
+                if (!currentUnitName && !isDpsRankingsMode) return;
+                
+                if (currentUnitName) {
+                    persistBoostsIfEnabled();
+                }
+
+                if (!document.getElementById('main-stats-table') && !isDpsRankingsMode) return;
+                
+                const rarityInfoWrapper = document.getElementById('rarity-info-table-wrapper');
+                if (rarityInfoWrapper && currentUnitName && allUnitData[currentUnitName]) {
+                    const unitData = allUnitData[currentUnitName];
+                    if (unitData.Value) {
+                        const headers = Array.from(rarityInfoWrapper.querySelectorAll('thead th'));
+                        const valueIndex = headers.findIndex(th => th.textContent === 'Value');
+                        const demandIndex = headers.findIndex(th => th.textContent === 'Demand');
+
+                        if (valueIndex > -1 && demandIndex > -1) {
+                            const dataCells = rarityInfoWrapper.querySelectorAll('tbody td');
+                            const valueCell = dataCells[valueIndex];
+                            const demandCell = dataCells[demandIndex];
+
+                            const versionValueData = selectedVersionKey === 'shiny' ? unitData.Value.Shiny : unitData.Value.Normal;
+                            
+                            let displayValue = 'N/A';
+                            let displayDemand = 'N/A';
+
+                            if (versionValueData) {
+                                displayValue = versionValueData.value || 'N/A';
+                                displayDemand = versionValueData.demand || 'N/A';
+                            }
+
+                            if (valueCell) valueCell.textContent = formatMangleValue(displayValue);
+                            if (demandCell) demandCell.textContent = displayDemand;
+                        }
+                    }
+                }
+
+
+                if (isDpsRankingsMode && !document.getElementById('main-stats-table')) {
+                    renderUnitTables();
+                }
+
+                const elementDropdownTrigger = document.getElementById('elementDropdown');
+                if (elementDropdownTrigger) {
+                    const triggerText = elementDropdownTrigger.querySelector('.dropdown-trigger-text');
+                    if (isDpsRankingsMode) {
+                        triggerText.textContent = `Enemy Element: ${elements[selectedElementKey]}`;
+                        elementDropdownTrigger.style.pointerEvents = 'auto';
+                        elementDropdownTrigger.style.opacity = '1';
+                        elementDropdownTrigger.style.cursor = 'pointer';
+                        elementDropdownTrigger.tabIndex = 0;
+                    } else {
+                        triggerText.textContent = `Element: ${elements[selectedElementKey]}`;
+                        elementDropdownTrigger.style.pointerEvents = 'none';
+                        elementDropdownTrigger.style.opacity = '0.6';
+                        elementDropdownTrigger.style.cursor = 'not-allowed';
+                        elementDropdownTrigger.tabIndex = -1;
+                    }
+                }
+
+                document.querySelectorAll('.aux-table').forEach(el => {
+                    el.style.display = isDpsRankingsMode ? 'none' : '';
+                });
+                
+                const statsHeaderRow = document.getElementById('stats-header-row');
+                const upgradesTbody = document.getElementById('upgrades-tbody');
+                if (!statsHeaderRow || !upgradesTbody) return;
+
+                statsHeaderRow.innerHTML = ''; 
+
+                if (isDpsRankingsMode) {
+                    const sortKeyMap = { 'Full DPS': 'fullDps', 'Type': 'type', 'Element': 'element', 'Placements': 'placements', 'Damage': 'damage', 'CD': 'cd', 'Range': 'range' };
+                    const rankingHeaders = ['Rank', 'Name', 'Type', 'Element', 'Placements', 'Full DPS', 'Damage', 'CD', 'Range'];
+                    
+                    rankingHeaders.forEach(headerText => {
+                        const th = document.createElement('th');
+                        const sortKey = sortKeyMap[headerText];
+                        const contentWrapper = document.createElement('div');
+                        const textSpan = document.createElement('span');
+                        textSpan.textContent = headerText;
+                        contentWrapper.appendChild(textSpan);
+
+                        if (sortKey) {
+                            th.classList.add('sortable-header');
+                            th.dataset.sortKey = sortKey;
+                            contentWrapper.classList.add('sortable-header-content');
+                            
+                            const indicator = document.createElement('span');
+                            indicator.className = 'sort-indicator';
+                            indicator.innerHTML = '<i class="fas fa-caret-up"></i>';
+                            
+                            contentWrapper.appendChild(indicator);
+
+                            th.addEventListener('click', () => {
+                                if (dpsRankingsSort.key === sortKey) {
+                                    dpsRankingsSort.direction = dpsRankingsSort.direction === 'asc' ? 'desc' : 'asc';
+                                } else {
+                                    dpsRankingsSort.key = sortKey;
+                                    dpsRankingsSort.direction = (sortKey === 'type' || sortKey === 'element' || sortKey === 'cd') ? 'asc' : 'desc';
+                                }
+                                populateRankingsTbody();
+                            });
+                        }
+                        th.appendChild(contentWrapper);
+                        statsHeaderRow.appendChild(th);
+                    });
+                    populateRankingsTbody();
+                } else {
+                    const stats = getCurrentUnitData();
+                    if (!stats) return;
+                    
+                    const hasDamageStats = stats.Upgrades.some(upg => upg.Damage !== undefined);
+                    const hasBoostStats = stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
+                    const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
+                    const hasRangeStat = stats.Upgrades.some(upg => upg.Range !== undefined);
+                    const hasPerUpgradeTypes = stats.hasPerUpgradeTypes;
+
+                    let headers = ['Level', 'Cost'];
+                    if (hasPerUpgradeTypes) headers.push('Attack Type');
+                    if (hasDamageStats) headers.push('DPS', 'Damage', 'Cooldown', 'Range');
+                    if (hasDpsBoost) headers.push('DPS Boost');
+                    if (hasBoostStats) headers.push('Boosts');
+                    if (hasRangeStat && !hasDamageStats) headers.push('Range');
+
+                    headers.forEach(headerText => {
+                        const th = document.createElement('th');
+                        th.textContent = headerText;
+                        statsHeaderRow.appendChild(th);
+                    });
+                    populateSingleUnitTbody();
+                }
+                
+                const elementHeaderCell = document.getElementById('element-header-cell');
+                const boostHeaderCell = document.getElementById('boost-header-cell');
+                if (statsHeaderRow && elementHeaderCell && boostHeaderCell) {
+                    const columnCount = statsHeaderRow.children.length;
+                    elementHeaderCell.colSpan = columnCount;
+                    boostHeaderCell.colSpan = columnCount;
+                }
+            }
+
+            function adjustObtainabilityLayout() {
+                const wrapper = document.getElementById('obtainability-wrapper');
+                if (!wrapper) return;
+                
+                const table = wrapper.querySelector('table');
+                if (!table || !table.dataset.methods) return;
+
+                const methods = JSON.parse(table.dataset.methods);
+                const thead = table.querySelector('thead');
+                const tbody = table.querySelector('tbody');
+                
+                if (!thead || !tbody || methods.length === 0) return;
+
+                thead.innerHTML = '';
+                tbody.innerHTML = '';
+
+                const isMobileView = window.innerWidth < 768;
+
+                if (isMobileView || methods.length === 1) {
+                    thead.appendChild(createTableRow('th', ['Obtainability']));
+                    methods.forEach(method => {
+                        tbody.appendChild(createTableRow('td', [method], 'note-row'));
+                    });
+                } else {
+                    const headerRow = createTableRow('th', ['Obtainability']);
+                    headerRow.firstElementChild.colSpan = methods.length;
+                    thead.appendChild(headerRow);
+                    tbody.appendChild(createTableRow('td', methods, 'note-row'));
+                }
+            }
+
+            function setDropdownMinWidths() {
+                const ruler = document.createElement('span');
+                ruler.style.cssText = 'visibility:hidden; position:absolute; white-space:nowrap; font-size:16px; padding:10px;';
+                document.body.appendChild(ruler);
+                document.querySelectorAll('.dropdown-flex-container .custom-dropdown').forEach(dropdown => {
+                    let maxWidth = 0;
+                    const trigger = dropdown.querySelector('.dropdown-trigger');
+                    let label = '';
+                    if (trigger.id === 'versionDropdown') label = 'Version: ';
+                    else if (trigger.id === 'enchantDropdown') label = 'Enchant: ';
+                    else if (trigger.id === 'elementDropdown') label = 'Element: ';
+                    
+                    for (const option of dropdown.querySelector('.dropdown-options').children) {
+                        ruler.textContent = label + option.textContent;
+                        maxWidth = Math.max(maxWidth, ruler.offsetWidth);
+                    }
+                    dropdown.style.minWidth = `${maxWidth + 40}px`;
+                });
+                document.body.removeChild(ruler);
+            }
+
+            function updateUnitVisuals() {
+                if (!currentUnitName || !allUnitData[currentUnitName]) return;
+
+                const baseUnitStats = allUnitData[currentUnitName];
+
+                const normalImageUrl = unitImages[normalizeUnitName(currentUnitName)];
+                let imageUrl = normalImageUrl;
+                if (selectedVersionKey === 'shiny') {
+                    const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${currentUnitName}`)];
+                    imageUrl = shinyImageUrl || normalImageUrl;
+                }
+                displayedUnitImage.src = imageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
+
+                const allRarityClasses = Object.values(rarityClassMap);
+                unitImageWrapper.classList.remove(...allRarityClasses, 'shiny-border', 'shiny-overlay');
+
+                if (baseUnitStats.Rarity && rarityClassMap[baseUnitStats.Rarity]) {
+                    unitImageWrapper.classList.add(rarityClassMap[baseUnitStats.Rarity]);
+                }
+
+                if (selectedVersionKey === 'shiny') {
+                    unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
+                }
+            }
+
+            function renderUnitTables() {
+                const currentBoosts = getBoostsState();
+                let mainDmgValue = currentBoosts.mainDmg;
+                let mainCdValue = currentBoosts.mainCd;
+                let mainRngValue = currentBoosts.mainRng;
+
+                const isFirstRender = !document.getElementById('mainDmgBoostInput');
+                if (isFirstRender && pendingMainBoosts) {
+                    mainDmgValue = pendingMainBoosts.dmg;
+                    mainCdValue = pendingMainBoosts.cd;
+                    mainRngValue = pendingMainBoosts.rng;
+                    pendingMainBoosts = null;
+                }
+
+                unitStatsContainer.style.visibility = 'hidden';
+                unitStatsContainer.innerHTML = '';
+                
+                const stats = getCurrentUnitData();
+                if (!stats && !isDpsRankingsMode) {
+                    unitStatsContainer.style.visibility = 'visible';
+                    return;
+                }
+                
+                if (isDpsRankingsMode && !stats) {
+                    currentUnitName = 'Freddy';
+                }
+                const currentStats = getCurrentUnitData();
+                if (!currentStats) {
+                    unitStatsContainer.style.visibility = 'visible';
+                    return;
+                }
+                
+                selectedElementKey = isDpsRankingsMode ? selectedElementKey : (currentStats.Element || 'Neutral');
+
+                updateUnitVisuals();
+
+                if (currentStats.BackendNote) {
+                    const noteWrapper = document.createElement('div');
+                    noteWrapper.className = 'aux-table';
+                    createTableInWrapper(['Note'], [[currentStats.BackendNote]], noteWrapper, 'note-table-wrapper');
+                    unitStatsContainer.appendChild(noteWrapper);
+                }
+                
+                const rarityWrapper = document.createElement('div');
+                rarityWrapper.className = 'aux-table';
+                rarityWrapper.id = 'rarity-info-table-wrapper';
+                
+                const headers = ['Rarity', 'Attack Type', 'Element', 'Placements'];
+                const rowData = [
+                    currentStats.Rarity || 'N/A',
+                    currentStats.Type || 'N/A',
+                    currentStats.Element || 'Neutral',
+                    currentStats.Max || 'N/A'
+                ];
+
+                const tradingValueData = currentStats.Value;
+                if (tradingValueData) {
+                    headers.splice(1, 0, 'Value', 'Demand');
+
+                    const versionValueData = selectedVersionKey === 'shiny' ? tradingValueData.Shiny : tradingValueData.Normal;
+                    
+                    let displayValue = 'N/A';
+                    let displayDemand = 'N/A';
+                    
+                    if (versionValueData) {
+                        displayValue = versionValueData.value || 'N/A';
+                        displayDemand = versionValueData.demand || 'N/A';
+                    }
+
+                    rowData.splice(1, 0, formatMangleValue(displayValue), displayDemand);
+                }
+
+                createTableInWrapper(headers, [rowData], rarityWrapper);
+                unitStatsContainer.appendChild(rarityWrapper);
+
+                const obtainabilityMethods = currentStats.Obtainability && currentStats.Obtainability.length > 0 ? currentStats.Obtainability : [];
+                const obtainabilityWrapper = document.createElement('div');
+                obtainabilityWrapper.className = 'aux-table';
+                obtainabilityWrapper.id = 'obtainability-wrapper';
+
+                if (obtainabilityMethods.length > 0) {
+                    const tableWrapper = document.createElement('div');
+                    tableWrapper.className = 'table-wrapper';
+                    const table = document.createElement('table');
+                    table.dataset.methods = JSON.stringify(obtainabilityMethods);
+                    
+                    table.appendChild(document.createElement('thead'));
+                    table.appendChild(document.createElement('tbody'));
+                    
+                    tableWrapper.appendChild(table);
+                    obtainabilityWrapper.appendChild(tableWrapper);
+                } else {
+                    createTableInWrapper(['Obtainability'], [['Data Not Available']], obtainabilityWrapper);
+                }
+                unitStatsContainer.appendChild(obtainabilityWrapper);
+
+
+                const passives = currentStats.Passives || {};
+                const actives = currentStats.Actives || [];
+                const allAbilities = Object.entries(passives);
+
+                actives.forEach(active => {
+                    const activeName = `Active: ${active.Name}`;
+                    let activeDesc = active.Description;
+                    if (active.Upgrade !== undefined) {
+                        const upgradeLevelText = active.Upgrade === 0 ? 'Placement' : `UPG ${active.Upgrade}`;
+                        let details = `(Unlocks at ${upgradeLevelText}`;
+                        if (active.Cooldown !== undefined) {
+                            const cooldownText = typeof active.Cooldown === 'number' ? `${active.Cooldown}s` : active.Cooldown;
+                            details += `, Cooldown: ${cooldownText}`;
+                        }
+                        details += ')';
+                        activeDesc += ` ${details}`;
+                    }
+                    allAbilities.push([activeName, activeDesc]);
+                });
+
+                if (allAbilities.length > 0) {
+                    const abilityWrapper = document.createElement('div');
+                    abilityWrapper.className = 'aux-table';
+                    
+                    const tableWrapper = document.createElement('div');
+                    tableWrapper.className = 'table-wrapper';
+                    const table = document.createElement('table');
+                    const thead = document.createElement('thead');
+                    const tbody = document.createElement('tbody');
+                    
+                    const headerText = allAbilities.length > 1 ? 'Abilities' : 'Ability';
+                    thead.appendChild(createTableRow('th', [headerText, 'Description']));
+                    
+                    allAbilities.forEach(([name, description]) => {
+                        const tr = document.createElement('tr');
+                        const tdName = document.createElement('td');
+                        tdName.textContent = name;
+                        tdName.classList.add('passive-name-cell');
+                        
+                        const tdDesc = document.createElement('td');
+                        tdDesc.textContent = description;
+                        tdDesc.classList.add('note-cell');
+                        
+                        tr.append(tdName, tdDesc);
+                        tbody.appendChild(tr);
+                    });
+                    
+                    table.append(thead, tbody);
+                    tableWrapper.appendChild(table);
+                    abilityWrapper.appendChild(tableWrapper);
+                    unitStatsContainer.appendChild(abilityWrapper);
+                }
+
+                const wrapper = document.createElement('div'), table = document.createElement('table'), thead = document.createElement('thead'),
+                    tbody = document.createElement('tbody');
+                wrapper.className = 'table-wrapper';
+                table.id = 'main-stats-table';
+                
+                const elementHeaderRow = document.createElement('tr');
+                const elementHeaderCell = document.createElement('th');
+                const elementDropdownContainer = document.createElement('div');
+                elementDropdownContainer.className = 'dropdown-flex-container';
+                
+                const mainBoostContainer = document.createElement('div');
+                mainBoostContainer.className = 'dropdown-flex-container main-boost-container';
+                mainBoostContainer.style.gap = 'var(--spacing-xs)';
+
+                const createMainBoostInput = (id, label, placeholder, value) => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'level-input-wrapper';
+                    const labelSpan = document.createElement('span');
+                    labelSpan.className = 'level-input-label';
+                    labelSpan.textContent = label;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = id;
+                    input.className = 'boost-override-input';
+                    input.placeholder = placeholder;
+                    input.value = value;
+                    input.addEventListener('input', () => updateView());
+                    wrapper.append(labelSpan, input);
+                    return wrapper;
+                };
+                
+                mainBoostContainer.appendChild(createMainBoostInput('mainDmgBoostInput', 'DMG:', '+%', mainDmgValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainCdBoostInput', 'CD:', '-%', mainCdValue));
+                mainBoostContainer.appendChild(createMainBoostInput('mainRngBoostInput', 'RNG:', '+%', mainRngValue));
+                
+                const clearBoostsBtn = document.createElement('button');
+                clearBoostsBtn.className = 'action-button';
+                clearBoostsBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                clearBoostsBtn.setAttribute('aria-label', 'Clear custom boosts');
+                clearBoostsBtn.onclick = () => {
+                    triggerAnimation(clearBoostsBtn);
+                    const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                    const mainCdInput = document.getElementById('mainCdBoostInput');
+                    const mainRngInput = document.getElementById('mainRngBoostInput');
+                    if (mainDmgInput) mainDmgInput.value = '';
+                    if (mainCdInput) mainCdInput.value = '';
+                    if (mainRngInput) mainRngInput.value = '';
+                    updateView();
+                };
+
+                const mainBoostWrapper = document.createElement('div');
+                mainBoostWrapper.style.display = 'flex';
+                mainBoostWrapper.style.gap = 'var(--spacing-xs)';
+                mainBoostWrapper.style.alignItems = 'center';
+                mainBoostWrapper.style.flex = '2 1 0px';
+                
+                mainBoostWrapper.appendChild(mainBoostContainer);
+                mainBoostWrapper.appendChild(clearBoostsBtn);
+
+                elementDropdownContainer.appendChild(mainBoostWrapper);
+                
+                const dropdownLabel = isDpsRankingsMode ? 'Enemy Element:' : 'Element:';
+                const elementDropdown = createCustomDropdown('elementDropdown', dropdownLabel, elements, selectedElementKey, (value) => {
+                    selectedElementKey = value; updateView();
+                });
+
+                elementDropdownContainer.appendChild(elementDropdown);
+                
+                const levelInputContainer = document.createElement('div');
+                levelInputContainer.className = 'level-input-container';
+                levelInputContainer.id = 'levelControlsContainer';
+                levelInputContainer.style.gap = 'var(--spacing-xs)';
+
+                const createLevelButton = (iconClass, ariaLabel) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'action-button';
+                    btn.setAttribute('aria-label', ariaLabel);
+                    btn.innerHTML = `<i class="${iconClass}"></i>`;
+                    return btn;
+                };
+
+                const minBtn = createLevelButton('fas fa-angles-left', 'Set minimum level (1)');
+                const minusBtn = createLevelButton('fas fa-minus', 'Decrease level by 1');
+                const plusBtn = createLevelButton('fas fa-plus', 'Increase level by 1');
+                const maxBtn = createLevelButton('fas fa-angles-right', `Set maximum level (${MAX_LEVEL})`);
+                
+                const levelInputWrapper = document.createElement('div');
+                levelInputWrapper.className = 'level-input-wrapper';
+                const levelLabel = document.createElement('span');
+                levelLabel.className = 'level-input-label';
+                levelLabel.textContent = 'Level:';
+                
+                const levelInput = document.createElement('input');
+                levelInput.type = 'number';
+                levelInput.id = 'customLevelInput';
+                levelInput.value = customLevel;
+                levelInput.min = 1;
+                levelInput.max = MAX_LEVEL;
+                levelInput.setAttribute('aria-label', 'Custom Level Input');
+
+                const updateLevel = (newLevel) => {
+                    const parsedLevel = parseInt(newLevel, 10);
+                    if (isNaN(parsedLevel)) return;
+                    
+                    const clampedLevel = Math.max(1, Math.min(MAX_LEVEL, parsedLevel));
+                    if (customLevel !== clampedLevel) {
+                        customLevel = clampedLevel;
+                        levelInput.value = customLevel;
+                        updateView();
+                    } else if (String(levelInput.value) !== String(customLevel)) {
+                         levelInput.value = customLevel;
+                    }
+                };
+                
+                levelInput.addEventListener('input', () => {
+                    if(levelInput.value === '') {
+                        customLevel = 1; 
+                        updateView();
+                    } else {
+                        const parsedValue = parseInt(levelInput.value, 10);
+                        if (!isNaN(parsedValue)) {
+                            customLevel = Math.max(1, Math.min(MAX_LEVEL, parsedValue));
+                            updateView();
+                        }
+                    }
+                });
+
+                levelInput.addEventListener('change', () => {
+                     updateLevel(levelInput.value || 1);
+                });
+                
+                minBtn.addEventListener('click', () => { updateLevel(1); triggerAnimation(minBtn); });
+                maxBtn.addEventListener('click', () => { updateLevel(MAX_LEVEL); triggerAnimation(maxBtn); });
+                
+                makeButtonHoldable(minusBtn, () => updateLevel(customLevel - 1));
+                makeButtonHoldable(plusBtn, () => updateLevel(customLevel + 1));
+                
+                levelInputWrapper.append(levelLabel, levelInput);
+                levelInputContainer.append(minBtn, minusBtn, levelInputWrapper, plusBtn, maxBtn);
+                elementDropdownContainer.appendChild(levelInputContainer);
+                
+                elementHeaderCell.id = 'element-header-cell';
+                elementHeaderCell.className = 'dropdown-header-cell';
+                elementHeaderCell.style.borderRight = 'none';
+                elementHeaderCell.appendChild(elementDropdownContainer);
+                elementHeaderRow.appendChild(elementHeaderCell);
+                thead.appendChild(elementHeaderRow);
+
+                const boostHeaderRow = document.createElement('tr');
+                const boostHeaderCell = document.createElement('th');
+                const dropdownContainer = document.createElement('div');
+                const versionDropdown = createCustomDropdown('versionDropdown', 'Version:', versions, selectedVersionKey, (value) => {
+                    selectedVersionKey = value;
+                    updateUnitVisuals();
+                    updateView();
+                    populateGallery();
+                });
+                
+                const enchantsDropdown = createCustomDropdown('enchantDropdown', 'Enchant:', enchants, selectedEnchantKey, (value) => {
+                    selectedEnchantKey = value; updateView();
+                });
+
+                boostHeaderRow.className = 'main-header-row';
+                boostHeaderCell.id = 'boost-header-cell';
+                boostHeaderCell.className = 'dropdown-header-cell';
+                boostHeaderCell.style.borderRight = 'none';
+                dropdownContainer.className = 'dropdown-flex-container';
+                dropdownContainer.append(versionDropdown, enchantsDropdown);
+                boostHeaderCell.appendChild(dropdownContainer);
+                boostHeaderRow.appendChild(boostHeaderCell);
+                thead.appendChild(boostHeaderRow);
+                
+                const mainHeaderRow = document.createElement('tr');
+                mainHeaderRow.id = 'stats-header-row';
+                mainHeaderRow.className = 'main-header-row';
+                thead.appendChild(mainHeaderRow);
+                
+                tbody.id = 'upgrades-tbody';
+                tbody.addEventListener('click', (e) => {
+                    const clickedCell = e.target.closest('td.clickable-unit-name');
+                    if (clickedCell) {
+                        const unitName = clickedCell.textContent;
+
+                        if (settings.saveBoosts) {
+                            settings.savedBoosts = getBoostsState();
+                            saveSettings();
+                        }
+
+                        if (isDpsRankingsMode && !ENABLE_URL_ROUTING) {
+                            resetToSingleUnitView();
+                        }
+                        
+                        selectAndDisplayUnit(unitName, settings.saveBoosts ? selectedVersionKey : 'normal');
+                    }
+                });
+                table.append(thead, tbody);
+                wrapper.appendChild(table);
+                unitStatsContainer.appendChild(wrapper);
+
+                const maxUpgrade = currentStats.Upgrades[currentStats.Upgrades.length - 1];
+                const hasDamageStats = currentStats.Upgrades.some(upg => upg.Damage !== undefined);
+                const hasBoostStats = maxUpgrade.DamageBoost || maxUpgrade.CooldownBoost || maxUpgrade.RangeBoost;
+
+                if (hasDamageStats || hasBoostStats) {
+                    const summaryWrapper = document.createElement('div');
+                    summaryWrapper.className = 'aux-table';
+                    summaryWrapper.id = 'summary-table-wrapper';
+
+                    let headers = [];
+                    let rowData = [];
+
+                    if (hasBoostStats) {
+                        const totalDmgBoost = maxUpgrade.DamageBoost || 1.0;
+                        const totalCdBoost = maxUpgrade.CooldownBoost || 1.0;
+                        const totalRangeBoost = maxUpgrade.RangeBoost || 1.0;
+
+                        const totalDpsBoostPercent = (((totalDmgBoost / totalCdBoost) - 1) * 100).toFixed(1) + '%';
+                        
+                        const boostParts = [];
+                        if (totalDmgBoost !== 1.0) boostParts.push(`${totalDmgBoost.toFixed(2)}x DMG`);
+                        if (totalCdBoost !== 1.0) boostParts.push(`${totalCdBoost.toFixed(2)}x CD`);
+                        if (totalRangeBoost !== 1.0) boostParts.push(`${totalRangeBoost.toFixed(2)}x Range`);
+                        const totalBoostsString = boostParts.join(', ') || 'None';
+
+                        if (hasDamageStats) {
+                            headers = ['Total DPS', 'Total DPS Boost', 'Total Boosts'];
+                            rowData = ['...', totalDpsBoostPercent, totalBoostsString];
+                        } else {
+                            headers = ['Total DPS Boost', 'Total Boosts'];
+                            rowData = [totalDpsBoostPercent, totalBoostsString];
+                        }
+                    } else {
+                        headers = ['Total DPS'];
+                        rowData = ['...'];
+                    }
+                    
+                    createTableInWrapper(headers, [rowData], summaryWrapper);
+                    unitStatsContainer.appendChild(summaryWrapper);
+                }
+                
+                const elementalContainer = document.createElement('div');
+                elementalContainer.id = 'elemental-dps-container';
+                elementalContainer.className = 'aux-table';
+                unitStatsContainer.appendChild(elementalContainer);
+
+                updateView();
+                setDropdownMinWidths();
+                adjustObtainabilityLayout();
+                unitStatsContainer.style.visibility = 'visible';
+            }
+            
+            function computeGlobalStatProfiles() {
+                const createProfile = () => ({
+                    placement: { min: Infinity, max: -Infinity },
+                    max: { min: Infinity, max: -Infinity },
+                    interpolated: Array(101).fill(null).map(() => ({ min: Infinity, max: -Infinity }))
+                });
+                const profiles = { totalDamage: createProfile(), totalDps: createProfile(), range: createProfile(), speed: createProfile(), costPerDps: createProfile() };
+                for (const unit of Object.values(allUnitData)) {
+                    if (!unit.Upgrades || unit.Upgrades.length === 0 || unit.BaseStats.Damage === undefined) continue;
+                    const placements = unit.Max || 1;
+                    const numUpgrades = unit.Upgrades.length;
+                    const lastUpgradeIndex = numUpgrades - 1;
+                    const cumulativeCosts = [unit.PlacePrice || 0];
+                    for (let i = 1; i <= lastUpgradeIndex; i++) {
+                        cumulativeCosts[i] = cumulativeCosts[i - 1] + (unit.Upgrades[i].Price || 0);
+                    }
+
+                    const pStats = unit.Upgrades[0], pCost = cumulativeCosts[0], pTotalDamage = pStats.Damage * placements;
+                    const pTotalDps = calculateDPS(pStats.Damage, pStats.Cooldown) * placements;
+                    const pCostPerDps = pTotalDps > 0 ? pCost / pTotalDps : Infinity;
+                    profiles.totalDamage.placement.min = Math.min(profiles.totalDamage.placement.min, pTotalDamage);
+                    profiles.totalDamage.placement.max = Math.max(profiles.totalDamage.placement.max, pTotalDamage);
+                    profiles.totalDps.placement.min = Math.min(profiles.totalDps.placement.min, pTotalDps);
+                    profiles.totalDps.placement.max = Math.max(profiles.totalDps.placement.max, pTotalDps);
+                    profiles.range.placement.min = Math.min(profiles.range.placement.min, pStats.Range);
+                    profiles.range.placement.max = Math.max(profiles.range.placement.max, pStats.Range);
+                    profiles.speed.placement.min = Math.min(profiles.speed.placement.min, pStats.Cooldown);
+                    profiles.speed.placement.max = Math.max(profiles.speed.placement.max, pStats.Cooldown);
+                    if (isFinite(pCostPerDps)) {
+                        profiles.costPerDps.placement.min = Math.min(profiles.costPerDps.placement.min, pCostPerDps);
+                        profiles.costPerDps.placement.max = Math.max(profiles.costPerDps.placement.max, pCostPerDps);
+                    }
+
+                    const mStats = unit.Upgrades[lastUpgradeIndex], mCost = cumulativeCosts[lastUpgradeIndex], mTotalDamage = mStats.Damage * placements;
+                    const mTotalDps = calculateDPS(mStats.Damage, mStats.Cooldown) * placements;
+                    const mCostPerDps = mTotalDps > 0 ? mCost / mTotalDps : Infinity;
+                    profiles.totalDamage.max.min = Math.min(profiles.totalDamage.max.min, mTotalDamage);
+                    profiles.totalDamage.max.max = Math.max(profiles.totalDamage.max.max, mTotalDamage);
+                    profiles.totalDps.max.min = Math.min(profiles.totalDps.max.min, mTotalDps);
+                    profiles.totalDps.max.max = Math.max(profiles.totalDps.max.max, mTotalDps);
+                    profiles.range.max.min = Math.min(profiles.range.max.min, mStats.Range);
+                    profiles.range.max.max = Math.max(profiles.range.max.max, mStats.Range);
+                    profiles.speed.max.min = Math.min(profiles.speed.placement.min, mStats.Cooldown);
+                    profiles.speed.max.max = Math.max(profiles.speed.placement.max, mStats.Cooldown);
+                    if (isFinite(mCostPerDps)) {
+                        profiles.costPerDps.max.min = Math.min(profiles.costPerDps.max.min, mCostPerDps);
+                        profiles.costPerDps.max.max = Math.max(profiles.costPerDps.max.max, mCostPerDps);
+                    }
+                    
+                    if (numUpgrades <= 1) continue;
+
+                    for (let p = 0; p <= 100; p++) {
+                        const percent = p / 100, floatIndex = percent * lastUpgradeIndex, lowerIndex = Math.floor(floatIndex),
+                            upperIndex = Math.ceil(floatIndex), fraction = floatIndex - lowerIndex;
+                        const interpolate = (statKey) => unit.Upgrades[lowerIndex][statKey] + (unit.Upgrades[upperIndex][statKey] - unit.Upgrades[lowerIndex][statKey]) * fraction;
+                        const iDamage = interpolate('Damage'), iCooldown = interpolate('Cooldown'), iRange = interpolate('Range'), iCost = cumulativeCosts[lowerIndex] + (cumulativeCosts[upperIndex] - cumulativeCosts[lowerIndex]) * fraction;
+                        const iTotalDamage = iDamage * placements, iTotalDps = calculateDPS(iDamage, iCooldown) * placements, iCostPerDps = iTotalDps > 0 ? iCost / iTotalDps : Infinity;
+                        
+                        profiles.totalDamage.interpolated[p].min = Math.min(profiles.totalDamage.interpolated[p].min, iTotalDamage);
+                        profiles.totalDamage.interpolated[p].max = Math.max(profiles.totalDamage.interpolated[p].max, iTotalDamage);
+                        profiles.totalDps.interpolated[p].min = Math.min(profiles.totalDps.interpolated[p].min, iTotalDps);
+                        profiles.totalDps.interpolated[p].max = Math.max(profiles.totalDps.interpolated[p].max, iTotalDps);
+                        profiles.range.interpolated[p].min = Math.min(profiles.range.interpolated[p].min, iRange);
+                        profiles.range.interpolated[p].max = Math.max(profiles.range.interpolated[p].max, iRange);
+                        profiles.speed.interpolated[p].min = Math.min(profiles.speed.interpolated[p].min, iCooldown);
+                        profiles.speed.interpolated[p].max = Math.max(profiles.speed.interpolated[p].max, iCooldown);
+                        if (isFinite(iCostPerDps)) {
+                            profiles.costPerDps.interpolated[p].min = Math.min(profiles.costPerDps.interpolated[p].min, iCostPerDps);
+                            profiles.costPerDps.interpolated[p].max = Math.max(profiles.costPerDps.interpolated[p].max, iCostPerDps);
+                        }
+                    }
+                }
+                const sanitize = profile => {
+                    const levels = [profile.placement, profile.max, ...profile.interpolated];
+                    levels.forEach(level => {
+                        if (level.min === Infinity) level.min = 0;
+                        if (level.max === -Infinity) level.max = 0;
+                    });
+                };
+                Object.values(profiles).forEach(sanitize);
+                globalStatProfiles = profiles;
+            }
+            
+            function updateComparisonControlUI() {
+                if (comparisonUnitName) {
+                    globalCompareWrapper.classList.add('hidden');
+
+                    const returnBtn = document.createElement('button');
+                    returnBtn.className = 'action-button action-button--small action-button--return'; 
+                    returnBtn.setAttribute('aria-label', 'Return to gallery');
+                    returnBtn.innerHTML = '<i class="fas fa-images"></i>';
+                    returnBtn.onclick = () => {
+                        triggerAnimation(returnBtn);
+                        comparisonUnitName = null;
+                        graphPanel.classList.remove('show');
+                        setTimeout(() => galleryPanel.classList.add('show'), 300);
+                    };
+
+                    const unitNameSpan = document.createElement('span');
+                    unitNameSpan.textContent = comparisonUnitName;
+                    
+                    unitComparisonDisplay.replaceChildren(returnBtn, unitNameSpan);
+                    unitComparisonDisplay.classList.remove('hidden');
+                } else {
+                    globalCompareWrapper.classList.remove('hidden');
+                    unitComparisonDisplay.classList.add('hidden');
+                }
+            }
+
+            function getBoostedStatValue(baseStat, statType, currentLevel, boosterMultipliers) {
+                let power = baseStat; 
+                
+                if (statType === 'dmg' && selectedVersionKey === 'shiny') {
+                    power *= 1.10;
+                }
+
+                const enchantKey = selectedEnchantKey;
+                if (enchantMultipliers[enchantKey] && enchantMultipliers[enchantKey][statType]) {
+                    power *= enchantMultipliers[enchantKey][statType];
+                }
+                
+                if (statType === 'dmg') {
+                    power *= calculateLevelMultiplier(currentLevel);
+                }
+                
+                if (boosterMultipliers[statType]) {
+                    power *= boosterMultipliers[statType];
+                }
+                return power;
+            }
+
+            function getInterpolatedStatValue(unit, index, statKey, isDamageStat) {
+                const placements = unit.Max || 1;
+                const numUpgrades = unit.Upgrades.length;
+                const lastUpgradeIndex = numUpgrades - 1;
+                
+                if (numUpgrades <= 1) {
+                    return unit.Upgrades[0][statKey];
+                }
+
+                const floatIndex = index / 100 * lastUpgradeIndex;
+                const lowerIndex = Math.floor(floatIndex);
+                const upperIndex = Math.ceil(floatIndex);
+                const fraction = floatIndex - lowerIndex;
+
+                const baseLower = unit.Upgrades[lowerIndex][statKey];
+                const baseUpper = unit.Upgrades[upperIndex][statKey];
+                
+                const interpolatedBase = baseLower + (baseUpper - baseLower) * fraction;
+                
+                return interpolatedBase;
+            }
+            
+            function getInterpolatedCost(unit, index) {
+                const numUpgrades = unit.Upgrades.length;
+                const lastUpgradeIndex = numUpgrades - 1;
+                
+                if (numUpgrades <= 1) return (unit.PlacePrice || 0) * (enchantMultipliers[selectedEnchantKey]?.cost || 1.0);
+                
+                const costMultiplier = enchantMultipliers[selectedEnchantKey]?.cost || 1.0;
+                const cumulativeCosts = [(unit.PlacePrice || 0) * costMultiplier];
+                for (let i = 1; i < numUpgrades; i++) {
+                    cumulativeCosts[i] = cumulativeCosts[i - 1] + ((unit.Upgrades[i].Price || 0) * costMultiplier);
+                }
+
+                const floatIndex = index / 100 * lastUpgradeIndex;
+                const lowerIndex = Math.floor(floatIndex);
+                const upperIndex = Math.ceil(floatIndex);
+                const fraction = floatIndex - lowerIndex;
+                
+                const costLower = cumulativeCosts[lowerIndex];
+                const costUpper = cumulativeCosts[upperIndex];
+                
+                return costLower + (costUpper - costUpper) * fraction;
+            }
+
+            function renderStatGraph() {
+                if (currentUnitName === null || currentGraphLevelIndex === -1) return;
+
+                const unit = getCurrentUnitData();
+                if (!unit) return;
+
+                const placements = unit.Max || 1;
+                const selectedLevelStats = unit.Upgrades[currentGraphLevelIndex];
+                const multipliers = getGlobalBoostMultipliers();
+                
+                const boostedDmg = selectedLevelStats.Damage * multipliers.dmg;
+                const boostedCd = selectedLevelStats.Cooldown * multipliers.cd;
+                const boostedRange = selectedLevelStats.Range * multipliers.range;
+
+                const totalDamage = boostedDmg * placements;
+                const totalDPS = calculateDPS(boostedDmg, boostedCd) * placements;
+                
+                const placementCost = (unit.PlacePrice || 0) * multipliers.cost;
+                const upgradeCosts = unit.Upgrades.slice(1, currentGraphLevelIndex + 1).reduce((acc, upg) => acc + ((upg.Price || 0) * multipliers.cost), 0);
+                const costUpToSelectedLevel = placementCost + upgradeCosts;
+                const costPerDps = totalDPS > 0 ? costUpToSelectedLevel / totalDPS : Infinity;
+                
+                let bounds = {};
+                
+                if (globalCompareCheckbox.checked && !comparisonUnitName) {
+                    const numUpgrades = unit.Upgrades.length, lastUpgradeIndex = numUpgrades - 1;
+                    let profileKey = 'interpolated', profileIndex = 0;
+
+                    if (currentGraphLevelIndex === 0) profileKey = 'placement';
+                    else if (numUpgrades > 1 && currentGraphLevelIndex === lastUpgradeIndex) profileKey = 'max';
+                    else if (numUpgrades > 1) profileIndex = Math.round((currentGraphLevelIndex / lastUpgradeIndex) * 100);
+                    else profileKey = 'placement';
+
+                    const getGlobalBounds = (statName) => profileKey === 'interpolated' ? globalStatProfiles[statName][profileKey][profileIndex] : globalStatProfiles[statName][profileKey];
+                    
+                    const enchantKey = selectedEnchantKey;
+                    
+                    const boostRange = (baseProfile, statType) => {
+                        const levelFactor = (statType === 'dmg') ? calculateLevelMultiplier(customLevel) : 1.0;
+                        const enchantFactor = (enchantMultipliers[enchantKey] && enchantMultipliers[enchantKey][statType]) ? enchantMultipliers[enchantKey][statType] : 1.0;
+                        const boosterFactor = multipliers[statType] || 1.0;
+                        const shinyFactor = (statType === 'dmg' && selectedVersionKey === 'shiny') ? 1.10 : 1.0;
+
+                        const totalBoost = enchantFactor * levelFactor * boosterFactor * shinyFactor;
+                        
+                        return {
+                            min: baseProfile.min * totalBoost,
+                            max: baseProfile.max * totalBoost,
+                            inverted: statType === 'speed' || statType === 'costPerDps'
+                        };
+                    };
+
+                    const boostCostPerDpsRange = (baseProfile) => {
+                        const dmgLevelFactor = calculateLevelMultiplier(customLevel);
+                        const dmgEnchantFactor = (enchantMultipliers[enchantKey]?.dmg || 1.0);
+                        const cdEnchantFactor = (enchantMultipliers[enchantKey]?.cd || 1.0);
+                        const costEnchantFactor = (enchantMultipliers[enchantKey]?.cost || 1.0);
+                        const shinyFactor = (selectedVersionKey === 'shiny') ? 1.10 : 1.0;
+                        
+                        const dpsBoostFactor = (dmgEnchantFactor * dmgLevelFactor * (multipliers.dmg || 1.0) * shinyFactor) / (cdEnchantFactor * (multipliers.cd || 1.0));
+                        
+                        const inverseDpsBoost = 1 / dpsBoostFactor;
+
+                        return {
+                            min: baseProfile.min * inverseDpsBoost * costEnchantFactor,
+                            max: baseProfile.max * inverseDpsBoost * costEnchantFactor,
+                            inverted: true
+                        };
+                    };
+
+                    bounds.TotalDamage = boostRange(getGlobalBounds('totalDamage'), 'dmg');
+                    bounds.TotalDPS = boostRange(getGlobalBounds('totalDps'), 'dmg'); 
+                    bounds.Range = boostRange(getGlobalBounds('range'), 'range');
+                    bounds.Speed = boostRange(getGlobalBounds('speed'), 'cd');
+                    bounds.CostPerDps = boostCostPerDpsRange(getGlobalBounds('costPerDps'));
+
+                } else {
+                    let allStatsForRange = [];
+                    const getStatRange = (unitData) => {
+                        const stats = [];
+                        const currentMultipliers = getGlobalBoostMultipliers();
+                        const placementCost = (unitData.PlacePrice || 0) * currentMultipliers.cost;
+                        let cumulativeCost = 0;
+                        const cumulativeCosts = unitData.Upgrades.map((upg, i) => {
+                             if (i === 0) cumulativeCost = placementCost;
+                             else cumulativeCost += (upg.Price || 0) * currentMultipliers.cost;
+                             return cumulativeCost;
+                        });
+
+                        unitData.Upgrades.forEach((upg, i) => {
+                            const d = upg.Damage * currentMultipliers.dmg;
+                            const c = upg.Cooldown * currentMultipliers.cd;
+                            const r = upg.Range * currentMultipliers.range;
+                            const tDmg = d * (unitData.Max || 1);
+                            const tDps = calculateDPS(d, c) * (unitData.Max || 1);
+                            const cpd = tDps > 0 ? cumulativeCosts[i] / tDps : Infinity;
+                            
+                            stats.push({ tDmg, tDps, r, c, cpd });
+                        });
+                        return stats;
+                    };
+
+                    if (comparisonUnitName && allUnitData[comparisonUnitName]) {
+                        const stats1 = getStatRange(getCurrentUnitData());
+                        const stats2 = getStatRange(allUnitData[comparisonUnitName]);
+                        allStatsForRange = [...stats1, ...stats2];
+                    } else {
+                        allStatsForRange = getStatRange(unit);
+                    }
+                    
+                    const finiteCostPerDps = allStatsForRange.map(s => s.cpd).filter(isFinite);
+                    bounds = {
+                        TotalDamage: { min: Math.min(...allStatsForRange.map(s => s.tDmg)), max: Math.max(...allStatsForRange.map(s => s.tDmg)), inverted: false },
+                        TotalDPS: { min: Math.min(...allStatsForRange.map(s => s.tDps)), max: Math.max(...allStatsForRange.map(s => s.tDps)), inverted: false },
+                        Range: { min: Math.min(...allStatsForRange.map(s => s.r)), max: Math.max(...allStatsForRange.map(s => s.r)), inverted: false },
+                        Speed: { min: Math.min(...allStatsForRange.map(s => s.c)), max: Math.max(...allStatsForRange.map(s => s.c)), inverted: true },
+                        CostPerDps: { min: finiteCostPerDps.length ? Math.min(...finiteCostPerDps) : 0, max: finiteCostPerDps.length ? Math.max(...finiteCostPerDps) : 0, inverted: true }
+                    };
+                }
+
+                const statsToDisplay = {
+                    'Damage': { ...bounds.TotalDamage, value: totalDamage, statType: 'dmg' },
+                    'DPS': { ...bounds.TotalDPS, value: totalDPS, statType: 'dps' },
+                    'Range': { ...bounds.Range, value: boostedRange, statType: 'range' },
+                    'Speed': { ...bounds.Speed, value: boostedCd, statType: 'cd' },
+                    'Cost/DPS': { ...bounds.CostPerDps, value: costPerDps, statType: 'costPerDps' }
+                };
+                graphContainer.innerHTML = '';
+                for (const [label, data] of Object.entries(statsToDisplay)) {
+                    let percent = 0;
+                    const range = data.max - data.min;
+                    if (range > 0) {
+                        const boundedValue = Math.max(data.min, Math.min(data.max, data.value));
+                        if (data.inverted) percent = (1 - ((boundedValue - data.min) / range)) * 100;
+                        else percent = ((boundedValue - data.min) / range) * 100;
+                    } else percent = data.inverted ? (data.value <= data.min ? 100 : 0) : (data.value >= data.max ? 100 : 0);
+                    percent = Math.min(100, Math.max(0, percent));
+                    const row = document.createElement('div'), labelEl = document.createElement('div'),
+                        barContainer = document.createElement('div'), bar = document.createElement('div'),
+                        valueEl = document.createElement('div');
+                    row.className = 'stat-row'; labelEl.className = 'stat-label'; labelEl.textContent = label;
+                    barContainer.className = 'stat-bar-container'; bar.className = 'stat-bar';
+                    valueEl.className = 'stat-value'; valueEl.textContent = data.value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+                    barContainer.appendChild(bar); row.append(labelEl, barContainer, valueEl); graphContainer.appendChild(row);
+                    requestAnimationFrame(() => { bar.style.width = `${percent}%`; });
+                }
+            }
+
+            function updateSuggestions(matches = []) {
+                if (matches.length > 0) {
+                    const fragment = document.createDocumentFragment();
+                    matches.forEach(unitName => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.textContent = unitName;
+                        suggestionItem.addEventListener('click', () => selectAndDisplayUnit(unitName, settings.saveBoosts ? selectedVersionKey : 'normal'));
+                        fragment.appendChild(suggestionItem);
+                    });
+                    unitSearchSuggestions.replaceChildren(fragment);
+                    unitSearchSuggestions.classList.add('show');
+                } else {
+                    unitSearchSuggestions.innerHTML = '';
+                    unitSearchSuggestions.classList.remove('show');
+                }
+            }
+            
+            function updateGalleryCompareButtons() {
+                document.querySelectorAll('.gallery-item').forEach(item => {
+                    const unitName = item.dataset.unitName;
+                    const compareBtn = item.querySelector('.gallery-compare-button');
+                    if(compareBtn){
+                        const isSearchedUnit = currentUnitName === unitName;
+                        const shouldShow = currentUnitName && !isSearchedUnit;
+                        compareBtn.style.display = shouldShow ? 'flex' : 'none';
+                    }
+                });
+            }
+
+            function unsearchUnit() {
+                if (ENABLE_URL_ROUTING && window.location.pathname !== '/' && window.location.pathname !== '') {
+                    window.location.href = '/unit-machine';
+                } else {
+                    currentUnitName = null;
+                    unitSearchInput.value = '';
+                    unitStatsContainer.innerHTML = '';
+                    unitImageDisplayContainer.classList.add('hidden');
+                    graphButton.disabled = true;
+                    dpsRankingsButton.disabled = false;
+                    populateGallery();
+                    updateGalleryCompareButtons();
+                }
+            }
+
+            function selectAndDisplayUnit(unitName, version = 'normal', isPageLoad = false) {
+                if (ENABLE_URL_ROUTING) {
+                    const unitSlug = createUnitSlug(unitName);
+                    const currentPath = window.location.pathname.replace(/\/$/, '');
+                    const currentSlugOrPage = currentPath.substring(1);
+                    
+                    if (!isPageLoad && unitSlug !== currentSlugOrPage) {
+                        sessionStorage.setItem('selectedVersion', version);
+                        window.location.href = `${window.location.origin}/${unitSlug}`;
+                        return;
+                    }
+                }
+
+                unitSearchInput.value = unitName;
+                if (allUnitData[unitName]) {
+                    currentUnitName = unitName;
+                    comparisonUnitName = null;
+                    
+                    if (!settings.saveBoosts) {
+                        resetBoosts(false);
+                    }
+                    selectedVersionKey = version;
+
+                    unitImageDisplayContainer.classList.remove('hidden');
+                    renderUnitTables();
+                    dpsRankingsButton.disabled = false;
+                    
+                    const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
+                    graphButton.disabled = !hasDamageStats;
+                    
+                    populateGallery();
+                    updateGalleryCompareButtons();
+
+                    if (ENABLE_URL_ROUTING && isPageLoad) {
+                        requestAnimationFrame(() => {
+                            const searchContainer = document.querySelector('.search-container');
+                            if (searchContainer) {
+                                const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                                window.scrollTo({
+                                    top: topPos - 15,
+                                    behavior: 'instant'
+                                });
+                            }
+                        });
+                    }
+                }
+                updateSuggestions();
+            }
+
+            function handleSearch() {
+                const searchTerm = unitSearchInput.value.trim();
+                if (!searchTerm) return updateSuggestions();
+                const versionToUse = settings.saveBoosts ? selectedVersionKey : 'normal';
+                if (allUnitData[searchTerm]) return selectAndDisplayUnit(searchTerm, versionToUse);
+                const result = fuse.search(searchTerm);
+                if (result.length > 0) selectAndDisplayUnit(result[0].item, versionToUse);
+                else { alert('Unit Not Found'); updateSuggestions(); }
+            }
+
+            function updateSortButtonsUI() {
+                const alphaIcon = sortAlphaButton.querySelector('i');
+                const rarityIcon = sortRarityButton.querySelector('i');
+
+                if (currentSort.mode === 'alpha') {
+                    sortAlphaButton.classList.add('active');
+                    sortRarityButton.classList.remove('active');
+                    alphaIcon.className = currentSort.direction === 'asc' ? 'fas fa-sort-alpha-down' : 'fas fa-sort-alpha-up';
+                    rarityIcon.className = 'fas fa-gem';
+                } else {
+                    sortRarityButton.classList.add('active');
+                    sortAlphaButton.classList.remove('active');
+                    rarityIcon.className = currentSort.direction === 'asc' ? 'fas fa-arrow-down-wide-short' : 'fas fa-arrow-up-wide-short';
+                    alphaIcon.className = 'fas fa-sort-alpha-down';
+                }
+            }
+            
+            function createGalleryItem(unitName, isSearched) {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.dataset.unitName = unitName;
+                if(isSearched) item.classList.add('is-searched');
+                
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'gallery-image-container';
+                
+                const unitData = allUnitData[unitName];
+                if (unitData.Rarity) {
+                    const rarityClassName = rarityClassMap[unitData.Rarity];
+                    if (rarityClassName) imageContainer.classList.add(rarityClassName);
+                }
+                
+                imageContainer.addEventListener('click', (e) => {
+                    if (e.target.closest('button')) return;
+                    e.stopPropagation();
+                    const isAlreadyVisible = imageContainer.classList.contains('buttons-visible');
+                    document.querySelectorAll('.gallery-image-container.buttons-visible').forEach(item => {
+                        item.classList.remove('buttons-visible');
+                    });
+                    if (!isAlreadyVisible) imageContainer.classList.add('buttons-visible');
+                });
+
+                const img = document.createElement('img');
+                img.className = 'gallery-image';
+                
+                const normalImageUrl = unitImages[normalizeUnitName(unitName)];
+                const shinyImageUrl = unitImages[normalizeUnitName(`Shiny ${unitName}`)];
+
+                let isShiny = false;
+                if (isSearched) {
+                   isShiny = selectedVersionKey === 'shiny';
+                }
+                
+                if (isShiny) {
+                    imageContainer.classList.add('shiny-border', 'shiny-overlay');
+                }
+                
+                const initialImageUrl = isShiny ? (shinyImageUrl || normalImageUrl) : normalImageUrl;
+
+                img.src = initialImageUrl || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
+                img.alt = unitName;
+                img.loading = 'lazy';
+                img.dataset.isShiny = isShiny;
+
+                imageContainer.appendChild(img);
+
+                if (isSearched) {
+                    const unsearchBtn = document.createElement('button');
+                    unsearchBtn.className = 'action-button action-button--small gallery-action-button gallery-unsearch-button';
+                    unsearchBtn.setAttribute('aria-label', `Unselect ${unitName}`);
+                    unsearchBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    unsearchBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        triggerAnimation(unsearchBtn);
+                        unsearchUnit();
+                    });
+                    imageContainer.appendChild(unsearchBtn);
+                } else {
+                    const searchBtn = document.createElement('button');
+                    searchBtn.className = 'action-button action-button--small gallery-action-button gallery-search-button';
+                    searchBtn.setAttribute('aria-label', `Search for ${unitName}`);
+                    searchBtn.innerHTML = '<i class="fas fa-search"></i>';
+                    searchBtn.addEventListener('click', () => {
+                        triggerAnimation(searchBtn);
+                        const isShiny = img.dataset.isShiny === 'true';
+                        selectAndDisplayUnit(unitName, isShiny ? 'shiny' : 'normal');
+                        galleryPanel.classList.remove('show');
+                    });
+                    imageContainer.appendChild(searchBtn);
+
+                    const compareBtn = document.createElement('button');
+                    compareBtn.className = 'action-button action-button--small gallery-action-button gallery-compare-button';
+                    compareBtn.setAttribute('aria-label', `Compare with ${unitName}`);
+                    compareBtn.innerHTML = '<i class="fas fa-balance-scale-right"></i>';
+                    compareBtn.addEventListener('click', () => {
+                        triggerAnimation(compareBtn);
+                        comparisonUnitName = unitName;
+                        galleryPanel.classList.remove('show');
+                        setTimeout(() => openGraphPanel(), 300);
+                    });
+                    imageContainer.appendChild(compareBtn);
+                }
+
+                const shinyBtn = document.createElement('button');
+                shinyBtn.className = 'action-button action-button--small gallery-action-button gallery-shiny-button';
+                shinyBtn.setAttribute('aria-label', `Toggle shiny for ${unitName}`);
+                shinyBtn.innerHTML = '<i class="fas fa-star"></i>';
+                shinyBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    triggerAnimation(shinyBtn);
+                    const isNowShiny = img.dataset.isShiny !== 'true';
+                    img.dataset.isShiny = isNowShiny;
+                    
+                    img.src = isNowShiny ? (shinyImageUrl || normalImageUrl) : normalImageUrl;
+                    
+                    imageContainer.classList.toggle('shiny-border', isNowShiny);
+                    imageContainer.classList.toggle('shiny-overlay', isNowShiny);
+                    
+                    if (currentUnitName === unitName) {
+                        selectedVersionKey = isNowShiny ? 'shiny' : 'normal';
+                        updateUnitVisuals();
+                        updateView();
+                    }
+                });
+                imageContainer.appendChild(shinyBtn);
+
+                const p = document.createElement('p');
+                p.className = 'gallery-name';
+                p.textContent = unitName;
+
+                item.append(imageContainer, p);
+                return item;
+            }
+
+            function populateGallery() {
+                let unitNames = Object.keys(allUnitData);
+                
+                if (currentSort.mode === 'rarity') {
+                    const rarityOrder = { 'Uncommon': 1, 'Rare': 2, 'Epic': 3, 'Mythic': 4, 'Secret': 5, 'Nightmare': 6, 'Apex': 7, 'Hero': 8 };
+                    const getRarityRank = (rarity) => rarityOrder[rarity] || 99;
+                    unitNames.sort((a, b) => {
+                        const rankA = getRarityRank(allUnitData[a].Rarity);
+                        const rankB = getRarityRank(allUnitData[b].Rarity);
+                        if (rankA !== rankB) return rankA - rankB;
+                        return a.localeCompare(b);
+                    });
+                } else {
+                    unitNames.sort((a, b) => a.localeCompare(b));
+                }
+                if (currentSort.direction === 'desc') unitNames.reverse();
+                
+                const otherUnitNames = unitNames.filter(name => name !== currentUnitName);
+                
+                galleryContainer.innerHTML = '';
+                
+                if (currentUnitName && allUnitData[currentUnitName]) {
+                    galleryContainer.appendChild(createGalleryItem(currentUnitName, true));
+                }
+
+                otherUnitNames.forEach(unitName => {
+                    galleryContainer.appendChild(createGalleryItem(unitName, false));
+                });
+                
+                updateGalleryCompareButtons();
+                galleryFilterInput.dispatchEvent(new Event('input'));
+            }
+            
+            function openGraphPanel() {
+                if (!currentUnitName) return;
+                
+                const graphHeader = document.getElementById('graphPanelHeader');
+                graphHeader.textContent = comparisonUnitName ? 'Unit Stat Graph (VS)' : 'Unit Stat Graph';
+
+                const unit = getCurrentUnitData();
+                if (!unit) return;
+
+                graphLevelDropdownContainer.innerHTML = '';
+
+                const levelOptions = {};
+                unit.Upgrades.forEach((_, index) => {
+                    let levelName = `UPG ${index}`;
+                    if (index === 0) levelName = 'Placement';
+                    if (index === unit.Upgrades.length - 1) levelName = 'Max';
+                    levelOptions[index] = levelName;
+                });
+                
+                const defaultLevel = unit.Upgrades.length - 1;
+                currentGraphLevelIndex = defaultLevel;
+                
+                const graphLevelDropdown = createCustomDropdown(
+                    'graphLevelDropdown', '', levelOptions, defaultLevel,
+                    (value) => { currentGraphLevelIndex = parseInt(value, 10); renderStatGraph(); }
+                );
+                graphLevelDropdownContainer.appendChild(graphLevelDropdown);
+                
+                updateComparisonControlUI();
+                renderStatGraph();
+                graphPanel.classList.add('show');
+            }
+            
+            function resetToSingleUnitView() {
+                isDpsRankingsMode = false;
+
+                menuButton.innerHTML = '<i class="fas fa-bars"></i>';
+                menuButton.setAttribute('aria-label', 'Menu');
+                if (menuButton.onclick) {
+                    menuButton.onclick = null;
+                }
+                menuButton.addEventListener('click', handleMenuClick);
+
+                searchButton.classList.remove('hidden');
+                unitSearchInput.placeholder = 'Search for a unit...';
+                unitSearchInput.style.cursor = 'pointer';
+                unitSearchInput.value = '';
+                
+                menuFlyout.appendChild(settingsButton);
+            }
+
+            function setupDpsRankingsView() {
+                isDpsRankingsMode = true;
+                updateSuggestions();
+                dpsRankingsSort = { key: 'fullDps', direction: 'desc' };
+                menuButton.innerHTML = '<i class="fas fa-arrow-left"></i>';
+                menuButton.setAttribute('aria-label', 'Return to Main Page');
+                menuButton.removeEventListener('click', handleMenuClick);
+
+                const backButtonHandler = () => {
+                    if (ENABLE_URL_ROUTING) {
+                        const previousUnitSlug = sessionStorage.getItem('previousUnitSlug');
+                        if (previousUnitSlug) {
+                            window.location.href = `/${previousUnitSlug}`;
+                        } else {
+                            sessionStorage.setItem('scrollToTopOnLoad', 'true');
+                            window.location.href = '/unit-machine';
+                        }
+                    } else {
+                        resetToSingleUnitView();
+                        if (previousUnitName) {
+                            selectAndDisplayUnit(previousUnitName);
+                        } else {
+                            unsearchUnit();
+                        }
+                    }
+                };
+                menuButton.onclick = backButtonHandler;
+                
+                searchButton.classList.add('hidden');
+                menuButton.parentElement.insertAdjacentElement('afterend', settingsButton);
+                unitSearchInput.placeholder = 'Filter rankings...';
+                unitSearchInput.value = '';
+                unitSearchInput.style.cursor = 'text';
+                unitImageDisplayContainer.classList.add('hidden');
+                updateView();
+            }
+
+            function saveSettings() {
+                try {
+                    localStorage.setItem('unitStatsViewerSettings', JSON.stringify(settings));
+                } catch (e) {
+                    console.error("Failed to save settings to localStorage", e);
+                }
+            }
+            
+            function loadSettings() {
+                try {
+                    const savedSettings = localStorage.getItem('unitStatsViewerSettings');
+                    if (savedSettings) {
+                        const parsedSettings = JSON.parse(savedSettings);
+                        if (!Array.isArray(parsedSettings.presets)) {
+                            parsedSettings.presets = [];
+                        } else {
+                            parsedSettings.presets.forEach(p => {
+                                if (typeof p === 'object' && p !== null && !p.id) {
+                                    p.id = Date.now().toString(36) + Math.random().toString(36).substring(2);
+                                }
+                            });
+                        }
+                        settings = { ...settings, ...parsedSettings };
+                    }
+                } catch (e) {
+                    console.error("Failed to load or parse settings from localStorage", e);
+                    settings = { saveBoosts: false, savedBoosts: null, presets: [] };
+                }
+                saveBoostsCheckbox.checked = settings.saveBoosts;
+                
+                if (settings.saveBoosts && settings.savedBoosts) {
+                    applyBoostsState(settings.savedBoosts, false);
+                }
+
+                renderPresetsList();
+            }
+            
+            function getBoostsState() {
+                const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                const mainCdInput = document.getElementById('mainCdBoostInput');
+                const mainRngInput = document.getElementById('mainRngBoostInput');
+                return {
+                    version: selectedVersionKey,
+                    enchant: selectedEnchantKey,
+                    level: customLevel,
+                    boosters: JSON.parse(JSON.stringify(boosterSelections)),
+                    mainDmg: mainDmgInput ? mainDmgInput.value : '',
+                    mainCd: mainCdInput ? mainCdInput.value : '',
+                    mainRng: mainRngInput ? mainRngInput.value : ''
+                };
+            }
+            
+            function applyBoostsState(state, triggerUpdate = true) {
+                if (!state) return;
+
+                selectedVersionKey = state.version || 'normal';
+                selectedEnchantKey = state.enchant || 'None';
+                customLevel = state.level || 1;
+                boosterSelections = JSON.parse(JSON.stringify(state.boosters || []));
+                
+                const mainDmgInput = document.getElementById('mainDmgBoostInput');
+                const mainCdInput = document.getElementById('mainCdBoostInput');
+                const mainRngInput = document.getElementById('mainRngBoostInput');
+
+                if (mainDmgInput) {
+                    mainDmgInput.value = state.mainDmg || '';
+                    mainCdInput.value = state.mainCd || '';
+                    mainRngInput.value = state.mainRng || '';
+                    pendingMainBoosts = null;
+                } else {
+                    pendingMainBoosts = {
+                        dmg: state.mainDmg || '',
+                        cd: state.mainCd || '',
+                        rng: state.mainRng || ''
+                    };
+                }
+                
+                const versionTrigger = document.getElementById('versionDropdown');
+                const enchantTrigger = document.getElementById('enchantDropdown');
+                const levelInput = document.getElementById('customLevelInput');
+                
+                if (versionTrigger) {
+                    versionTrigger.dataset.value = selectedVersionKey;
+                    versionTrigger.querySelector('.dropdown-trigger-text').textContent = `Version: ${versions[selectedVersionKey]}`;
+                }
+                if (enchantTrigger) {
+                    enchantTrigger.dataset.value = selectedEnchantKey;
+                    enchantTrigger.querySelector('.dropdown-trigger-text').textContent = `Enchant: ${enchants[selectedEnchantKey]}`;
+                }
+                if (levelInput) {
+                    levelInput.value = customLevel;
+                }
+
+                boosterDropdownContainer.innerHTML = '';
+                boosterDropdownContainer.appendChild(createBoosterDropdown('boosterDropdown', 'Booster', boosterData, updateView));
+                
+                if (triggerUpdate) {
+                    if (currentUnitName && !isDpsRankingsMode) {
+                        updateUnitVisuals();
+                        renderUnitTables();
+                    } else {
+                        updateView();
+                    }
+                }
+            }
+            
+            function resetBoosts(triggerUpdate = true) {
+                 applyBoostsState({
+                    version: 'normal',
+                    enchant: 'None',
+                    level: 1,
+                    boosters: [],
+                    mainDmg: '',
+                    mainCd: '',
+                    mainRng: ''
+                }, triggerUpdate);
+            }
+
+            function renderPresetsList() {
+                presetsListContainer.innerHTML = '';
+                if (settings.presets.length === 0) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'preset-item preset-item-placeholder';
+                    presetsListContainer.appendChild(placeholder);
+                    return;
+                }
+                settings.presets.forEach((preset) => {
+                    const item = document.createElement('div');
+                    item.className = 'preset-item';
+                    
+                    const name = document.createElement('span');
+                    name.className = 'preset-name';
+                    name.textContent = preset.name;
+                    
+                    const restoreBtn = document.createElement('button');
+                    restoreBtn.className = 'action-button action-button--small preset-action-btn';
+                    restoreBtn.innerHTML = '<i class="fas fa-undo"></i>';
+                    restoreBtn.setAttribute('aria-label', `Restore preset ${preset.name}`);
+                    restoreBtn.onclick = () => {
+                        triggerAnimation(restoreBtn);
+                        applyBoostsState(preset.boosts);
+                    };
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'action-button action-button--small preset-action-btn';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    deleteBtn.setAttribute('aria-label', `Delete preset ${preset.name}`);
+                     deleteBtn.onclick = () => {
+                        triggerAnimation(deleteBtn);
+                        settings.presets = settings.presets.filter(p => p.id !== preset.id);
+                        saveSettings();
+                        renderPresetsList();
+                    };
+
+                    item.append(name, restoreBtn, deleteBtn);
+                    presetsListContainer.appendChild(item);
+                });
+            }
+
+            function processAndStoreBoosterData() {
+                boosterData = {};
+                boosterDropdownContainer.innerHTML = '';
+                boosterDropdownContainer.appendChild(createBoosterDropdown('boosterDropdown', 'Booster', boosterData, updateView));
+            }
+            
+            function processUnitData(unit) {
+                const processed = { ...unit };
+                let rarity = unit.Rarity;
+                if (rarity === 'Mythical') rarity = 'Mythic';
+                processed.Rarity = rarity;
+                
+                processed.hasPerUpgradeTypes = unit.UpgradeStats?.some(upg => upg.Type) ?? false;
+
+                const upgrades = [];
+                const baseUpgrade = {
+                    ...unit.BaseStats,
+                    Price: 0,
+                    Type: unit.BaseStats.Type || unit.Type
+                };
+                upgrades.push(baseUpgrade);
+
+                if (unit.UpgradeStats) {
+                    let lastType = baseUpgrade.Type;
+                    unit.UpgradeStats.forEach(upg => {
+                        const currentType = upg.Type || lastType;
+                        upgrades.push({
+                            ...upg,
+                            Price: upg.UpgradePrice || 0,
+                            Type: currentType
+                        });
+                        lastType = currentType;
+                    });
+                }
+                processed.Upgrades = upgrades;
+
+                const typesInOrder = [upgrades[0].Type];
+                for (let i = 1; i < upgrades.length; i++) {
+                    const currentType = upgrades[i].Type;
+                    if (currentType && currentType !== typesInOrder[typesInOrder.length - 1]) {
+                        typesInOrder.push(currentType);
+                    }
+                }
+                processed.Type = typesInOrder.join('-');
+                processed.maxUpgradeType = upgrades.length > 0 ? upgrades[upgrades.length - 1].Type : (unit.Type || 'N/A');
+                
+                return processed;
+            }
+
+            (async function fetchData() {
+                try {
+                    const GITHUB_IMAGES_URL = 'https://raw.githubusercontent.com/UGAccount/FNTDUG/main/Images';
+
+                    const [statsResponse, imagesResponse] = await Promise.all([
+                        fetch(GITHUB_URL),
+                        fetch(GITHUB_IMAGES_URL)
+                    ]);
+
+                    if (!statsResponse.ok) throw new Error(`HTTP error fetching stats! status: ${statsResponse.status}`);
+                    if (!imagesResponse.ok) throw new Error(`HTTP error fetching images! status: ${imagesResponse.status}`);
+                    
+                    const responseData = await statsResponse.json();
+                    const imagesData = await imagesResponse.json();
+                    const rawUnitImages = imagesData.Images.Units || {};
+                    unitImages = {};
+                    for (const [name, url] of Object.entries(rawUnitImages)) {
+                        unitImages[normalizeUnitName(name)] = url;
+                    }
+                    
+                    const rawEnchantData = responseData.Enchants;
+                    enchantMultipliers = {
+                        None: { dmg: 1.0, cd: 1.0, range: 1.0, cost: 1.0 }
+                    };
+                    for (const enchantName in rawEnchantData) {
+                        const boost = rawEnchantData[enchantName].Boost;
+                        if (boost) {
+                            enchantMultipliers[enchantName] = {
+                                dmg: boost.Damage || 1.0,
+                                cd: boost.Cooldown || 1.0,
+                                range: boost.Range || 1.0,
+                                cost: boost.Cost || 1.0
+                            };
+                        }
+                    }
+                    enchants = generateOptionsObject(enchantMultipliers);
+
+                    const unitValues = responseData.Values.Units || {};
+                    const rawUnitData = responseData.Units;
+                    const finalUnitData = {};
+                    rawUnitData.forEach(unit => {
+                        if (unit.Name.startsWith('Shiny ')) return;
+                        const processedUnit = processUnitData(unit);
+                        finalUnitData[unit.Name] = {
+                            ...processedUnit,
+                            PlacePrice: unit.PlacementPrice,
+                            Max: unit.MaxPlaced,
+                            Passives: unit.Passives || {},
+                            Actives: unit.Actives || [],
+                            Obtainability: unit.Obtainability,
+                            Value: unitValues[unit.Name] || null,
+                            BackendNote: backendNotes[unit.Name] || undefined,
+                        };
+                    });
+                    
+                    allUnitData = finalUnitData;
+                    
+                    fuse = new Fuse(Object.keys(allUnitData), { threshold: 0.3 });
+                    processAndStoreBoosterData();
+                    computeGlobalStatProfiles();
+                    loadSettings();
+                    populateGallery();
+                    updateSortButtonsUI();
+
+                    if (ENABLE_URL_ROUTING) {
+                        const path = window.location.pathname.replace(/\/$/, '');
+                        const pathSlug = decodeURIComponent(path.substring(1));
+
+                        if (pathSlug === 'dps-list') {
+                            setTimeout(() => {
+                                selectAndDisplayUnit("Freddy", selectedVersionKey, true);
+                                setupDpsRankingsView();
+                            }, 0);
+                        } else if (pathSlug && pathSlug !== 'unit-machine') {
+                            const unitNameFromUrl = Object.keys(allUnitData).find(
+                                name => createUnitSlug(name) === pathSlug
+                            );
+                            if (unitNameFromUrl) {
+                                const versionFromStorage = sessionStorage.getItem('selectedVersion') || selectedVersionKey;
+                                sessionStorage.removeItem('selectedVersion');
+                                setTimeout(() => {
+                                    selectAndDisplayUnit(unitNameFromUrl, versionFromStorage, true);
+                                }, 0);
+                            }
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                    unitStatsContainer.innerHTML = `<p>Failed to load required data: ${error.message}</p>`;
+                }
+            })();
+
+            if (ENABLE_URL_ROUTING && sessionStorage.getItem('scrollToTopOnLoad') === 'true') {
+                sessionStorage.removeItem('scrollToTopOnLoad');
+                requestAnimationFrame(() => {
+                    const searchContainer = document.querySelector('.search-container');
+                    if (searchContainer) {
+                        const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
+                        window.scrollTo({ top: topPos - 15, behavior: 'instant' });
+                    }
+                });
+            }
+
+            graphButton.disabled = true;
+            dpsRankingsButton.disabled = false;
+
+            unitSearchInput.addEventListener('input', () => {
+                if (isDpsRankingsMode) {
+                    filterDpsRankings();
+                    return;
+                }
+                const searchTerm = unitSearchInput.value.trim();
+                updateSuggestions(searchTerm.length > 0 && fuse ? fuse.search(searchTerm).slice(0, 15).map(r => r.item) : []);
+            });
+
+            unitSearchInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!isDpsRankingsMode) {
+                        handleSearch();
+                    }
+                }
+            });
+
+            searchButton.addEventListener('click', () => {
+                triggerAnimation(searchButton);
+                if (isDpsRankingsMode) {
+                    unitSearchInput.focus();
+                } else {
+                    handleSearch();
+                }
+            });
+
+            document.querySelectorAll('.action-button').forEach(button => {
+                 button.addEventListener('animationend', (e) => e.currentTarget.classList.remove('animate-pulse'));
+            });
+            
+            boostsButton.addEventListener('click', () => triggerAnimation(boostsButton));
+            
+            menuButton.addEventListener('click', handleMenuClick);
+
+            closeBoostsButton.addEventListener('click', () => triggerAnimation(closeBoostsButton));
+            graphButton.addEventListener('click', () => { if (!graphButton.disabled) triggerAnimation(graphButton); });
+            galleryButton.addEventListener('click', () => triggerAnimation(galleryButton));
+            closeGraphButton.addEventListener('click', () => triggerAnimation(closeGraphButton));
+            closeGalleryButton.addEventListener('click', () => triggerAnimation(closeGalleryButton));
+
+            boostsButton.addEventListener('click', () => boostsPanel.classList.add('show'));
+            closeBoostsButton.addEventListener('click', () => boostsPanel.classList.remove('show'));
+
+            galleryButton.addEventListener('click', () => galleryPanel.classList.add('show'));
+            closeGalleryButton.addEventListener('click', () => galleryPanel.classList.remove('show'));
+
+            graphButton.addEventListener('click', () => { if (currentUnitName) openGraphPanel(); });
+            closeGraphButton.addEventListener('click', () => {
+                comparisonUnitName = null; 
+                graphPanel.classList.remove('show')
+            });
+            globalCompareCheckbox.addEventListener('change', renderStatGraph);
+            
+            dpsRankingsButton.addEventListener('click', () => {
+                triggerAnimation(dpsRankingsButton);
+                menuFlyout.classList.remove('show');
+                previousUnitName = currentUnitName;
+                
+                if (ENABLE_URL_ROUTING) {
+                    if (currentUnitName) {
+                        sessionStorage.setItem('previousUnitSlug', createUnitSlug(currentUnitName));
+                    } else {
+                        sessionStorage.removeItem('previousUnitSlug');
+                    }
+                    window.location.href = '/dps-list';
+                } else {
+                    const tableExists = !!document.getElementById('main-stats-table');
+                    if (!tableExists) {
+                        unitStatsContainer.style.visibility = 'hidden';
+                        selectAndDisplayUnit("Freddy", 'normal');
+                        unitStatsContainer.style.visibility = 'visible';
+                    }
+                    currentUnitName = previousUnitName;
+                    setupDpsRankingsView();
+                }
+            });
+            
+            if (settingsButton && !settingsButton.disabled) {
+                settingsButton.addEventListener('click', () => {
+                    triggerAnimation(settingsButton);
+                    settingsPanel.classList.add('show');
+                });
+            }
+            closeSettingsButton.addEventListener('click', () => {
+                triggerAnimation(closeSettingsButton);
+                settingsPanel.classList.remove('show');
+            });
+
+            saveBoostsCheckbox.addEventListener('change', () => {
+                settings.saveBoosts = saveBoostsCheckbox.checked;
+                if (settings.saveBoosts) {
+                    settings.savedBoosts = getBoostsState();
+                }
+                saveSettings();
+            });
+
+            resetBoostsButton.addEventListener('click', () => {
+                triggerAnimation(resetBoostsButton);
+                resetBoosts(true);
+                if (settings.saveBoosts) {
+                    settings.savedBoosts = getBoostsState();
+                    saveSettings();
+                }
+            });
+
+            savePresetButton.addEventListener('click', () => {
+                triggerAnimation(savePresetButton);
+                presetSaveForm.classList.remove('hidden');
+                presetNameInput.focus();
+            });
+            cancelSavePresetButton.addEventListener('click', () => {
+                triggerAnimation(cancelSavePresetButton);
+                presetSaveForm.classList.add('hidden');
+                presetNameInput.value = '';
+            });
+            confirmSavePresetButton.addEventListener('click', () => {
+                triggerAnimation(confirmSavePresetButton);
+                const name = presetNameInput.value.trim();
+                if (name) {
+                    if (settings.presets.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+                        alert('A preset with this name already exists. Please choose a different name.');
+                        return;
+                    }
+                    settings.presets.push({
+                        id: Date.now().toString(36) + Math.random().toString(36).substring(2),
+                        name: name,
+                        boosts: getBoostsState()
+                    });
+                    saveSettings();
+                    renderPresetsList();
+                    presetNameInput.value = '';
+                    presetSaveForm.classList.add('hidden');
+                } else {
+                    alert('Please enter a name for the preset.');
+                }
+            });
+
+            function handleSort(mode) {
+                const button = mode === 'alpha' ? sortAlphaButton : sortRarityButton;
+                triggerAnimation(button);
+
+                if (currentSort.mode === mode) {
+                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort.mode = mode;
+                    currentSort.direction = 'asc';
+                }
+
+                updateSortButtonsUI();
+                populateGallery();
+            }
+
+            sortAlphaButton.addEventListener('click', () => handleSort('alpha'));
+            sortRarityButton.addEventListener('click', () => handleSort('rarity'));
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.input-container')) {
+                    unitSearchSuggestions.classList.remove('show');
+                }
+                if (!e.target.closest('.menu-container')) {
+                    menuFlyout.classList.remove('show');
+                }
+                if (!e.target.closest('.custom-dropdown')) {
+                     document.querySelectorAll('.dropdown-trigger.open').forEach(t => {
+                        const optionsDiv = t.nextElementSibling;
+                        t.classList.remove('open', 'focused');
+                        if (optionsDiv) {
+                           optionsDiv.classList.remove('show');
+                        }
+                    });
+                }
+                if (!e.target.closest('.gallery-image-container')) {
+                    document.querySelectorAll('.gallery-image-container.buttons-visible').forEach(item => {
+                        item.classList.remove('buttons-visible');
+                    });
+                }
+                if (e.target === boostsPanel) boostsPanel.classList.remove('show');
+                if (e.target === settingsPanel) settingsPanel.classList.remove('show');
+                if (e.target === graphPanel) {
+                    comparisonUnitName = null;
+                    graphPanel.classList.remove('show');
+                }
+                if (e.target === galleryPanel) galleryPanel.classList.remove('show');
+            });
+            
+            window.addEventListener('resize', () => {
+                if (currentUnitName) { 
+                    setDropdownMinWidths(); 
+                    adjustObtainabilityLayout();
+                }
+            });
+
+            galleryFilterInput.addEventListener('input', () => {
+                const filterValue = galleryFilterInput.value.toLowerCase().trim();
+                galleryContainer.querySelectorAll('.gallery-item').forEach(item => {
+                    const unitName = item.querySelector('.gallery-name').textContent.toLowerCase();
+                    if (unitName.includes(filterValue)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
