@@ -2634,7 +2634,7 @@
     "Units": {
       "Scarecrow Freddy": {
         "Shiny": {
-          "value": "2.6+",
+          "value": "3.6+",
           "demand": "8.4/10"
         }
       },
@@ -2656,7 +2656,7 @@
       },
       "Slasher Bonnie": {
         "Normal": {
-          "value": "0.05",
+          "value": "0.025",
           "demand": "N/A"
         },
         "Shiny": {
@@ -2670,7 +2670,7 @@
           "demand": "9.5/10"
         },
         "Shiny": {
-          "value": "25+",
+          "value": "30+",
           "demand": "10/10"
         }
       },
@@ -2690,7 +2690,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "16-19",
+          "value": "17-19",
           "demand": "9.9/10"
         }
       },
@@ -2716,7 +2716,7 @@
       },
       "Party Glock Freddy": {
         "Normal": {
-          "value": "0.02",
+          "value": "0.05",
           "demand": "N/A"
         },
         "Shiny": {
@@ -2726,7 +2726,7 @@
       },
       "Puppet's Alliance": {
         "Normal": {
-          "value": "0.02",
+          "value": "0.05",
           "demand": "N/A"
         },
         "Shiny": {
@@ -2760,27 +2760,27 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "5.8-6",
+          "value": "5.5-6",
           "demand": "7/10"
         }
       },
       "Turkey Chica": {
         "Normal": {
-          "value": "0.02",
+          "value": "0.05",
           "demand": "5.5/10"
         },
         "Shiny": {
-          "value": "1.3-1.4",
+          "value": "1.3+",
           "demand": "N/A"
         }
       },
       "Withered Freddy": {
         "Normal": {
-          "value": "0.005",
+          "value": "0.003",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "0.18-0.2",
+          "value": "0.25",
           "demand": "8.5/10"
         }
       },
@@ -2810,7 +2810,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "0.14+",
+          "value": "0.1+",
           "demand": "7/10"
         }
       }
