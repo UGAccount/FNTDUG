@@ -2827,11 +2827,11 @@
     },
     "Gamepasses": {
       "Shiny Hunter": {
-        "value": "0.8-1.3",
+        "value": "1.3+",
         "demand": "N/A"
       },
       "VIP": {
-        "value": "0.15-0.3+",
+        "value": "0.3-0.4",
         "demand": "N/A"
       },
       "Premium": {
@@ -2839,7 +2839,7 @@
         "demand": "N/A"
       },
       "Event Premium": {
-        "value": "1.4",
+        "value": "N/A",
         "demand": "N/A"
       },
       "Quick Open": {
