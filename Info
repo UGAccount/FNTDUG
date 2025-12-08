@@ -1394,37 +1394,31 @@
       "MaxPlaced": 1,
       "BaseStats": {
         "Range": 20,
-        "Damage": 80,
         "Cooldown": 0
       },
       "UpgradeStats": [
         {
           "Range": 20,
-          "Damage": 90,
           "Cooldown": 0,
           "UpgradePrice": 1600
         },
         {
           "Range": 20,
-          "Damage": 100,
           "Cooldown": 0,
           "UpgradePrice": 2000
         },
         {
           "Range": 22,
-          "Damage": 100,
           "Cooldown": 0,
           "UpgradePrice": 2400
         },
         {
           "Range": 22,
-          "Damage": 110,
           "Cooldown": 0,
           "UpgradePrice": 3000
         },
         {
           "Range": 22,
-          "Damage": 120,
           "Cooldown": 0,
           "UpgradePrice": 3600
         }
