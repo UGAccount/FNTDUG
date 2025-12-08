@@ -903,7 +903,7 @@
       "Name": "Conductor Toy Freddy",
       "Rarity": "Secret",
       "PlacementPrice": 550,
-      "Type": "Summons",
+      "Type": "Line",
       "Element": "Rust",
       "MaxPlaced": 3,
       "BaseStats": {
