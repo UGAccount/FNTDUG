@@ -908,43 +908,43 @@
       "MaxPlaced": 3,
       "BaseStats": {
         "Range": 15.5,
-        "Damage": 45,
-        "Cooldown": 3.5
+        "Damage": 110,
+        "Cooldown": 7
       },
       "UpgradeStats": [
         {
           "Range": 16.5,
-          "Damage": 50,
-          "Cooldown": 3.5,
+          "Damage": 120,
+          "Cooldown": 7,
           "UpgradePrice": 400
         },
         {
           "Range": 17,
-          "Damage": 60,
-          "Cooldown": 3.5,
+          "Damage": 130,
+          "Cooldown": 7,
           "UpgradePrice": 450
         },
         {
           "Range": 17.5,
-          "Damage": 65,
-          "Cooldown": 3.5,
+          "Damage": 140,
+          "Cooldown": 7,
           "UpgradePrice": 500
         },
         {
           "Range": 18.5,
-          "Damage": 70,
-          "Cooldown": 3.5,
+          "Damage": 150,
+          "Cooldown": 7,
           "UpgradePrice": 1000
         },
         {
           "Range": 20,
-          "Damage": 75,
-          "Cooldown": 3.5,
+          "Damage": 175,
+          "Cooldown": 7,
           "UpgradePrice": 1250
         }
       ],
       "Passives": {
-        "All Aboard!": "On this unit's cooldown, summons a train on the track with 120% damage as health. While a train is currently on the track, boosts this unit’s damage by 10% (capped at 1)."
+        "All Aboard!": "On this unit's cooldown, summons a train on the track with 120% damage as health (does not damage bosses). While a train is on the track, this unit gains a 10% damage boost (capped at 1)."
       },
       "Obtainability": [
         "Christmas Movie Event Exclusive 1299R$ / 25000 Gingerbread"
@@ -1067,45 +1067,45 @@
     {
       "Name": "Grinch Foxy",
       "Rarity": "Secret",
-      "PlacementPrice": 2750,
+      "PlacementPrice": 2350,
       "Type": "Cone",
       "Element": "Neutral",
-      "MaxPlaced": 2,
+      "MaxPlaced": 3,
       "BaseStats": {
-        "Range": 18,
+        "Range": 22,
         "Damage": 150,
         "Cooldown": 2
       },
       "UpgradeStats": [
         {
-          "Range": 20,
+          "Range": 23,
           "Damage": 150,
           "Cooldown": 1.9,
           "UpgradePrice": 1750
         },
         {
-          "Range": 22,
+          "Range": 25,
           "Damage": 150,
           "Cooldown": 1.8,
           "UpgradePrice": 2250
         },
         {
-          "Range": 24,
+          "Range": 27,
           "Damage": 150,
           "Cooldown": 1.7,
           "UpgradePrice": 2650
         },
         {
-          "Range": 24,
+          "Range": 29,
           "Damage": 175,
           "Cooldown": 1.5,
           "UpgradePrice": 2500
         },
         {
-          "Range": 24,
-          "Damage": 200,
+          "Range": 31,
+          "Damage": 210,
           "Cooldown": 1.5,
-          "UpgradePrice": 5000
+          "UpgradePrice": 3250
         }
       ],
       "Passives": {
@@ -2016,6 +2016,69 @@
       ]
     },
     {
+      "Name": "Scrooge Freddy",
+      "Rarity": "Nightmare",
+      "PlacementPrice": 2500,
+      "Type": "Line",
+      "Element": "Dark",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 21,
+        "Damage": 550,
+        "Cooldown": 4.8
+      },
+      "UpgradeStats": [
+        {
+          "Range": 23,
+          "Damage": 650,
+          "Cooldown": 4.8,
+          "UpgradePrice": 2000
+        },
+        {
+          "Range": 24,
+          "Damage": 650,
+          "Cooldown": 4.4,
+          "UpgradePrice": 2600
+        },
+        {
+          "Range": 25,
+          "Damage": 700,
+          "Cooldown": 4.4,
+          "UpgradePrice": 2650
+        },
+        {
+          "Range": 26,
+          "Damage": 750,
+          "Cooldown": 4,
+          "UpgradePrice": 3500
+        },
+        {
+          "Range": 27,
+          "Damage": 800,
+          "Cooldown": 4,
+          "UpgradePrice": 4000
+        },
+        {
+          "Range": 28,
+          "Damage": 800,
+          "Cooldown": 3.8,
+          "UpgradePrice": 4250
+        },
+        {
+          "Range": 31,
+          "Damage": 900,
+          "Cooldown": 3.5,
+          "UpgradePrice": 6000
+        }
+      ],
+      "Passives": {
+        "Ghosts of Christmas Past and Future": "All attacks from this unit inflict [Darkfire]. Darkfire does 23% of this unit’s damage per tick for 2 seconds."
+      },
+      "Obtainability": [
+        "Christmas Movie Event Summons .35%"
+      ]
+    },
+    {
       "Name": "Withered Golden Freddy",
       "Rarity": "Nightmare",
       "PlacementPrice": 2900,
@@ -2153,7 +2216,7 @@
       "Actives": [
         {
           "Name": "Hallowed Pumpkin Realm",
-          "Description": "While active, all units that are not Dark or Fire element cannot attack actively, passives that do not rely on attacks will still function. All Dark and Fire element unit’s damage is boosted by 70% for the duration of this ability. For the duration of Hallowed Pumpkin Realm, Rider’s Hellfire changes to The Crows Calling.",
+          "Description": "While active, all none Dark or Fire element units cannot attack, none attack passives will still function. All Dark and Fire element unit’s damage is boosted by 70% for the duration of this ability.",
           "Cooldown": 300,
           "Upgrade": 9
         }
@@ -2633,6 +2696,10 @@
   "Values": {
     "Units": {
       "Scarecrow Freddy": {
+        "Normal": {
+          "value": "0.05",
+          "demand": "N/A"
+        },
         "Shiny": {
           "value": "3.6+",
           "demand": "8.4/10"
@@ -2687,7 +2754,7 @@
       "Shadow Bonnie": {
         "Normal": {
           "value": "0.6",
-          "demand": "N/A"
+          "demand": "7/10"
         },
         "Shiny": {
           "value": "17-19",
@@ -2696,7 +2763,7 @@
       },
       "Headless Horseman Mangle": {
         "Normal": {
-          "value": "0.14",
+          "value": "0.1",
           "demand": "8.5/10"
         },
         "Shiny": {
@@ -2760,7 +2827,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "5.5-6",
+          "value": "8+",
           "demand": "7/10"
         }
       },
@@ -2776,7 +2843,7 @@
       },
       "Withered Freddy": {
         "Normal": {
-          "value": "0.003",
+          "value": "0.005",
           "demand": "N/A"
         },
         "Shiny": {
@@ -2790,7 +2857,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "0.1-0.15",
+          "value": "0.15",
           "demand": "N/A"
         }
       },
@@ -2839,7 +2906,7 @@
         "demand": "N/A"
       },
       "Event Premium": {
-        "value": "N/A",
+        "value": "1.4",
         "demand": "N/A"
       },
       "Quick Open": {
