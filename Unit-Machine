@@ -1497,7 +1497,7 @@
                     }
                 }
 
-                const typeOrder = { 'Full': 1, 'Cone': 2, 'Circle': 3, 'Line': 4, 'Summons': 5 'Single': 6 };
+                const typeOrder = { 'Full': 1, 'Cone': 2, 'Circle': 3, 'Line': 4, 'Summons': 5, 'Single': 6 };
                 const getTypeRank = (typeStr) => {
                     if (!typeStr) return 7;
                     return typeOrder[typeStr] || 7;
