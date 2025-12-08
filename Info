@@ -250,7 +250,7 @@
       "Name": "Undead Chica",
       "Rarity": "Rare",
       "PlacementPrice": 600,
-      "Type": "Circle",
+      "Type": "Summons",
       "Element": "Rust",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -903,7 +903,7 @@
       "Name": "Conductor Toy Freddy",
       "Rarity": "Secret",
       "PlacementPrice": 550,
-      "Type": "Line",
+      "Type": "Summons",
       "Element": "Rust",
       "MaxPlaced": 3,
       "BaseStats": {
@@ -1944,7 +1944,7 @@
       "Name": "Purple Guy",
       "Rarity": "Nightmare",
       "PlacementPrice": 4000,
-      "Type": "Circle",
+      "Type": "Summons",
       "Element": "Neutral",
       "MaxPlaced": 2,
       "BaseStats": {
