@@ -2682,7 +2682,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "3.6+",
+          "value": "3+",
           "demand": "8.4/10"
         }
       },
@@ -2808,7 +2808,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "14+",
+          "value": "11+",
           "demand": "7/10"
         }
       },
