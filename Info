@@ -2728,7 +2728,7 @@
           "demand": "9/10"
         },
         "Shiny": {
-          "value": "15-17+",
+          "value": "20-22",
           "demand": "9.9/10"
         }
       },
@@ -2738,7 +2738,7 @@
           "demand": "7/10"
         },
         "Shiny": {
-          "value": "17-19",
+          "value": "21-23",
           "demand": "9.9/10"
         }
       },
@@ -2784,7 +2784,7 @@
       },
       "Party Packer Cupcake": {
         "Normal": {
-          "value": "0.15-0.18",
+          "value": "0.1",
           "demand": "N/A"
         },
         "Shiny": {
