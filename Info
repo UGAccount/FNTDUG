@@ -2769,7 +2769,7 @@
         },
         "Shiny": {
           "value": "1.3+",
-          "demand": "N/A"
+          "demand": "6.5/10"
         }
       },
       "Puppet's Alliance": {
@@ -2925,7 +2925,7 @@
     },
     "Pets": {
       "Golden Freddy": {
-        "value": "0.2",
+        "value": "0.15",
         "demand": "N/A"
       },
       "Gang Freddy": {
@@ -2935,7 +2935,7 @@
     },
     "Gamepasses": {
       "Shiny Hunter": {
-        "value": "1.3+",
+        "value": "1.55+",
         "demand": "N/A"
       },
       "VIP": {
