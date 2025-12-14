@@ -1052,57 +1052,6 @@
       ]
     },
     {
-      "Name": "Grinch Foxy",
-      "Rarity": "Secret",
-      "PlacementPrice": 2350,
-      "Type": "Cone",
-      "Element": "Neutral",
-      "MaxPlaced": 3,
-      "BaseStats": {
-        "Range": 22,
-        "Damage": 150,
-        "Cooldown": 2
-      },
-      "UpgradeStats": [
-        {
-          "Range": 23,
-          "Damage": 150,
-          "Cooldown": 1.9,
-          "UpgradePrice": 1750
-        },
-        {
-          "Range": 25,
-          "Damage": 150,
-          "Cooldown": 1.8,
-          "UpgradePrice": 2250
-        },
-        {
-          "Range": 27,
-          "Damage": 150,
-          "Cooldown": 1.7,
-          "UpgradePrice": 2650
-        },
-        {
-          "Range": 29,
-          "Damage": 175,
-          "Cooldown": 1.5,
-          "UpgradePrice": 2500
-        },
-        {
-          "Range": 31,
-          "Damage": 210,
-          "Cooldown": 1.5,
-          "UpgradePrice": 3250
-        }
-      ],
-      "Passives": {
-        "Broken Ornaments": "When attacking an enemy, has a 33% chance to apply a 2 second bleed dealing 10% damage every second"
-      },
-      "Obtainability": [
-        "Christmas Movie Event Premium Pass T30"
-      ]
-    },
-    {
       "Name": "Krampus Purple Guy",
       "Rarity": "Secret",
       "PlacementPrice": 3250,
@@ -1848,6 +1797,57 @@
       },
       "Obtainability": [
         "Halloween Event Premium Pass T30"
+      ]
+    },
+    {
+      "Name": "Grinch Foxy",
+      "Rarity": "Nightmare",
+      "PlacementPrice": 2350,
+      "Type": "Cone",
+      "Element": "Neutral",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 22,
+        "Damage": 150,
+        "Cooldown": 2
+      },
+      "UpgradeStats": [
+        {
+          "Range": 23,
+          "Damage": 150,
+          "Cooldown": 1.9,
+          "UpgradePrice": 1750
+        },
+        {
+          "Range": 25,
+          "Damage": 150,
+          "Cooldown": 1.8,
+          "UpgradePrice": 2250
+        },
+        {
+          "Range": 27,
+          "Damage": 150,
+          "Cooldown": 1.7,
+          "UpgradePrice": 2650
+        },
+        {
+          "Range": 29,
+          "Damage": 175,
+          "Cooldown": 1.5,
+          "UpgradePrice": 2500
+        },
+        {
+          "Range": 31,
+          "Damage": 210,
+          "Cooldown": 1.5,
+          "UpgradePrice": 3250
+        }
+      ],
+      "Passives": {
+        "Broken Ornaments": "When attacking an enemy, has a 33% chance to apply a 2 second bleed dealing 10% damage every second"
+      },
+      "Obtainability": [
+        "Christmas Movie Event Premium Pass T30"
       ]
     },
     {
