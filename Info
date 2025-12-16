@@ -2123,6 +2123,104 @@
       ]
     },
     {
+      "Name": "Frozen King Foxy",
+      "Rarity": "Apex",
+      "PlacementPrice": 4500,
+      "Type": "Line",
+      "Element": "Water",
+      "MaxPlaced": 1,
+      "BaseStats": {
+        "Range": 20,
+        "Damage": 1800,
+        "Cooldown": 10
+      },
+      "UpgradeStats": [
+        {
+          "Damage": 1900,
+          "Range": 20.5,
+          "Cooldown": 9.5,
+          "UpgradePrice": 3250
+        },
+        {
+          "Damage": 2000,
+          "Range": 21,
+          "Cooldown": 9.5,
+          "UpgradePrice": 4250
+        },
+        {
+          "Damage": 2100,
+          "Range": 21.5,
+          "Cooldown": 9.5,
+          "UpgradePrice": 5750
+        },
+        {
+          "Damage": 2150,
+          "Range": 21.5,
+          "Cooldown": 9.5,
+          "UpgradePrice": 2500
+        },
+        {
+          "Damage": 2150,
+          "Range": 21.5,
+          "Cooldown": 9,
+          "UpgradePrice": 7500,
+          "Type": "Cone"
+        },
+        {
+          "Damage": 2200,
+          "Range": 21.5,
+          "Cooldown": 9,
+          "UpgradePrice": 3500
+        },
+        {
+          "Damage": 2200,
+          "Range": 22,
+          "Cooldown": 8.5,
+          "UpgradePrice": 3750
+        },
+        {
+          "Damage": 2200,
+          "Range": 22,
+          "Cooldown": 8,
+          "UpgradePrice": 4000
+        },
+        {
+          "Damage": 2250,
+          "Range": 22,
+          "Cooldown": 7,
+          "UpgradePrice": 4250
+        },
+        {
+          "Damage": 2300,
+          "Range": 22,
+          "Cooldown": 6.5,
+          "UpgradePrice": 8500,
+          "Type": "Explosion"
+        },
+        {
+          "Damage": 2400,
+          "Range": 22,
+          "Cooldown": 6,
+          "UpgradePrice": 3500
+        }
+      ],
+      "Passives": {
+        "Frozen Obelisk": "All enemies within this unit’s range are slowed by 10%. Additionally these enemies take 20% more damage from Water element units.",
+        "Crown of Permafrost": "Enemies hit by this unit are inflicted with [Permafrost]. [Permafrost] deals 3% of the unit’s damage every second until the enemy dies."
+      },
+      "Actives": [
+        {
+          "Name": "Black Ice Bifrost",
+          "Description": "When selected, Frozen King Foxy descends into the icy depths, allowing it to be placed anywhere on the map. After being placed, it will rise up and start attacking after 2s. Once 2s have passed, this unit gains 10% decreased CD for 3s",
+          "Cooldown": 12,
+          "Upgrade": 11
+        }
+      ],
+      "Obtainability": [
+        "Christmas Movie Event Special Endless (It's a random chance to get upon completion of wave 25.)"
+      ]
+    },
+    {
       "Name": "Headless Horseman Mangle",
       "Rarity": "Apex",
       "PlacementPrice": 5400,
@@ -2798,7 +2896,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "7+",
+          "value": "10+",
           "demand": "8+/10"
         }
       },
