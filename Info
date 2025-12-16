@@ -2195,7 +2195,7 @@
           "Range": 22,
           "Cooldown": 6.5,
           "UpgradePrice": 8500,
-          "Type": "Explosion"
+          "Type": "Circle"
         },
         {
           "Damage": 2400,
