@@ -2896,7 +2896,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "10+",
+          "value": "11+",
           "demand": "8+/10"
         }
       },
@@ -2926,7 +2926,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "0.25",
+          "value": "0.3+",
           "demand": "8.5/10"
         }
       },
@@ -2962,11 +2962,11 @@
       },
       "Conductor Toy Freddy": {
         "Normal": {
-          "value": "0.05+",
+          "value": "0.08",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "1.6+",
+          "value": "1.7-2",
           "demand": "N/A"
         }
       },
@@ -2982,11 +2982,11 @@
       },
       "Frostmancer Withered Bonnie": {
         "Normal": {
-          "value": "0.07",
+          "value": "0.05",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "0.25-0.3",
+          "value": "0.2",
           "demand": "9/10"
         }
       },
@@ -3006,7 +3006,7 @@
           "demand": "9/10"
         },
         "Shiny": {
-          "value": "20+",
+          "value": "25",
           "demand": "N/A"
         }
       },
