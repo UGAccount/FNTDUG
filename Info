@@ -2960,6 +2960,16 @@
           "demand": "7/10"
         }
       },
+      "Frozen King Foxy": {
+        "Normal": {
+          "value": "N/A",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "N/A",
+          "demand": "N/A"
+        }
+      },
       "Conductor Toy Freddy": {
         "Normal": {
           "value": "0.08",
