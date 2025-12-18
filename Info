@@ -2816,7 +2816,7 @@
           "demand": "9.5/10"
         },
         "Shiny": {
-          "value": "30-32",
+          "value": "28-30",
           "demand": "10/10"
         }
       },
@@ -2826,7 +2826,7 @@
           "demand": "9/10"
         },
         "Shiny": {
-          "value": "20-22",
+          "value": "23-25",
           "demand": "9.9/10"
         }
       },
@@ -2836,7 +2836,7 @@
           "demand": "7/10"
         },
         "Shiny": {
-          "value": "25-28",
+          "value": "30+",
           "demand": "10/10"
         }
       },
@@ -2856,7 +2856,7 @@
           "demand": "9/10"
         },
         "Shiny": {
-          "value": "8+",
+          "value": "8.5+",
           "demand": "10/10"
         }
       },
@@ -2906,7 +2906,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "11+",
+          "value": "8",
           "demand": "6.5/10"
         }
       },
@@ -2958,16 +2958,6 @@
         "Shiny": {
           "value": "0.1+",
           "demand": "7/10"
-        }
-      },
-      "Frozen King Foxy": {
-        "Normal": {
-          "value": "N/A",
-          "demand": "N/A"
-        },
-        "Shiny": {
-          "value": "N/A",
-          "demand": "N/A"
         }
       },
       "Conductor Toy Freddy": {
@@ -3028,6 +3018,16 @@
         "Shiny": {
           "value": "1.5-2",
           "demand": "9/10"
+        }
+      },
+      "Frozen King Foxy": {
+        "Normal": {
+          "value": "0.3",
+          "demand": "N/A"
+        },
+        "Shiny": {
+          "value": "8.5",
+          "demand": "N/A"
         }
       }
     },
