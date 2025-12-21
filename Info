@@ -591,38 +591,38 @@
       "Name": "Endo 01",
       "Rarity": "Mythical",
       "PlacementPrice": 1000,
-      "Type": "Single",
+      "Type": "Circle",
       "Element": "Electricity",
-      "MaxPlaced": 2,
+      "MaxPlaced": 3,
       "BaseStats": {
-        "Range": 20,
-        "Damage": 15,
-        "Cooldown": 3
+        "Range": 18,
+        "Damage": 100,
+        "Cooldown": 2.5
       },
       "UpgradeStats": [
         {
           "Range": 20,
-          "Damage": 20,
-          "Cooldown": 3,
-          "UpgradePrice": 800
-        },
-        {
-          "Range": 20,
-          "Damage": 20,
-          "Cooldown": 3,
+          "Damage": 125,
+          "Cooldown": 2.5,
           "UpgradePrice": 1000
         },
         {
           "Range": 20,
-          "Damage": 20,
-          "Cooldown": 3,
-          "UpgradePrice": 1200
+          "Damage": 140,
+          "Cooldown": 2.3,
+          "UpgradePrice": 1350
         },
         {
           "Range": 20,
-          "Damage": 20,
-          "Cooldown": 3,
-          "UpgradePrice": 1500
+          "Damage": 175,
+          "Cooldown": 2.2,
+          "UpgradePrice": 2000
+        },
+        {
+          "Range": 22,
+          "Damage": 200,
+          "Cooldown": 2,
+          "UpgradePrice": 2500
         }
       ],
       "Passives": {
@@ -1271,6 +1271,51 @@
       ]
     },
     {
+      "Name": "Popcorn Bot",
+      "Rarity": "Secret",
+      "PlacementPrice": 1750,
+      "Type": "Line",
+      "Element": "Fire",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 22,
+        "Damage": 40,
+        "Cooldown": 1
+      },
+      "UpgradeStats": [
+        {
+          "Range": 24,
+          "Damage": 65,
+          "Cooldown": 1,
+          "UpgradePrice": 1750
+        },
+        {
+          "Range": 26,
+          "Damage": 75,
+          "Cooldown": 1,
+          "UpgradePrice": 1850
+        },
+        {
+          "Range": 27,
+          "Damage": 85,
+          "Cooldown": 1,
+          "UpgradePrice": 1925
+        },
+        {
+          "Range": 28,
+          "Damage": 125,
+          "Cooldown": 1,
+          "UpgradePrice": 2250
+        }
+      ],
+      "Passives": {
+        "Popcorn Party Pack": "Every 8 seconds this unit shots Popcorn with 1 of 3 different effects in this order. Spicy: 120 degree Cone, dealing 35% burn for 3s. Sweet Boost all units and their stats by 5% for 7s."
+      },
+      "Obtainability": [
+        "4th Bi-Weekly Exclusive 799R$ / 35000 Coins"
+      ]
+    },
+    {
       "Name": "Puppet's Alliance",
       "Rarity": "Secret",
       "PlacementPrice": 1500,
@@ -1396,7 +1441,8 @@
           "Range": 27.5,
           "Damage": 600,
           "Cooldown": 4,
-          "UpgradePrice": 4500
+          "UpgradePrice": 4500,
+          "Type": "Circle"
         },
         {
           "Range": 24,
@@ -1405,27 +1451,27 @@
           "UpgradePrice": 6000
         },
         {
-          "Range": 24,
-          "Damage": 700,
-          "Cooldown": 5,
-          "UpgradePrice": 4500
+          "Range": 22,
+          "Damage": 600,
+          "Cooldown": 4.4,
+          "UpgradePrice": 4500,
+          "Type": "Full"
         },
         {
-          "Range": 25,
-          "Damage": 750,
-          "Cooldown": 4.7,
+          "Range": 24,
+          "Damage": 650,
+          "Cooldown": 4.3,
           "UpgradePrice": 5000
         },
         {
-          "Range": 25,
-          "Damage": 800,
-          "Cooldown": 4.7,
+          "Range": 27,
+          "Damage": 700,
+          "Cooldown": 4.2,
           "UpgradePrice": 5500
         }
       ],
       "Passives": {
-        "Agonizing Energy": "Attacks apply poison for 2s, dealing 20% of this unit's current damage. [10% dmg/tick]",
-        "Blackout [Active Ability] [Upgrade 6+]": "Upon activation, darkens the map for 15s. Every enemy taken down by this unit during these 15s grants a 0.2% increase to damage and range. [20% max buff] [60s Local CD]"
+        "Agonizing Energy": "Attacks apply poison for 2s, dealing 20% of this unit's current damage. [10% dmg/tick]"
       },
       "Obtainability": [
         "Season 1 Premium Pass T30"
@@ -1562,38 +1608,38 @@
       "MaxPlaced": 3,
       "BaseStats": {
         "Range": 16,
-        "Damage": 70,
-        "Cooldown": 3.5
+        "Damage": 100,
+        "Cooldown": 3
       },
       "UpgradeStats": [
         {
           "Range": 18,
-          "Damage": 75,
-          "Cooldown": 3.5,
+          "Damage": 175,
+          "Cooldown": 3,
           "UpgradePrice": 1200
         },
         {
           "Range": 20,
-          "Damage": 85,
-          "Cooldown": 3.2,
-          "UpgradePrice": 1250
+          "Damage": 175,
+          "Cooldown": 2.8,
+          "UpgradePrice": 1450
         },
         {
           "Range": 21,
-          "Damage": 90,
-          "Cooldown": 3,
+          "Damage": 190,
+          "Cooldown": 2.7,
           "UpgradePrice": 1900
         },
         {
           "Range": 21,
-          "Damage": 120,
-          "Cooldown": 2.8,
+          "Damage": 225,
+          "Cooldown": 2.6,
           "UpgradePrice": 2450
         },
         {
           "Range": 22,
-          "Damage": 145,
-          "Cooldown": 2.7,
+          "Damage": 250,
+          "Cooldown": 2.5,
           "UpgradePrice": 2750
         }
       ],
@@ -2776,27 +2822,27 @@
     "Units": {
       "Scarecrow Freddy": {
         "Normal": {
-          "value": "0.05",
+          "value": "N/A",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "3+",
-          "demand": "7.5/10"
+          "value": "N/A",
+          "demand": "N/A"
         }
       },
       "BBnJ": {
         "Shiny": {
-          "value": "0.10-0.14",
-          "demand": "5/10"
+          "value": "N/A",
+          "demand": "N/A"
         }
       },
       "Balloon Boy": {
         "Normal": {
-          "value": "0.2+",
+          "value": "0.3+",
           "demand": "9/10"
         },
         "Shiny": {
-          "value": "5.5-6+",
+          "value": "8+",
           "demand": "7.5/10"
         }
       },
@@ -2826,23 +2872,23 @@
           "demand": "9/10"
         },
         "Shiny": {
-          "value": "28+",
+          "value": "32+",
           "demand": "9.9/10"
         }
       },
       "Shadow Bonnie": {
         "Normal": {
-          "value": "0.6",
+          "value": "1.5+",
           "demand": "7/10"
         },
         "Shiny": {
-          "value": "32-35",
+          "value": "35-37+",
           "demand": "10/10"
         }
       },
       "Headless Horseman Mangle": {
         "Normal": {
-          "value": "0.1",
+          "value": "0.14",
           "demand": "8.5/10"
         },
         "Shiny": {
@@ -2882,11 +2928,11 @@
       },
       "Party Packer Cupcake": {
         "Normal": {
-          "value": "0.1",
+          "value": "0.12-0.13",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "1.5",
+          "value": "1.8-2.2",
           "demand": "6/10"
         }
       },
@@ -2902,12 +2948,12 @@
       },
       "Jack'O Bonnie": {
         "Normal": {
-          "value": "0.40-0.50",
+          "value": "N/A",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "8",
-          "demand": "6.5/10"
+          "value": "N/A",
+          "demand": "N/A"
         }
       },
       "Turkey Chica": {
@@ -2962,7 +3008,7 @@
       },
       "Conductor Toy Freddy": {
         "Normal": {
-          "value": "0.08",
+          "value": "0.06",
           "demand": "N/A"
         },
         "Shiny": {
@@ -3012,7 +3058,7 @@
       },
       "Scrooge Freddy": {
         "Normal": {
-          "value": "0.13-0.14",
+          "value": "0.07+",
           "demand": "8.5+/10"
         },
         "Shiny": {
@@ -3026,7 +3072,7 @@
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "8.5",
+          "value": "13-15",
           "demand": "N/A"
         }
       }
