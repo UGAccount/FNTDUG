@@ -1648,7 +1648,7 @@
       "Name": "Toy Maker Mangle",
       "Rarity": "Secret",
       "PlacementPrice": 1500,
-      "Type": "Single",
+      "Type": "Summons",
       "Element": "Rust",
       "MaxPlaced": 2,
       "BaseStats": {
