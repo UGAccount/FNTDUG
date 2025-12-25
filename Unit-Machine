@@ -944,7 +944,7 @@
             let pendingMainBoosts = null;
             
             const MAX_LEVEL = 60;
-
+       
             const elementalAdvantages = {
                 "Electricity": { "Boosts": { "Water": 1.3, "Rust": 0.7 } },
                 "Fire": { "Boosts": { "Rust": 1.3, "Water": 0.7 } },
@@ -1826,10 +1826,10 @@
 
                 updateUnitVisuals();
 
-                if (currentStats.BackendNote) {
+                if (currentStats.Note) {
                     const noteWrapper = document.createElement('div');
                     noteWrapper.className = 'aux-table';
-                    createTableInWrapper(['Note'], [[currentStats.BackendNote]], noteWrapper, 'note-table-wrapper');
+                    createTableInWrapper(['Note'], [[currentStats.Note]], noteWrapper, 'note-table-wrapper');
                     unitStatsContainer.appendChild(noteWrapper);
                 }
                 
@@ -2233,8 +2233,8 @@
                     profiles.totalDps.max.max = Math.max(profiles.totalDps.max.max, mTotalDps);
                     profiles.range.max.min = Math.min(profiles.range.max.min, mStats.Range);
                     profiles.range.max.max = Math.max(profiles.range.max.max, mStats.Range);
-                    profiles.speed.max.min = Math.min(profiles.speed.placement.min, mStats.Cooldown);
-                    profiles.speed.max.max = Math.max(profiles.speed.placement.max, mStats.Cooldown);
+                    profiles.speed.max.min = Math.min(profiles.speed.max.min, mStats.Cooldown);
+                    profiles.speed.max.max = Math.max(profiles.speed.max.max, mStats.Cooldown);
                     if (isFinite(mCostPerDps)) {
                         profiles.costPerDps.max.min = Math.min(profiles.costPerDps.max.min, mCostPerDps);
                         profiles.costPerDps.max.max = Math.max(profiles.costPerDps.max.max, mCostPerDps);
@@ -2488,11 +2488,11 @@
                 }
 
                 const statsToDisplay = {
-                    'Damage': { ...bounds.TotalDamage, value: totalDamage, statType: 'dmg' },
-                    'DPS': { ...bounds.TotalDPS, value: totalDPS, statType: 'dps' },
-                    'Range': { ...bounds.Range, value: boostedRange, statType: 'range' },
-                    'Speed': { ...bounds.Speed, value: boostedCd, statType: 'cd' },
-                    'Cost/DPS': { ...bounds.CostPerDps, value: costPerDps, statType: 'costPerDps' }
+                    'DPS': { ...bounds.TotalDPS, value: totalDPS },
+                    'Damage': { ...bounds.TotalDamage, value: totalDamage },
+                    'Cooldown': { ...bounds.Speed, value: boostedCd },
+                    'Range': { ...bounds.Range, value: boostedRange },
+                    'Cost/DPS': { ...bounds.CostPerDps, value: costPerDps }
                 };
                 graphContainer.innerHTML = '';
                 for (const [label, data] of Object.entries(statsToDisplay)) {
@@ -2509,7 +2509,7 @@
                         valueEl = document.createElement('div');
                     row.className = 'stat-row'; labelEl.className = 'stat-label'; labelEl.textContent = label;
                     barContainer.className = 'stat-bar-container'; bar.className = 'stat-bar';
-                    valueEl.className = 'stat-value'; valueEl.textContent = data.value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+                    valueEl.className = 'stat-value'; valueEl.textContent = isFinite(data.value) ? data.value.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '∞';
                     barContainer.appendChild(bar); row.append(labelEl, barContainer, valueEl); graphContainer.appendChild(row);
                     requestAnimationFrame(() => { bar.style.width = `${percent}%`; });
                 }
@@ -3132,7 +3132,7 @@
                             Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
                             Value: unitValues[unit.Name] || null,
-                            BackendNote: unit.Note || undefined,
+                            Note: unit.Note,
                         };
                     });
                     
