@@ -2524,7 +2524,8 @@
       ],
       "Obtainability": [
         "Christmas Present (0.5%)"
-      ]
+      ],
+      "Note": "This unit's damage is lowered in the final upgrade because its cone size increases from 90 to 180 degrees. Placement: 50 degrees, Upgrade 5: 90 degrees, Upgrade 7: 180 degrees."
     },
     {
       "Name": "Golden Freddy",
