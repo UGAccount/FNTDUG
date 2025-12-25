@@ -945,6 +945,8 @@
             
             const MAX_LEVEL = 60;
        
+            const backendNotes = {};
+
             const elementalAdvantages = {
                 "Electricity": { "Boosts": { "Water": 1.3, "Rust": 0.7 } },
                 "Fire": { "Boosts": { "Rust": 1.3, "Water": 0.7 } },
@@ -969,7 +971,7 @@
             const formatMangleValue = (valueString) => {
                 if (valueString !== 'N/A' && valueString && /[\d]/.test(valueString)) {
                     const lastNumberMatch = valueString.match(/(\d+)$/);
-                    const suffix = (lastNumberMatch && parseInt(lastNumberMatch, 10) === 1) ? ' Mangle' : ' Mangles';
+                    const suffix = (lastNumberMatch && parseInt(lastNumberMatch[1], 10) === 1) ? ' Mangle' : ' Mangles';
                     return valueString + suffix;
                 }
                 return valueString;
@@ -1826,10 +1828,10 @@
 
                 updateUnitVisuals();
 
-                if (currentStats.Note) {
+                if (currentStats.BackendNote) {
                     const noteWrapper = document.createElement('div');
                     noteWrapper.className = 'aux-table';
-                    createTableInWrapper(['Note'], [[currentStats.Note]], noteWrapper, 'note-table-wrapper');
+                    createTableInWrapper(['Note'], [[currentStats.BackendNote]], noteWrapper, 'note-table-wrapper');
                     unitStatsContainer.appendChild(noteWrapper);
                 }
                 
@@ -2208,7 +2210,7 @@
                         cumulativeCosts[i] = cumulativeCosts[i - 1] + (unit.Upgrades[i].Price || 0);
                     }
 
-                    const pStats = unit.Upgrades, pCost = cumulativeCosts, pTotalDamage = pStats.Damage * placements;
+                    const pStats = unit.Upgrades[0], pCost = cumulativeCosts[0], pTotalDamage = pStats.Damage * placements;
                     const pTotalDps = calculateDPS(pStats.Damage, pStats.Cooldown) * placements;
                     const pCostPerDps = pTotalDps > 0 ? pCost / pTotalDps : Infinity;
                     profiles.totalDamage.placement.min = Math.min(profiles.totalDamage.placement.min, pTotalDamage);
@@ -2233,8 +2235,8 @@
                     profiles.totalDps.max.max = Math.max(profiles.totalDps.max.max, mTotalDps);
                     profiles.range.max.min = Math.min(profiles.range.max.min, mStats.Range);
                     profiles.range.max.max = Math.max(profiles.range.max.max, mStats.Range);
-                    profiles.speed.max.min = Math.min(profiles.speed.max.min, mStats.Cooldown);
-                    profiles.speed.max.max = Math.max(profiles.speed.max.max, mStats.Cooldown);
+                    profiles.speed.max.min = Math.min(profiles.speed.placement.min, mStats.Cooldown);
+                    profiles.speed.max.max = Math.max(profiles.speed.placement.max, mStats.Cooldown);
                     if (isFinite(mCostPerDps)) {
                         profiles.costPerDps.max.min = Math.min(profiles.costPerDps.max.min, mCostPerDps);
                         profiles.costPerDps.max.max = Math.max(profiles.costPerDps.max.max, mCostPerDps);
@@ -2328,7 +2330,7 @@
                 const lastUpgradeIndex = numUpgrades - 1;
                 
                 if (numUpgrades <= 1) {
-                    return unit.Upgrades[statKey];
+                    return unit.Upgrades[0][statKey];
                 }
 
                 const floatIndex = index / 100 * lastUpgradeIndex;
@@ -2488,11 +2490,11 @@
                 }
 
                 const statsToDisplay = {
-                    'DPS': { ...bounds.TotalDPS, value: totalDPS },
-                    'Damage': { ...bounds.TotalDamage, value: totalDamage },
-                    'Cooldown': { ...bounds.Speed, value: boostedCd },
-                    'Range': { ...bounds.Range, value: boostedRange },
-                    'Cost/DPS': { ...bounds.CostPerDps, value: costPerDps }
+                    'Damage': { ...bounds.TotalDamage, value: totalDamage, statType: 'dmg' },
+                    'DPS': { ...bounds.TotalDPS, value: totalDPS, statType: 'dps' },
+                    'Range': { ...bounds.Range, value: boostedRange, statType: 'range' },
+                    'Speed': { ...bounds.Speed, value: boostedCd, statType: 'cd' },
+                    'Cost/DPS': { ...bounds.CostPerDps, value: costPerDps, statType: 'costPerDps' }
                 };
                 graphContainer.innerHTML = '';
                 for (const [label, data] of Object.entries(statsToDisplay)) {
@@ -2509,7 +2511,7 @@
                         valueEl = document.createElement('div');
                     row.className = 'stat-row'; labelEl.className = 'stat-label'; labelEl.textContent = label;
                     barContainer.className = 'stat-bar-container'; bar.className = 'stat-bar';
-                    valueEl.className = 'stat-value'; valueEl.textContent = isFinite(data.value) ? data.value.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '∞';
+                    valueEl.className = 'stat-value'; valueEl.textContent = data.value.toLocaleString(undefined, { maximumFractionDigits: 2 });
                     barContainer.appendChild(bar); row.append(labelEl, barContainer, valueEl); graphContainer.appendChild(row);
                     requestAnimationFrame(() => { bar.style.width = `${percent}%`; });
                 }
@@ -2614,7 +2616,7 @@
                 const versionToUse = settings.saveBoosts ? selectedVersionKey : 'normal';
                 if (allUnitData[searchTerm]) return selectAndDisplayUnit(searchTerm, versionToUse);
                 const result = fuse.search(searchTerm);
-                if (result.length > 0) selectAndDisplayUnit(result.item, versionToUse);
+                if (result.length > 0) selectAndDisplayUnit(result[0].item, versionToUse);
                 else { alert('Unit Not Found'); updateSuggestions(); }
             }
 
@@ -3068,7 +3070,7 @@
                 }
                 processed.Upgrades = upgrades;
 
-                const typesInOrder = [upgrades.Type];
+                const typesInOrder = [upgrades[0].Type];
                 for (let i = 1; i < upgrades.length; i++) {
                     const currentType = upgrades[i].Type;
                     if (currentType && currentType !== typesInOrder[typesInOrder.length - 1]) {
@@ -3132,7 +3134,7 @@
                             Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
                             Value: unitValues[unit.Name] || null,
-                            Note: unit.Note,
+                            BackendNote: backendNotes[unit.Name] || undefined,
                         };
                     });
                     
