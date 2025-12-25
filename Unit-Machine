@@ -944,8 +944,6 @@
             let pendingMainBoosts = null;
             
             const MAX_LEVEL = 60;
-       
-            const backendNotes = {};
 
             const elementalAdvantages = {
                 "Electricity": { "Boosts": { "Water": 1.3, "Rust": 0.7 } },
@@ -971,7 +969,7 @@
             const formatMangleValue = (valueString) => {
                 if (valueString !== 'N/A' && valueString && /[\d]/.test(valueString)) {
                     const lastNumberMatch = valueString.match(/(\d+)$/);
-                    const suffix = (lastNumberMatch && parseInt(lastNumberMatch[1], 10) === 1) ? ' Mangle' : ' Mangles';
+                    const suffix = (lastNumberMatch && parseInt(lastNumberMatch, 10) === 1) ? ' Mangle' : ' Mangles';
                     return valueString + suffix;
                 }
                 return valueString;
@@ -2210,7 +2208,7 @@
                         cumulativeCosts[i] = cumulativeCosts[i - 1] + (unit.Upgrades[i].Price || 0);
                     }
 
-                    const pStats = unit.Upgrades[0], pCost = cumulativeCosts[0], pTotalDamage = pStats.Damage * placements;
+                    const pStats = unit.Upgrades, pCost = cumulativeCosts, pTotalDamage = pStats.Damage * placements;
                     const pTotalDps = calculateDPS(pStats.Damage, pStats.Cooldown) * placements;
                     const pCostPerDps = pTotalDps > 0 ? pCost / pTotalDps : Infinity;
                     profiles.totalDamage.placement.min = Math.min(profiles.totalDamage.placement.min, pTotalDamage);
@@ -2330,7 +2328,7 @@
                 const lastUpgradeIndex = numUpgrades - 1;
                 
                 if (numUpgrades <= 1) {
-                    return unit.Upgrades[0][statKey];
+                    return unit.Upgrades[statKey];
                 }
 
                 const floatIndex = index / 100 * lastUpgradeIndex;
@@ -2616,7 +2614,7 @@
                 const versionToUse = settings.saveBoosts ? selectedVersionKey : 'normal';
                 if (allUnitData[searchTerm]) return selectAndDisplayUnit(searchTerm, versionToUse);
                 const result = fuse.search(searchTerm);
-                if (result.length > 0) selectAndDisplayUnit(result[0].item, versionToUse);
+                if (result.length > 0) selectAndDisplayUnit(result.item, versionToUse);
                 else { alert('Unit Not Found'); updateSuggestions(); }
             }
 
@@ -3070,7 +3068,7 @@
                 }
                 processed.Upgrades = upgrades;
 
-                const typesInOrder = [upgrades[0].Type];
+                const typesInOrder = [upgrades.Type];
                 for (let i = 1; i < upgrades.length; i++) {
                     const currentType = upgrades[i].Type;
                     if (currentType && currentType !== typesInOrder[typesInOrder.length - 1]) {
@@ -3134,7 +3132,7 @@
                             Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
                             Value: unitValues[unit.Name] || null,
-                            BackendNote: backendNotes[unit.Name] || undefined,
+                            BackendNote: unit.Note || undefined,
                         };
                     });
                     
