@@ -363,6 +363,51 @@
       ]
     },
     {
+      "Name": "Frosty the Snowcake",
+      "Rarity": "Epic",
+      "PlacementPrice": 1050,
+      "Type": "Circle",
+      "Element": "Water",
+      "MaxPlaced": 3,
+      "BaseStats": {
+        "Range": 15,
+        "Damage": 110,
+        "Cooldown": 4
+      },
+      "UpgradeStats": [
+        {
+          "Range": 15,
+          "Damage": 120,
+          "Cooldown": 4,
+          "UpgradePrice": 850
+        },
+        {
+          "Range": 16,
+          "Damage": 130,
+          "Cooldown": 4,
+          "UpgradePrice": 1450
+        },
+        {
+          "Range": 20,
+          "Damage": 130,
+          "Cooldown": 3.6,
+          "UpgradePrice": 1950
+        },
+        {
+          "Range": 24,
+          "Damage": 140,
+          "Cooldown": 3.6,
+          "UpgradePrice": 2550
+        }
+      ],
+      "Passives": {
+        "Chilling Snowcake": "Each enemy damaged by this unit is slowed by 10% for 1s."
+      },
+      "Obtainability": [
+        "Christmas Present (90%)"
+      ]
+    },
+    {
       "Name": "Santa Freddy",
       "Rarity": "Epic",
       "PlacementPrice": 450,
@@ -1309,7 +1354,7 @@
         }
       ],
       "Passives": {
-        "Popcorn Party Pack": "Every 8 seconds this unit shots Popcorn with 1 of 3 different effects in this order. Spicy: 120 degree Cone, dealing 35% burn for 3s. Sweet Boost all units and their stats by 5% for 7s."
+        "Popcorn Party Pack": "Every 8 seconds this unit shots Popcorn with 1 of 3 different effects in this order. Spicy: 120 degree Cone, dealing 35% burn for 3s. Buttered: Single target Knockback Sweet Boost all units and their stats by 5% for 7s."
       },
       "Obtainability": [
         "4th Bi-Weekly Exclusive 799R$ / 35000 Coins"
@@ -1597,6 +1642,63 @@
       },
       "Obtainability": [
         "Halloween Event Exclusive 799R$ / 15000 Pumpkins"
+      ]
+    },
+    {
+      "Name": "Toy Maker Mangle",
+      "Rarity": "Secret",
+      "PlacementPrice": 1500,
+      "Type": "Single",
+      "Element": "Rust",
+      "MaxPlaced": 2,
+      "BaseStats": {
+        "Range": 19,
+        "Damage": 450,
+        "Cooldown": 6
+      },
+      "UpgradeStats": [
+        {
+          "Range": 20,
+          "Damage": 550,
+          "Cooldown": 5.5,
+          "UpgradePrice": 1000
+        },
+        {
+          "Range": 21,
+          "Damage": 650,
+          "Cooldown": 5,
+          "UpgradePrice": 1250
+        },
+        {
+          "Range": 22.5,
+          "Damage": 750,
+          "Cooldown": 4.5,
+          "UpgradePrice": 1500
+        },
+        {
+          "Range": 23.5,
+          "Damage": 800,
+          "Cooldown": 4,
+          "UpgradePrice": 2250
+        },
+        {
+          "Range": 25,
+          "Damage": 850,
+          "Cooldown": 3.5,
+          "UpgradePrice": 2500
+        },
+        {
+          "Range": 26,
+          "Damage": 900,
+          "Cooldown": 3,
+          "UpgradePrice": 3000
+        }
+      ],
+      "Passives": {
+        "Toy Maker": " This unit summons its toys on the track every 10 seconds, cycling through them in the following order. 1: Toy Train - HP equal to 80% damage 2: Toy Soldier - HP equal to 50% damage, attacks the first enemy within 15 range for 30% damage every 3s. 3: Wind-Up Bomb Toy - HP equal to 20% damage. On death, explodes dealing 125% "
+      },
+      "Obtainability": [
+        "Christmas Present (9.5%)"
       ]
     },
     {
@@ -2348,6 +2450,80 @@
       ],
       "Obtainability": [
         "Halloween Event Endless Shop | 150K Bones"
+      ]
+    },
+    {
+      "Name": "Yeti Oni Bonnie",
+      "Rarity": "Apex",
+      "PlacementPrice": 12500,
+      "Type": "Cone",
+      "Element": "Water",
+      "MaxPlaced": 1,
+      "BaseStats": {
+        "Range": 25,
+        "Damage": 2750,
+        "Cooldown": 5
+      },
+      "UpgradeStats": [
+        {
+          "Range": 28,
+          "Damage": 2750,
+          "Cooldown": 5,
+          "UpgradePrice": 7250
+        },
+        {
+          "Range": 29,
+          "Damage": 3000,
+          "Cooldown": 4.7,
+          "UpgradePrice": 7750
+        },
+        {
+          "Range": 31,
+          "Damage": 3250,
+          "Cooldown": 4.5,
+          "UpgradePrice": 7850
+        },
+        {
+          "Range": 32.5,
+          "Damage": 3250,
+          "Cooldown": 4.5,
+          "UpgradePrice": 8000
+        },
+        {
+          "Range": 33,
+          "Damage": 3550,
+          "Cooldown": 6,
+          "UpgradePrice": 10000,
+          "Angle": 0.9
+        },
+        {
+          "Range": 34.5,
+          "Damage": 4000,
+          "Cooldown": 6,
+          "UpgradePrice": 6250
+        },
+        {
+          "Range": 35,
+          "Damage": 3750,
+          "Cooldown": 5.8,
+          "UpgradePrice": 15000,
+          "Angle": 1.8
+        }
+      ],
+      "Passives": {
+        "Yeti’s Army": " On this unit’s cooldown, summons a Yeti Oni Apprentice on the track. Every 3rd summon, summons a Yeti Oni Sensei instead. Yeti Oni Apprentice: 30% damage as HP, attacks enemies within 23 range for 15% damage in a Single type with a 3s CD. Yeti Oni Sensei: 80% damage as HP, attacks enemies within 15 range for 30% damage in a Single type with a 2.5s CD. ",
+        "Frost Slash": "When attacking an enemy with more than 80% HP, immediately performs a follow up attack dealing 50% damage in a line."
+      },
+      "Actives": [
+        {
+          "Name": "Agony of The Snow Oni",
+          "Description": "Once activated, Yeti Oni Bonnie Bursts into a fit of rage for 3s, then for the next 60 seconds summons clones of itself with health 3x its damage and switches its type to full AOE.",
+          "Cooldown": 60,
+          "Upgrade": 7
+        }
+      ],
+      "Obtainability": [
+        "Christmas Present (0.5%)"
       ]
     },
     {
