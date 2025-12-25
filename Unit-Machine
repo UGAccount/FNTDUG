@@ -945,8 +945,6 @@
             
             const MAX_LEVEL = 60;
        
-            const backendNotes = {};
-
             const elementalAdvantages = {
                 "Electricity": { "Boosts": { "Water": 1.3, "Rust": 0.7 } },
                 "Fire": { "Boosts": { "Rust": 1.3, "Water": 0.7 } },
@@ -2490,10 +2488,10 @@
                 }
 
                 const statsToDisplay = {
-                    'Damage': { ...bounds.TotalDamage, value: totalDamage, statType: 'dmg' },
                     'DPS': { ...bounds.TotalDPS, value: totalDPS, statType: 'dps' },
+                    'Damage': { ...bounds.TotalDamage, value: totalDamage, statType: 'dmg' },
+                    'Cooldown': { ...bounds.Speed, value: boostedCd, statType: 'cd' },
                     'Range': { ...bounds.Range, value: boostedRange, statType: 'range' },
-                    'Speed': { ...bounds.Speed, value: boostedCd, statType: 'cd' },
                     'Cost/DPS': { ...bounds.CostPerDps, value: costPerDps, statType: 'costPerDps' }
                 };
                 graphContainer.innerHTML = '';
@@ -3134,7 +3132,7 @@
                             Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
                             Value: unitValues[unit.Name] || null,
-                            BackendNote: backendNotes[unit.Name] || undefined,
+                            BackendNote: unit.Note || undefined,
                         };
                     });
                     
