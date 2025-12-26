@@ -1354,7 +1354,7 @@
         }
       ],
       "Passives": {
-        "Popcorn Party Pack": "Every 8 seconds this unit shots Popcorn with 1 of 3 different effects in this order. Spicy: 120 degree Cone, dealing 35% burn for 3s. Buttered: Single target Knockback Sweet Boost all units and their stats by 5% for 7s."
+        "Popcorn Party Pack": "Every 8 seconds this unit shots Popcorn with 1 of 3 different effects in this order. Spicy: 120 degree Cone, dealing 35% burn for 3s. Buttered: Single target Knockback Sweet: Boost all units and their stats by 5% for 7s."
       },
       "Obtainability": [
         "4th Bi-Weekly Exclusive 799R$ / 35000 Coins"
@@ -2455,58 +2455,58 @@
     {
       "Name": "Yeti Oni Bonnie",
       "Rarity": "Apex",
-      "PlacementPrice": 12500,
+      "PlacementPrice": 10000,
       "Type": "Cone",
       "Element": "Water",
       "MaxPlaced": 1,
       "BaseStats": {
         "Range": 25,
         "Damage": 2750,
-        "Cooldown": 5
+        "Cooldown": 12
       },
       "UpgradeStats": [
         {
           "Range": 28,
           "Damage": 2750,
-          "Cooldown": 5,
+          "Cooldown": 11.5,
           "UpgradePrice": 7250
         },
         {
           "Range": 29,
           "Damage": 3000,
-          "Cooldown": 4.7,
+          "Cooldown": 11.5,
           "UpgradePrice": 7750
         },
         {
           "Range": 31,
           "Damage": 3250,
-          "Cooldown": 4.5,
+          "Cooldown": 11.5,
           "UpgradePrice": 7850
         },
         {
           "Range": 32.5,
           "Damage": 3250,
-          "Cooldown": 4.5,
+          "Cooldown": 11,
           "UpgradePrice": 8000
         },
         {
           "Range": 33,
           "Damage": 3550,
-          "Cooldown": 6,
+          "Cooldown": 11,
           "UpgradePrice": 10000,
           "Angle": 0.9
         },
         {
           "Range": 34.5,
           "Damage": 4000,
-          "Cooldown": 6,
+          "Cooldown": 10.5,
           "UpgradePrice": 6250
         },
         {
           "Range": 35,
           "Damage": 3750,
-          "Cooldown": 5.8,
-          "UpgradePrice": 15000,
+          "Cooldown": 10,
+          "UpgradePrice": 12500,
           "Angle": 1.8
         }
       ],
@@ -2517,8 +2517,8 @@
       "Actives": [
         {
           "Name": "Agony of The Snow Oni",
-          "Description": "Once activated, Yeti Oni Bonnie Bursts into a fit of rage for 3s, then for the next 60 seconds summons clones of itself with health 3x its damage and switches its type to full AOE.",
-          "Cooldown": 60,
+          "Description": "Once activated,Yeti Oni Bonnie bursts into a fit of rage summoning clones of itself with 250% Damage as Health and switches Type to Full AoE for 20s",
+          "Cooldown": 40,
           "Upgrade": 7
         }
       ],
