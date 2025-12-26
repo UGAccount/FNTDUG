@@ -2999,17 +2999,17 @@
     "Units": {
       "Scarecrow Freddy": {
         "Normal": {
-          "value": "N/A",
+          "value": "0.05",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "N/A",
+          "value": "3",
           "demand": "N/A"
         }
       },
       "BBnJ": {
         "Shiny": {
-          "value": "N/A",
+          "value": "0.1-0.14",
           "demand": "N/A"
         }
       },
@@ -3059,7 +3059,7 @@
           "demand": "7/10"
         },
         "Shiny": {
-          "value": "45+",
+          "value": "41-45",
           "demand": "10/10"
         }
       },
@@ -3125,11 +3125,11 @@
       },
       "Jack'O Bonnie": {
         "Normal": {
-          "value": "N/A",
+          "value": "0.4-0.5",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "N/A",
+          "value": "6.5",
           "demand": "N/A"
         }
       },
@@ -3294,7 +3294,7 @@
         "demand": "N/A"
       },
       "Premium": {
-        "value": "1.5+",
+        "value": "1.5-2",
         "demand": "N/A"
       },
       "Event Premium": {
