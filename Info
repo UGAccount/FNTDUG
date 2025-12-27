@@ -3255,7 +3255,7 @@
       },
       "Yeti Oni Bonnie": {
         "Normal": {
-          "value": "1",
+          "value": "1.5+",
           "demand": "N/A"
         },
         "Shiny": {
