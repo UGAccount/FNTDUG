@@ -1342,6 +1342,7 @@
                 const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                 const hasRangeStat = unitData.Upgrades.some(upg => upg.Range !== undefined);
                 const hasPerUpgradeTypes = unitData.hasPerUpgradeTypes;
+                const hasPerUpgradeDegrees = unitData.hasPerUpgradeDegrees;
                 
                 const elementalContainer = document.getElementById('elemental-dps-container');
                 if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
@@ -1357,6 +1358,9 @@
                     let rowData = [levelName, price.toLocaleString()];
                     if (hasPerUpgradeTypes) {
                         rowData.push(upgrade.Type || '-');
+                    }
+                    if (hasPerUpgradeDegrees) {
+                        rowData.push(upgrade.Degrees || '-');
                     }
 
                     if (hasDamageStats) {
@@ -1469,7 +1473,7 @@
                     const rowData = [
                         index + 1,
                         stats.name,
-                        stats.type,
+                        stats.maxUpgradeType,
                         stats.element,
                         stats.placements,
                         stats.fullDps.toLocaleString(undefined, { maximumFractionDigits: 2 }),
@@ -1498,7 +1502,8 @@
                 const typeOrder = { 'Full': 1, 'Cone': 2, 'Circle': 3, 'Line': 4, 'Summons': 5, 'Single': 6 };
                 const getTypeRank = (typeStr) => {
                     if (!typeStr) return 7;
-                    return typeOrder[typeStr] || 7;
+                    const typeKey = typeStr.split(' ')[0];
+                    return typeOrder[typeKey] || 7;
                 };
 
                 const defaultCriteria = [
@@ -1688,9 +1693,11 @@
                     const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                     const hasRangeStat = stats.Upgrades.some(upg => upg.Range !== undefined);
                     const hasPerUpgradeTypes = stats.hasPerUpgradeTypes;
+                    const hasPerUpgradeDegrees = stats.hasPerUpgradeDegrees;
 
                     let headers = ['Level', 'Cost'];
                     if (hasPerUpgradeTypes) headers.push('Attack Type');
+                    if (hasPerUpgradeDegrees) headers.push('Degrees');
                     if (hasDamageStats) headers.push('DPS', 'Damage', 'Cooldown', 'Range');
                     if (hasDpsBoost) headers.push('DPS Boost');
                     if (hasBoostStats) headers.push('Boosts');
@@ -3045,38 +3052,61 @@
                 processed.Rarity = rarity;
                 
                 processed.hasPerUpgradeTypes = unit.UpgradeStats?.some(upg => upg.Type) ?? false;
+                processed.hasPerUpgradeDegrees = unit.UpgradeStats?.some(upg => upg.Degrees) ?? false;
 
                 const upgrades = [];
                 const baseUpgrade = {
                     ...unit.BaseStats,
                     Price: 0,
-                    Type: unit.BaseStats.Type || unit.Type
+                    Type: unit.BaseStats.Type || unit.Type,
+                    Degrees: unit.Degrees,
                 };
                 upgrades.push(baseUpgrade);
 
+                let minDegrees = unit.Degrees;
+                let maxDegrees = unit.Degrees;
+
                 if (unit.UpgradeStats) {
                     let lastType = baseUpgrade.Type;
+                    let lastDegrees = baseUpgrade.Degrees;
+
                     unit.UpgradeStats.forEach(upg => {
                         const currentType = upg.Type || lastType;
+                        const currentDegrees = upg.Degrees || lastDegrees;
                         upgrades.push({
                             ...upg,
                             Price: upg.UpgradePrice || 0,
-                            Type: currentType
+                            Type: currentType,
+                            Degrees: currentDegrees
                         });
                         lastType = currentType;
+                        lastDegrees = currentDegrees;
+                        if(upg.Degrees) {
+                            if (minDegrees === undefined || upg.Degrees < minDegrees) minDegrees = upg.Degrees;
+                            if (maxDegrees === undefined || upg.Degrees > maxDegrees) maxDegrees = upg.Degrees;
+                        }
                     });
                 }
                 processed.Upgrades = upgrades;
 
-                const typesInOrder = [upgrades[0].Type];
-                for (let i = 1; i < upgrades.length; i++) {
-                    const currentType = upgrades[i].Type;
-                    if (currentType && currentType !== typesInOrder[typesInOrder.length - 1]) {
-                        typesInOrder.push(currentType);
+                if (minDegrees !== undefined) {
+                    if (minDegrees === maxDegrees) {
+                        processed.Type = `${unit.Type} (${maxDegrees}°)`;
+                    } else {
+                        processed.Type = `${unit.Type} (${minDegrees}°-${maxDegrees}°)`;
                     }
+                     processed.maxUpgradeType = `${unit.Type} (${maxDegrees}°)`;
+                } else {
+                    const typesInOrder = [upgrades[0].Type];
+                    for (let i = 1; i < upgrades.length; i++) {
+                        const currentType = upgrades[i].Type;
+                        if (currentType && currentType !== typesInOrder[typesInOrder.length - 1]) {
+                            typesInOrder.push(currentType);
+                        }
+                    }
+                    processed.Type = typesInOrder.join('-');
+                    processed.maxUpgradeType = upgrades.length > 0 ? upgrades[upgrades.length - 1].Type : (unit.Type || 'N/A');
                 }
-                processed.Type = typesInOrder.join('-');
-                processed.maxUpgradeType = upgrades.length > 0 ? upgrades[upgrades.length - 1].Type : (unit.Type || 'N/A');
                 
                 return processed;
             }
