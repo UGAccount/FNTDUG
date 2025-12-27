@@ -2457,6 +2457,7 @@
       "Rarity": "Apex",
       "PlacementPrice": 10000,
       "Type": "Cone",
+      "Degrees": 50,
       "Element": "Water",
       "MaxPlaced": 1,
       "BaseStats": {
@@ -2494,7 +2495,7 @@
           "Damage": 3550,
           "Cooldown": 11,
           "UpgradePrice": 10000,
-          "Angle": 0.9
+          "Degrees": 90
         },
         {
           "Range": 34.5,
@@ -2507,7 +2508,7 @@
           "Damage": 3750,
           "Cooldown": 10,
           "UpgradePrice": 12500,
-          "Angle": 1.8
+          "Degrees": 180
         }
       ],
       "Passives": {
