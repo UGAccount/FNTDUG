@@ -903,7 +903,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const ENABLE_URL_ROUTING = true;
 
-            const GITHUB_URL = 'https://raw.githubusercontent.com/UGAccount/FNTDUG/main/Info';
+            const GITHUB_URL = 'https://raw.githubusercontent.com/UGAccount/FNTD2/main/Info';
             const unitSearchInput = document.getElementById('unitSearchInput'), searchButton = document.getElementById('searchButton'),
                 boostsButton = document.getElementById('boostsButton'), unitSearchSuggestions = document.getElementById('unitSearchSuggestions'),
                 unitStatsContainer = document.getElementById('unitStatsContainer'), boostsPanel = document.getElementById('boostsPanel'),
