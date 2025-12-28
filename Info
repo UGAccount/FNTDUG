@@ -3050,7 +3050,7 @@
           "demand": "9/10"
         },
         "Shiny": {
-          "value": "28+",
+          "value": "25+",
           "demand": "9.9/10"
         }
       },
@@ -3060,13 +3060,13 @@
           "demand": "7/10"
         },
         "Shiny": {
-          "value": "41-45",
+          "value": "29",
           "demand": "10/10"
         }
       },
       "Headless Horseman Mangle": {
         "Normal": {
-          "value": "0.14",
+          "value": "0.15+",
           "demand": "8.5/10"
         },
         "Shiny": {
@@ -3076,7 +3076,7 @@
       },
       "Purple Guy": {
         "Normal": {
-          "value": "0.14",
+          "value": "0.15+",
           "demand": "9/10"
         },
         "Shiny": {
@@ -3226,11 +3226,11 @@
       },
       "Krampus Purple Guy": {
         "Normal": {
-          "value": "1.1",
+          "value": "1",
           "demand": "9/10"
         },
         "Shiny": {
-          "value": "19-21",
+          "value": "18+",
           "demand": "N/A"
         }
       },
@@ -3246,21 +3246,21 @@
       },
       "Frozen King Foxy": {
         "Normal": {
-          "value": "0.5+",
+          "value": "0.75-1+",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "17+",
+          "value": "20+",
           "demand": "N/A"
         }
       },
       "Yeti Oni Bonnie": {
         "Normal": {
-          "value": "1.5+",
+          "value": "1.75+",
           "demand": "N/A"
         },
         "Shiny": {
-          "value": "20",
+          "value": "25-28",
           "demand": "N/A"
         }
       },
@@ -3295,7 +3295,7 @@
         "demand": "N/A"
       },
       "Premium": {
-        "value": "1.5-2",
+        "value": "1.75+",
         "demand": "N/A"
       },
       "Event Premium": {
