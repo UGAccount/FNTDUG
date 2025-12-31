@@ -965,6 +965,11 @@
                 'Apex': 'rarity-apex',
                 'Hero': 'rarity-hero'
             };
+
+            const rarityOrder = { 
+                'Uncommon': 1, 'Rare': 2, 'Epic': 3, 'Mythic': 4, 
+                'Secret': 5, 'Nightmare': 6, 'Apex': 7, 'Hero': 8 
+            };
             
             const formatMangleValue = (valueString) => {
                 if (valueString !== 'N/A' && valueString && /[\d]/.test(valueString)) {
@@ -1046,7 +1051,7 @@
                 data.forEach((item, index) => {
                     const cell = document.createElement(cellType);
                     cell.textContent = item;
-                    if (isDpsRankingsMode && index === 1 && cellType === 'td') {
+                    if (isDpsRankingsMode && cellType === 'td' && index === 1) {
                         cell.classList.add('clickable-unit-name');
                     }
                     if (rowClass === 'note-row') {
@@ -1437,6 +1442,7 @@
 
                 return {
                     name: unit.Name,
+                    rarity: unit.Rarity || 'N/A',
                     type: unit.Type || 'N/A',
                     maxUpgradeType: unit.maxUpgradeType || 'N/A',
                     element: unitElement,
@@ -1473,6 +1479,7 @@
                     const rowData = [
                         index + 1,
                         stats.name,
+                        stats.rarity,
                         stats.maxUpgradeType,
                         stats.element,
                         stats.placements,
@@ -1500,6 +1507,7 @@
                 }
 
                 const typeOrder = { 'Full': 1, 'FullAOE': 2, 'Cone': 3, 'Circle': 4, 'Line': 5, 'Summons': 6, 'Single': 7 };
+                const getRarityRank = (rarity) => rarityOrder[rarity] || 99;
                 const getTypeRank = (typeStr) => {
                     if (!typeStr) return 8;
                     const typeKey = typeStr.split(' ')[0];
@@ -1508,6 +1516,7 @@
 
                 const defaultCriteria = [
                     { key: 'fullDps', direction: 'desc' },
+                    { key: 'rarity', direction: 'asc' }, 
                     { key: 'type', direction: 'asc' },
                     { key: 'range', direction: 'desc' },
                     { key: 'cd', direction: 'asc' },
@@ -1528,7 +1537,10 @@
                         let valA = a[key];
                         let valB = b[key];
 
-                        if (key === 'type') {
+                        if (key === 'rarity') {
+                            valA = getRarityRank(a.rarity);
+                            valB = getRarityRank(b.rarity);
+                        } else if (key === 'type') {
                             valA = getTypeRank(a.maxUpgradeType);
                             valB = getTypeRank(b.maxUpgradeType);
                         }
@@ -1648,8 +1660,17 @@
                 statsHeaderRow.innerHTML = ''; 
 
                 if (isDpsRankingsMode) {
-                    const sortKeyMap = { 'Full DPS': 'fullDps', 'Type': 'type', 'Element': 'element', 'Placements': 'placements', 'Damage': 'damage', 'CD': 'cd', 'Range': 'range' };
-                    const rankingHeaders = ['Rank', 'Name', 'Type', 'Element', 'Placements', 'Full DPS', 'Damage', 'CD', 'Range'];
+                    const sortKeyMap = { 
+                        'Full DPS': 'fullDps', 
+                        'Rarity': 'rarity', 
+                        'Type': 'type', 
+                        'Element': 'element', 
+                        'Placements': 'placements', 
+                        'Damage': 'damage', 
+                        'CD': 'cd', 
+                        'Range': 'range' 
+                    };
+                    const rankingHeaders = ['Rank', 'Name', 'Rarity', 'Type', 'Element', 'Placements', 'Full DPS', 'Damage', 'CD', 'Range'];
                     
                     rankingHeaders.forEach(headerText => {
                         const th = document.createElement('th');
@@ -1659,7 +1680,7 @@
                         textSpan.textContent = headerText;
                         contentWrapper.appendChild(textSpan);
 
-                        if (sortKey) {
+                        if (sortKey && headerText !== 'Rank') {
                             th.classList.add('sortable-header');
                             th.dataset.sortKey = sortKey;
                             contentWrapper.classList.add('sortable-header-content');
@@ -1675,7 +1696,7 @@
                                     dpsRankingsSort.direction = dpsRankingsSort.direction === 'asc' ? 'desc' : 'asc';
                                 } else {
                                     dpsRankingsSort.key = sortKey;
-                                    dpsRankingsSort.direction = (sortKey === 'type' || sortKey === 'element' || sortKey === 'cd') ? 'asc' : 'desc';
+                                    dpsRankingsSort.direction = (sortKey === 'rarity' || sortKey === 'type' || sortKey === 'element' || sortKey === 'cd') ? 'asc' : 'desc';
                                 }
                                 populateRankingsTbody();
                             });
@@ -2763,7 +2784,6 @@
                 let unitNames = Object.keys(allUnitData);
                 
                 if (currentSort.mode === 'rarity') {
-                    const rarityOrder = { 'Uncommon': 1, 'Rare': 2, 'Epic': 3, 'Mythic': 4, 'Secret': 5, 'Nightmare': 6, 'Apex': 7, 'Hero': 8 };
                     const getRarityRank = (rarity) => rarityOrder[rarity] || 99;
                     unitNames.sort((a, b) => {
                         const rankA = getRarityRank(allUnitData[a].Rarity);
