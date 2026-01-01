@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,6 +24,7 @@
         --bg-medium: #1c1c1c;
         --primary-accent: #7161d0;
         --primary-accent-hover: #594bad;
+        --comparison-accent: #d06161;
         --text-light: white;
         --text-muted: #d3d3d3;
         --disabled-bg: #4a4a4a;
@@ -910,6 +912,7 @@
                 closeBoostsButton = document.getElementById('closeBoostsButton'), boosterDropdownContainer = document.getElementById('boosterDropdownContainer'),
                 graphButton = document.getElementById('graphButton'), graphPanel = document.getElementById('graphPanel'),
                 closeGraphButton = document.getElementById('closeGraphButton'), graphContainer = document.getElementById('graphContainer'),
+                graphPanelHeader = document.getElementById('graphPanelHeader'),
                 graphLevelDropdownContainer = document.getElementById('graphLevelDropdownContainer'),
                 menuButton = document.getElementById('menuButton'), menuFlyout = document.getElementById('menuFlyout'),
                 globalCompareCheckbox = document.getElementById('globalCompareCheckbox'),
@@ -1043,7 +1046,39 @@
             
             const versions = { normal: "Normal", shiny: "Shiny" };
             const elements = Object.keys(elementalAdvantages).reduce((acc, key) => { acc[key] = key; return acc; }, {});
-            const calculateDPS = (damage, cooldown) => cooldown === 0 ? damage : (damage / cooldown);
+            
+            const calculateDPS = (damage, cooldown) => {
+                if (typeof damage === 'object' && damage !== null && damage.hasOwnProperty('form1')) {
+                    const cd1 = (typeof cooldown === 'object' && cooldown !== null) ? cooldown.form1 : cooldown;
+                    const cd2 = (typeof cooldown === 'object' && cooldown !== null) ? cooldown.form2 : cooldown;
+                    if (cd1 === 0 || cd2 === 0) return Infinity;
+                    const dps1 = damage.form1 / cd1;
+                    const dps2 = damage.form2 / cd2;
+                    return (dps1 + dps2) / 2;
+                }
+                if (cooldown === 0) return Infinity;
+                return damage / cooldown;
+            };
+            
+            const formatStat = (stat, precision = 2) => {
+                const formatSingleValue = (value) => {
+                    if (typeof value === 'number') {
+                        if (isFinite(value)) {
+                            return String(parseFloat(value.toFixed(precision)));
+                        }
+                        return '∞';
+                    }
+                    return value;
+                };
+
+                if (typeof stat === 'object' && stat !== null && stat.hasOwnProperty('form1')) {
+                    const val1 = formatSingleValue(stat.form1);
+                    const val2 = formatSingleValue(stat.form2);
+                    if (val1 === val2) return val1;
+                    return `${val1}/${val2}`;
+                }
+                return formatSingleValue(stat);
+            };
 
             const createTableRow = (cellType, data, rowClass = null) => {
                 const tr = document.createElement('tr');
@@ -1346,8 +1381,8 @@
                 const hasBoostStats = unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
                 const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                 const hasRangeStat = unitData.Upgrades.some(upg => upg.Range !== undefined);
-                const hasPerUpgradeTypes = unitData.hasPerUpgradeTypes;
-                const hasPerUpgradeDegrees = unitData.hasPerUpgradeDegrees;
+                const typeChangesWithUpgrades = unitData.typeChangesWithUpgrades;
+                const hasPerUpgradeDegrees = unitData.Upgrades.some(upg => upg.Degrees);
                 
                 const elementalContainer = document.getElementById('elemental-dps-container');
                 if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
@@ -1361,21 +1396,41 @@
                     const basePrice = i === 0 ? (unitData.PlacePrice || 0) : (upgrade.Price || 0);
                     const price = basePrice * multipliers.cost;
                     let rowData = [levelName, price.toLocaleString()];
-                    if (hasPerUpgradeTypes) {
-                        rowData.push(upgrade.Type || '-');
+                    if (typeChangesWithUpgrades) {
+                        rowData.push(formatStat(upgrade.Type) || '-');
                     }
                     if (hasPerUpgradeDegrees) {
-                        rowData.push(upgrade.Degrees || '-');
+                        rowData.push(formatStat(upgrade.Degrees) || '-');
                     }
 
                     if (hasDamageStats) {
-                        const modDmg = upgrade.Damage * multipliers.dmg;
-                        const modCd = upgrade.Cooldown * multipliers.cd;
-                        const modRange = upgrade.Range * multipliers.range;
-                        
+                        let modDmg, modCd, modRange;
+                        if (typeof upgrade.Damage === 'object') {
+                            modDmg = {
+                                form1: upgrade.Damage.form1 * multipliers.dmg,
+                                form2: upgrade.Damage.form2 * multipliers.dmg
+                            };
+                            modCd = {
+                                form1: (typeof upgrade.Cooldown === 'object' ? upgrade.Cooldown.form1 : upgrade.Cooldown) * multipliers.cd,
+                                form2: (typeof upgrade.Cooldown === 'object' ? upgrade.Cooldown.form2 : upgrade.Cooldown) * multipliers.cd
+                            };
+                            if (typeof upgrade.Range === 'object') {
+                                modRange = {
+                                    form1: upgrade.Range.form1 * multipliers.range,
+                                    form2: upgrade.Range.form2 * multipliers.range
+                                };
+                            } else {
+                                modRange = upgrade.Range * multipliers.range;
+                            }
+                        } else {
+                            modDmg = upgrade.Damage * multipliers.dmg;
+                            modCd = upgrade.Cooldown * multipliers.cd;
+                            modRange = upgrade.Range * multipliers.range;
+                        }
+
                         const dps = calculateDPS(modDmg, modCd);
                         if (dps > maxDPS) maxDPS = dps;
-                        rowData.push(dps.toFixed(2), modDmg.toFixed(2), modCd.toFixed(3), modRange.toFixed(1));
+                        rowData.push(formatStat(dps, 2), formatStat(modDmg, 2), formatStat(modCd, 3), formatStat(modRange, 1));
                     }
                     if (hasDpsBoost) {
                         const dmgBoost = upgrade.DamageBoost || 1.0;
@@ -1402,7 +1457,7 @@
                     const totalDPS = maxDPS * (unitData.Max || 1);
                     const summaryWrapper = document.getElementById('summary-table-wrapper');
                     const totalDpsCell = summaryWrapper?.querySelector('td');
-                    if (totalDpsCell) totalDpsCell.textContent = totalDPS.toFixed(2);
+                    if (totalDpsCell) totalDpsCell.textContent = formatStat(totalDPS, 2);
                     
                     if (elementalContainer) {
                         elementalContainer.innerHTML = '';
@@ -1411,7 +1466,7 @@
                             const boosts = Object.entries(advantages).filter(([, val]) => val !== 1.0);
                             if (boosts.length > 0) {
                                 const headers = boosts.map(([key]) => `${key} DPS`);
-                                const data = [boosts.map(([, val]) => (totalDPS * val).toFixed(2))];
+                                const data = [boosts.map(([, val]) => formatStat(totalDPS * val, 2))];
                                 createTableInWrapper(headers, data, elementalContainer);
                             }
                         }
@@ -1420,31 +1475,69 @@
             }
 
             function calculateBoostedMaxStats(unit) {
-                if (!unit.Upgrades || unit.Upgrades.length === 0 || unit.BaseStats.Damage === undefined) return null;
-
+                if (!unit.Upgrades || unit.Upgrades.length === 0) return null;
                 const maxLevelStats = unit.Upgrades[unit.Upgrades.length - 1];
+                if (maxLevelStats.Damage === undefined) return null;
+
                 const multipliers = getGlobalBoostMultipliers();
-
-                const boostedDmg = maxLevelStats.Damage * multipliers.dmg;
-                const boostedCd = maxLevelStats.Cooldown * multipliers.cd;
-                const boostedRange = maxLevelStats.Range * multipliers.range;
-
+                const placements = unit.Max || 1;
                 const unitElement = unit.Element || 'Neutral';
-                const enemyElement = selectedElementKey; 
+                const enemyElement = selectedElementKey;
                 let elementalMultiplier = 1.0;
-                if (elementalAdvantages[unitElement] && elementalAdvantages[unitElement].Boosts && elementalAdvantages[unitElement].Boosts[enemyElement] !== undefined) {
+                if (elementalAdvantages[unitElement]?.Boosts?.[enemyElement] !== undefined) {
                     elementalMultiplier = elementalAdvantages[unitElement].Boosts[enemyElement];
                 }
 
-                const finalDmg = boostedDmg * elementalMultiplier;
-                const placements = unit.Max || 1;
-                const fullDps = calculateDPS(finalDmg, boostedCd) * placements;
+                let finalDmg, boostedCd, boostedRange, fullDps, bestAttackTypeForSort;
+
+                if (unit.isSwitchUnit && typeof maxLevelStats.Damage === 'object') {
+                    const boostedDmg1 = maxLevelStats.Damage.form1 * multipliers.dmg;
+                    const boostedDmg2 = maxLevelStats.Damage.form2 * multipliers.dmg;
+                    const cd1 = (typeof maxLevelStats.Cooldown === 'object') ? maxLevelStats.Cooldown.form1 : maxLevelStats.Cooldown;
+                    const cd2 = (typeof maxLevelStats.Cooldown === 'object') ? maxLevelStats.Cooldown.form2 : maxLevelStats.Cooldown;
+                    const boostedCd1 = cd1 * multipliers.cd;
+                    const boostedCd2 = cd2 * multipliers.cd;
+                    const finalDmg1 = boostedDmg1 * elementalMultiplier;
+                    const finalDmg2 = boostedDmg2 * elementalMultiplier;
+                    const dps1 = finalDmg1 / boostedCd1;
+                    const dps2 = finalDmg2 / boostedCd2;
+
+                    fullDps = ((dps1 + dps2) / 2) * placements;
+                    finalDmg = { form1: finalDmg1, form2: finalDmg2 };
+                    boostedCd = { form1: boostedCd1, form2: boostedCd2 };
+                    
+                    if (typeof maxLevelStats.Range === 'object') {
+                        boostedRange = {
+                            form1: maxLevelStats.Range.form1 * multipliers.range,
+                            form2: maxLevelStats.Range.form2 * multipliers.range
+                        };
+                    } else {
+                        boostedRange = maxLevelStats.Range * multipliers.range;
+                    }
+
+                    const type1 = (typeof maxLevelStats.Type === 'object') ? maxLevelStats.Type.form1 : maxLevelStats.Type;
+                    const type2 = (typeof maxLevelStats.Type === 'object') ? maxLevelStats.Type.form2 : maxLevelStats.Type;
+                    
+                    const typeOrder = { 'Full': 1, 'FullAOE': 2, 'Cone': 3, 'Circle': 4, 'Line': 5, 'Summons': 6, 'Single': 7 };
+                    const rank1 = typeOrder[type1.split(' ')[0]] || 8;
+                    const rank2 = typeOrder[type2.split(' ')[0]] || 8;
+                    bestAttackTypeForSort = rank1 <= rank2 ? type1 : type2;
+
+                } else {
+                    const boostedDmg = maxLevelStats.Damage * multipliers.dmg;
+                    boostedCd = maxLevelStats.Cooldown * multipliers.cd;
+                    boostedRange = maxLevelStats.Range * multipliers.range;
+                    finalDmg = boostedDmg * elementalMultiplier;
+                    fullDps = calculateDPS(finalDmg, boostedCd) * placements;
+                    bestAttackTypeForSort = unit.maxUpgradeType || 'N/A';
+                }
 
                 return {
                     name: unit.Name,
                     rarity: unit.Rarity || 'N/A',
-                    type: unit.Type || 'N/A',
-                    maxUpgradeType: unit.maxUpgradeType || 'N/A',
+                    maxUpgradeType: unit.maxUpgradeType,
+                    bestAttackTypeForSort: bestAttackTypeForSort,
+                    isSwitchUnit: !!unit.isSwitchUnit,
                     element: unitElement,
                     placements: placements,
                     fullDps: fullDps,
@@ -1483,10 +1576,10 @@
                         stats.maxUpgradeType,
                         stats.element,
                         stats.placements,
-                        stats.fullDps.toLocaleString(undefined, { maximumFractionDigits: 2 }),
-                        stats.damage.toLocaleString(undefined, { maximumFractionDigits: 2 }),
-                        stats.cd.toFixed(3),
-                        stats.range.toFixed(1)
+                        formatStat(stats.fullDps),
+                        formatStat(stats.damage),
+                        formatStat(stats.cd, 3),
+                        formatStat(stats.range, 1)
                     ];
                     const tr = createTableRow('td', rowData);
                     tr.dataset.unitName = stats.name.toLowerCase();
@@ -1501,17 +1594,18 @@
                 for (const unitName in allUnitData) {
                     let unitData = allUnitData[unitName];
                     const boostedStats = calculateBoostedMaxStats(unitData);
-                    if (boostedStats && boostedStats.fullDps > 0) {
+                    if (boostedStats && boostedStats.fullDps > 0 && isFinite(boostedStats.fullDps)) {
                         rankingsData.push(boostedStats);
                     }
                 }
 
                 const typeOrder = { 'Full': 1, 'FullAOE': 2, 'Cone': 3, 'Circle': 4, 'Line': 5, 'Summons': 6, 'Single': 7 };
                 const getRarityRank = (rarity) => rarityOrder[rarity] || 99;
-                const getTypeRank = (typeStr) => {
+                const getTypeRank = (typeStr, isSwitchUnit = false) => {
                     if (!typeStr) return 8;
                     const typeKey = typeStr.split(' ')[0];
-                    return typeOrder[typeKey] || 8;
+                    const rank = typeOrder[typeKey] || 8;
+                    return rank + (isSwitchUnit ? 0.5 : 0);
                 };
 
                 const defaultCriteria = [
@@ -1534,15 +1628,17 @@
                 
                 rankingsData.sort((a, b) => {
                     for (const { key, direction } of sortCriteria) {
-                        let valA = a[key];
-                        let valB = b[key];
+                        let valA, valB;
 
-                        if (key === 'rarity') {
+                        if (key === 'type') {
+                            valA = getTypeRank(a.bestAttackTypeForSort, a.isSwitchUnit);
+                            valB = getTypeRank(b.bestAttackTypeForSort, b.isSwitchUnit);
+                        } else if (key === 'rarity') {
                             valA = getRarityRank(a.rarity);
                             valB = getRarityRank(b.rarity);
-                        } else if (key === 'type') {
-                            valA = getTypeRank(a.maxUpgradeType);
-                            valB = getTypeRank(b.maxUpgradeType);
+                        } else {
+                            valA = a[key];
+                            valB = b[key];
                         }
 
                         let comparison = 0;
@@ -1713,11 +1809,11 @@
                     const hasBoostStats = stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
                     const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                     const hasRangeStat = stats.Upgrades.some(upg => upg.Range !== undefined);
-                    const hasPerUpgradeTypes = stats.hasPerUpgradeTypes;
-                    const hasPerUpgradeDegrees = stats.hasPerUpgradeDegrees;
+                    const typeChangesWithUpgrades = stats.typeChangesWithUpgrades;
+                    const hasPerUpgradeDegrees = stats.Upgrades.some(upg => upg.Degrees);
 
                     let headers = ['Level', 'Cost'];
-                    if (hasPerUpgradeTypes) headers.push('Attack Type');
+                    if (typeChangesWithUpgrades) headers.push('Attack Type');
                     if (hasPerUpgradeDegrees) headers.push('Degrees');
                     if (hasDamageStats) headers.push('DPS', 'Damage', 'Cooldown', 'Range');
                     if (hasDpsBoost) headers.push('DPS Boost');
@@ -1872,6 +1968,11 @@
                     currentStats.Element || 'Neutral',
                     currentStats.Max || 'N/A'
                 ];
+                
+                if (currentStats.SwitchSpeed) {
+                    headers.push('Switch Time');
+                    rowData.push(`${currentStats.SwitchSpeed}s`);
+                }
 
                 const tradingValueData = currentStats.Value;
                 if (tradingValueData) {
@@ -2220,84 +2321,50 @@
             }
             
             function computeGlobalStatProfiles() {
-                const createProfile = () => ({
-                    placement: { min: Infinity, max: -Infinity },
-                    max: { min: Infinity, max: -Infinity },
-                    interpolated: Array(101).fill(null).map(() => ({ min: Infinity, max: -Infinity }))
-                });
-                const profiles = { totalDamage: createProfile(), totalDps: createProfile(), range: createProfile(), speed: createProfile(), costPerDps: createProfile() };
+                const createProfile = () => ({ min: Infinity, max: -Infinity });
+                const profiles = {
+                    totalDps: { placement: createProfile(), max: createProfile() },
+                    totalDamage: { placement: createProfile(), max: createProfile() },
+                    range: { placement: createProfile(), max: createProfile() },
+                    speed: { placement: createProfile(), max: createProfile() },
+                    costPerDps: { placement: createProfile(), max: createProfile() }
+                };
+            
                 for (const unit of Object.values(allUnitData)) {
                     if (!unit.Upgrades || unit.Upgrades.length === 0 || unit.BaseStats.Damage === undefined) continue;
+                    
                     const placements = unit.Max || 1;
-                    const numUpgrades = unit.Upgrades.length;
-                    const lastUpgradeIndex = numUpgrades - 1;
+                    const lastUpgradeIndex = unit.Upgrades.length - 1;
+            
                     const cumulativeCosts = [unit.PlacePrice || 0];
                     for (let i = 1; i <= lastUpgradeIndex; i++) {
                         cumulativeCosts[i] = cumulativeCosts[i - 1] + (unit.Upgrades[i].Price || 0);
                     }
-
-                    const pStats = unit.Upgrades[0], pCost = cumulativeCosts[0], pTotalDamage = pStats.Damage * placements;
+            
+                    const pStats = unit.Upgrades[0];
+                    const pCost = cumulativeCosts[0];
                     const pTotalDps = calculateDPS(pStats.Damage, pStats.Cooldown) * placements;
-                    const pCostPerDps = pTotalDps > 0 ? pCost / pTotalDps : Infinity;
-                    profiles.totalDamage.placement.min = Math.min(profiles.totalDamage.placement.min, pTotalDamage);
-                    profiles.totalDamage.placement.max = Math.max(profiles.totalDamage.placement.max, pTotalDamage);
-                    profiles.totalDps.placement.min = Math.min(profiles.totalDps.placement.min, pTotalDps);
-                    profiles.totalDps.placement.max = Math.max(profiles.totalDps.placement.max, pTotalDps);
-                    profiles.range.placement.min = Math.min(profiles.range.placement.min, pStats.Range);
-                    profiles.range.placement.max = Math.max(profiles.range.placement.max, pStats.Range);
-                    profiles.speed.placement.min = Math.min(profiles.speed.placement.min, pStats.Cooldown);
-                    profiles.speed.placement.max = Math.max(profiles.speed.placement.max, pStats.Cooldown);
-                    if (isFinite(pCostPerDps)) {
-                        profiles.costPerDps.placement.min = Math.min(profiles.costPerDps.placement.min, pCostPerDps);
-                        profiles.costPerDps.placement.max = Math.max(profiles.costPerDps.placement.max, pCostPerDps);
+                    if (isFinite(pTotalDps)) {
+                        profiles.totalDps.placement.min = Math.min(profiles.totalDps.placement.min, pTotalDps);
+                        profiles.totalDps.placement.max = Math.max(profiles.totalDps.placement.max, pTotalDps);
                     }
-
-                    const mStats = unit.Upgrades[lastUpgradeIndex], mCost = cumulativeCosts[lastUpgradeIndex], mTotalDamage = mStats.Damage * placements;
+            
+                    const mStats = unit.Upgrades[lastUpgradeIndex];
+                    const mCost = cumulativeCosts[lastUpgradeIndex];
                     const mTotalDps = calculateDPS(mStats.Damage, mStats.Cooldown) * placements;
-                    const mCostPerDps = mTotalDps > 0 ? mCost / mTotalDps : Infinity;
-                    profiles.totalDamage.max.min = Math.min(profiles.totalDamage.max.min, mTotalDamage);
-                    profiles.totalDamage.max.max = Math.max(profiles.totalDamage.max.max, mTotalDamage);
-                    profiles.totalDps.max.min = Math.min(profiles.totalDps.max.min, mTotalDps);
-                    profiles.totalDps.max.max = Math.max(profiles.totalDps.max.max, mTotalDps);
-                    profiles.range.max.min = Math.min(profiles.range.max.min, mStats.Range);
-                    profiles.range.max.max = Math.max(profiles.range.max.max, mStats.Range);
-                    profiles.speed.max.min = Math.min(profiles.speed.placement.min, mStats.Cooldown);
-                    profiles.speed.max.max = Math.max(profiles.speed.placement.max, mStats.Cooldown);
-                    if (isFinite(mCostPerDps)) {
-                        profiles.costPerDps.max.min = Math.min(profiles.costPerDps.max.min, mCostPerDps);
-                        profiles.costPerDps.max.max = Math.max(profiles.costPerDps.max.max, mCostPerDps);
-                    }
-                    
-                    if (numUpgrades <= 1) continue;
-
-                    for (let p = 0; p <= 100; p++) {
-                        const percent = p / 100, floatIndex = percent * lastUpgradeIndex, lowerIndex = Math.floor(floatIndex),
-                            upperIndex = Math.ceil(floatIndex), fraction = floatIndex - lowerIndex;
-                        const interpolate = (statKey) => unit.Upgrades[lowerIndex][statKey] + (unit.Upgrades[upperIndex][statKey] - unit.Upgrades[lowerIndex][statKey]) * fraction;
-                        const iDamage = interpolate('Damage'), iCooldown = interpolate('Cooldown'), iRange = interpolate('Range'), iCost = cumulativeCosts[lowerIndex] + (cumulativeCosts[upperIndex] - cumulativeCosts[lowerIndex]) * fraction;
-                        const iTotalDamage = iDamage * placements, iTotalDps = calculateDPS(iDamage, iCooldown) * placements, iCostPerDps = iTotalDps > 0 ? iCost / iTotalDps : Infinity;
-                        
-                        profiles.totalDamage.interpolated[p].min = Math.min(profiles.totalDamage.interpolated[p].min, iTotalDamage);
-                        profiles.totalDamage.interpolated[p].max = Math.max(profiles.totalDamage.interpolated[p].max, iTotalDamage);
-                        profiles.totalDps.interpolated[p].min = Math.min(profiles.totalDps.interpolated[p].min, iTotalDps);
-                        profiles.totalDps.interpolated[p].max = Math.max(profiles.totalDps.interpolated[p].max, iTotalDps);
-                        profiles.range.interpolated[p].min = Math.min(profiles.range.interpolated[p].min, iRange);
-                        profiles.range.interpolated[p].max = Math.max(profiles.range.interpolated[p].max, iRange);
-                        profiles.speed.interpolated[p].min = Math.min(profiles.speed.interpolated[p].min, iCooldown);
-                        profiles.speed.interpolated[p].max = Math.max(profiles.speed.interpolated[p].max, iCooldown);
-                        if (isFinite(iCostPerDps)) {
-                            profiles.costPerDps.interpolated[p].min = Math.min(profiles.costPerDps.interpolated[p].min, iCostPerDps);
-                            profiles.costPerDps.interpolated[p].max = Math.max(profiles.costPerDps.interpolated[p].max, iCostPerDps);
-                        }
+                     if (isFinite(mTotalDps)) {
+                        profiles.totalDps.max.min = Math.min(profiles.totalDps.max.min, mTotalDps);
+                        profiles.totalDps.max.max = Math.max(profiles.totalDps.max.max, mTotalDps);
                     }
                 }
+            
                 const sanitize = profile => {
-                    const levels = [profile.placement, profile.max, ...profile.interpolated];
-                    levels.forEach(level => {
+                    Object.values(profile).forEach(level => {
                         if (level.min === Infinity) level.min = 0;
                         if (level.max === -Infinity) level.max = 0;
                     });
                 };
+            
                 Object.values(profiles).forEach(sanitize);
                 globalStatProfiles = profiles;
             }
@@ -2328,221 +2395,244 @@
                 }
             }
 
-            function getBoostedStatValue(baseStat, statType, currentLevel, boosterMultipliers) {
-                let power = baseStat; 
-                
-                if (statType === 'dmg' && selectedVersionKey === 'shiny') {
-                    power *= 1.10;
+            function getUnitStatsAtLevel(unit, levelIndex, multipliers) {
+                if (!unit || !unit.Upgrades || !unit.Upgrades[levelIndex]) {
+                    return { totalDPS: 0, totalDamage: 0, range: 0, speed: 0, costPerDps: Infinity };
                 }
-
-                const enchantKey = selectedEnchantKey;
-                if (enchantMultipliers[enchantKey] && enchantMultipliers[enchantKey][statType]) {
-                    power *= enchantMultipliers[enchantKey][statType];
-                }
-                
-                if (statType === 'dmg') {
-                    power *= calculateLevelMultiplier(currentLevel);
-                }
-                
-                if (boosterMultipliers[statType]) {
-                    power *= boosterMultipliers[statType];
-                }
-                return power;
-            }
-
-            function getInterpolatedStatValue(unit, index, statKey, isDamageStat) {
+            
+                const stats = unit.Upgrades[levelIndex];
                 const placements = unit.Max || 1;
-                const numUpgrades = unit.Upgrades.length;
-                const lastUpgradeIndex = numUpgrades - 1;
-                
-                if (numUpgrades <= 1) {
-                    return unit.Upgrades[0][statKey];
+                let boostedDmg, boostedCd, boostedRange;
+            
+                if (typeof stats.Damage === 'object') {
+                    boostedDmg = { form1: stats.Damage.form1 * multipliers.dmg, form2: stats.Damage.form2 * multipliers.dmg };
+                    boostedCd = {
+                        form1: (typeof stats.Cooldown === 'object' ? stats.Cooldown.form1 : stats.Cooldown) * multipliers.cd,
+                        form2: (typeof stats.Cooldown === 'object' ? stats.Cooldown.form2 : stats.Cooldown) * multipliers.cd
+                    };
+                     if (typeof stats.Range === 'object') {
+                        boostedRange = { form1: stats.Range.form1 * multipliers.range, form2: stats.Range.form2 * multipliers.range };
+                    } else {
+                        boostedRange = stats.Range * multipliers.range;
+                    }
+                } else {
+                    boostedDmg = (stats.Damage || 0) * multipliers.dmg;
+                    boostedCd = (stats.Cooldown || 0) * multipliers.cd;
+                    boostedRange = (stats.Range || 0) * multipliers.range;
                 }
-
-                const floatIndex = index / 100 * lastUpgradeIndex;
-                const lowerIndex = Math.floor(floatIndex);
-                const upperIndex = Math.ceil(floatIndex);
-                const fraction = floatIndex - lowerIndex;
-
-                const baseLower = unit.Upgrades[lowerIndex][statKey];
-                const baseUpper = unit.Upgrades[upperIndex][statKey];
-                
-                const interpolatedBase = baseLower + (baseUpper - baseLower) * fraction;
-                
-                return interpolatedBase;
+            
+                const totalDPS = calculateDPS(boostedDmg, boostedCd) * placements;
+                const totalDamage = (typeof boostedDmg === 'object' ? (boostedDmg.form1 + boostedDmg.form2) / 2 : boostedDmg) * placements;
+                const range = typeof boostedRange === 'object' ? (boostedRange.form1 + boostedRange.form2) / 2 : boostedRange;
+                const speed = typeof boostedCd === 'object' ? (boostedCd.form1 + boostedCd.form2) / 2 : boostedCd;
+            
+                const placementCost = (unit.PlacePrice || 0) * multipliers.cost;
+                const upgradeCosts = unit.Upgrades.slice(1, levelIndex + 1).reduce((acc, upg) => acc + ((upg.Price || 0) * multipliers.cost), 0);
+                const costUpToSelectedLevel = placementCost + upgradeCosts;
+                const costPerDps = totalDPS > 0 ? costUpToSelectedLevel / totalDPS : Infinity;
+            
+                return { totalDPS, totalDamage, range, speed, costPerDps };
             }
             
-            function getInterpolatedCost(unit, index) {
-                const numUpgrades = unit.Upgrades.length;
-                const lastUpgradeIndex = numUpgrades - 1;
-                
-                if (numUpgrades <= 1) return (unit.PlacePrice || 0) * (enchantMultipliers[selectedEnchantKey]?.cost || 1.0);
-                
-                const costMultiplier = enchantMultipliers[selectedEnchantKey]?.cost || 1.0;
-                const cumulativeCosts = [(unit.PlacePrice || 0) * costMultiplier];
-                for (let i = 1; i < numUpgrades; i++) {
-                    cumulativeCosts[i] = cumulativeCosts[i - 1] + ((unit.Upgrades[i].Price || 0) * costMultiplier);
-                }
-
-                const floatIndex = index / 100 * lastUpgradeIndex;
-                const lowerIndex = Math.floor(floatIndex);
-                const upperIndex = Math.ceil(floatIndex);
-                const fraction = floatIndex - lowerIndex;
-                
-                const costLower = cumulativeCosts[lowerIndex];
-                const costUpper = cumulativeCosts[upperIndex];
-                
-                return costLower + (costUpper - costUpper) * fraction;
+            function getComparisonBounds(units, multipliers) {
+                const allStats = { totalDPS: [], totalDamage: [], range: [], speed: [], costPerDps: [] };
+            
+                units.forEach(unit => {
+                    if (unit && unit.Upgrades) {
+                        unit.Upgrades.forEach((_, i) => {
+                            const stats = getUnitStatsAtLevel(unit, i, multipliers);
+                            allStats.totalDPS.push(stats.totalDPS);
+                            allStats.totalDamage.push(stats.totalDamage);
+                            allStats.range.push(stats.range);
+                            allStats.speed.push(stats.speed);
+                            if (isFinite(stats.costPerDps)) {
+                                allStats.costPerDps.push(stats.costPerDps);
+                            }
+                        });
+                    }
+                });
+            
+                const getMinMax = (arr, inverted = false) => ({
+                    min: arr.length > 0 ? Math.min(...arr) : 0,
+                    max: arr.length > 0 ? Math.max(...arr) : 0,
+                    inverted
+                });
+            
+                return {
+                    TotalDPS: getMinMax(allStats.totalDPS),
+                    TotalDamage: getMinMax(allStats.totalDamage),
+                    Range: getMinMax(allStats.range),
+                    Speed: getMinMax(allStats.speed, true),
+                    CostPerDps: getMinMax(allStats.costPerDps, true)
+                };
             }
 
             function renderStatGraph() {
                 if (currentUnitName === null || currentGraphLevelIndex === -1) return;
-
-                const unit = getCurrentUnitData();
-                if (!unit) return;
-
-                const placements = unit.Max || 1;
-                const selectedLevelStats = unit.Upgrades[currentGraphLevelIndex];
-                const multipliers = getGlobalBoostMultipliers();
-                
-                const boostedDmg = selectedLevelStats.Damage * multipliers.dmg;
-                const boostedCd = selectedLevelStats.Cooldown * multipliers.cd;
-                const boostedRange = selectedLevelStats.Range * multipliers.range;
-
-                const totalDamage = boostedDmg * placements;
-                const totalDPS = calculateDPS(boostedDmg, boostedCd) * placements;
-                
-                const placementCost = (unit.PlacePrice || 0) * multipliers.cost;
-                const upgradeCosts = unit.Upgrades.slice(1, currentGraphLevelIndex + 1).reduce((acc, upg) => acc + ((upg.Price || 0) * multipliers.cost), 0);
-                const costUpToSelectedLevel = placementCost + upgradeCosts;
-                const costPerDps = totalDPS > 0 ? costUpToSelectedLevel / totalDPS : Infinity;
-                
-                let bounds = {};
-                
-                if (globalCompareCheckbox.checked && !comparisonUnitName) {
-                    const numUpgrades = unit.Upgrades.length, lastUpgradeIndex = numUpgrades - 1;
-                    let profileKey = 'interpolated', profileIndex = 0;
-
-                    if (currentGraphLevelIndex === 0) profileKey = 'placement';
-                    else if (numUpgrades > 1 && currentGraphLevelIndex === lastUpgradeIndex) profileKey = 'max';
-                    else if (numUpgrades > 1) profileIndex = Math.round((currentGraphLevelIndex / lastUpgradeIndex) * 100);
-                    else profileKey = 'placement';
-
-                    const getGlobalBounds = (statName) => profileKey === 'interpolated' ? globalStatProfiles[statName][profileKey][profileIndex] : globalStatProfiles[statName][profileKey];
-                    
-                    const enchantKey = selectedEnchantKey;
-                    
-                    const boostRange = (baseProfile, statType) => {
-                        const levelFactor = (statType === 'dmg') ? calculateLevelMultiplier(customLevel) : 1.0;
-                        const enchantFactor = (enchantMultipliers[enchantKey] && enchantMultipliers[enchantKey][statType]) ? enchantMultipliers[enchantKey][statType] : 1.0;
-                        const boosterFactor = multipliers[statType] || 1.0;
-                        const shinyFactor = (statType === 'dmg' && selectedVersionKey === 'shiny') ? 1.10 : 1.0;
-
-                        const totalBoost = enchantFactor * levelFactor * boosterFactor * shinyFactor;
-                        
-                        return {
-                            min: baseProfile.min * totalBoost,
-                            max: baseProfile.max * totalBoost,
-                            inverted: statType === 'speed' || statType === 'costPerDps'
-                        };
-                    };
-
-                    const boostCostPerDpsRange = (baseProfile) => {
-                        const dmgLevelFactor = calculateLevelMultiplier(customLevel);
-                        const dmgEnchantFactor = (enchantMultipliers[enchantKey]?.dmg || 1.0);
-                        const cdEnchantFactor = (enchantMultipliers[enchantKey]?.cd || 1.0);
-                        const costEnchantFactor = (enchantMultipliers[enchantKey]?.cost || 1.0);
-                        const shinyFactor = (selectedVersionKey === 'shiny') ? 1.10 : 1.0;
-                        
-                        const dpsBoostFactor = (dmgEnchantFactor * dmgLevelFactor * (multipliers.dmg || 1.0) * shinyFactor) / (cdEnchantFactor * (multipliers.cd || 1.0));
-                        
-                        const inverseDpsBoost = 1 / dpsBoostFactor;
-
-                        return {
-                            min: baseProfile.min * inverseDpsBoost * costEnchantFactor,
-                            max: baseProfile.max * inverseDpsBoost * costEnchantFactor,
-                            inverted: true
-                        };
-                    };
-
-                    bounds.TotalDamage = boostRange(getGlobalBounds('totalDamage'), 'dmg');
-                    bounds.TotalDPS = boostRange(getGlobalBounds('totalDps'), 'dmg'); 
-                    bounds.Range = boostRange(getGlobalBounds('range'), 'range');
-                    bounds.Speed = boostRange(getGlobalBounds('speed'), 'cd');
-                    bounds.CostPerDps = boostCostPerDpsRange(getGlobalBounds('costPerDps'));
-
-                } else {
-                    let allStatsForRange = [];
-                    const getStatRange = (unitData) => {
-                        const stats = [];
-                        const currentMultipliers = getGlobalBoostMultipliers();
-                        const placementCost = (unitData.PlacePrice || 0) * currentMultipliers.cost;
-                        let cumulativeCost = 0;
-                        const cumulativeCosts = unitData.Upgrades.map((upg, i) => {
-                             if (i === 0) cumulativeCost = placementCost;
-                             else cumulativeCost += (upg.Price || 0) * currentMultipliers.cost;
-                             return cumulativeCost;
-                        });
-
-                        unitData.Upgrades.forEach((upg, i) => {
-                            const d = upg.Damage * currentMultipliers.dmg;
-                            const c = upg.Cooldown * currentMultipliers.cd;
-                            const r = upg.Range * currentMultipliers.range;
-                            const tDmg = d * (unitData.Max || 1);
-                            const tDps = calculateDPS(d, c) * (unitData.Max || 1);
-                            const cpd = tDps > 0 ? cumulativeCosts[i] / tDps : Infinity;
-                            
-                            stats.push({ tDmg, tDps, r, c, cpd });
-                        });
-                        return stats;
-                    };
-
-                    if (comparisonUnitName && allUnitData[comparisonUnitName]) {
-                        const stats1 = getStatRange(getCurrentUnitData());
-                        const stats2 = getStatRange(allUnitData[comparisonUnitName]);
-                        allStatsForRange = [...stats1, ...stats2];
-                    } else {
-                        allStatsForRange = getStatRange(unit);
-                    }
-                    
-                    const finiteCostPerDps = allStatsForRange.map(s => s.cpd).filter(isFinite);
-                    bounds = {
-                        TotalDamage: { min: Math.min(...allStatsForRange.map(s => s.tDmg)), max: Math.max(...allStatsForRange.map(s => s.tDmg)), inverted: false },
-                        TotalDPS: { min: Math.min(...allStatsForRange.map(s => s.tDps)), max: Math.max(...allStatsForRange.map(s => s.tDps)), inverted: false },
-                        Range: { min: Math.min(...allStatsForRange.map(s => s.r)), max: Math.max(...allStatsForRange.map(s => s.r)), inverted: false },
-                        Speed: { min: Math.min(...allStatsForRange.map(s => s.c)), max: Math.max(...allStatsForRange.map(s => s.c)), inverted: true },
-                        CostPerDps: { min: finiteCostPerDps.length ? Math.min(...finiteCostPerDps) : 0, max: finiteCostPerDps.length ? Math.max(...finiteCostPerDps) : 0, inverted: true }
-                    };
-                }
-
-                const statsToDisplay = {
-                    'DPS': { ...bounds.TotalDPS, value: totalDPS, statType: 'dps' },
-                    'Damage': { ...bounds.TotalDamage, value: totalDamage, statType: 'dmg' },
-                    'Cooldown': { ...bounds.Speed, value: boostedCd, statType: 'cd' },
-                    'Range': { ...bounds.Range, value: boostedRange, statType: 'range' },
-                    'Cost/DPS': { ...bounds.CostPerDps, value: costPerDps, statType: 'costPerDps' }
-                };
+            
+                const unitA = getCurrentUnitData();
+                const unitB = comparisonUnitName ? allUnitData[comparisonUnitName] : null;
+                if (!unitA) return;
+            
                 graphContainer.innerHTML = '';
-                for (const [label, data] of Object.entries(statsToDisplay)) {
-                    let percent = 0;
-                    const range = data.max - data.min;
-                    if (range > 0) {
-                        const boundedValue = Math.max(data.min, Math.min(data.max, data.value));
-                        if (data.inverted) percent = (1 - ((boundedValue - data.min) / range)) * 100;
-                        else percent = ((boundedValue - data.min) / range) * 100;
-                    } else percent = data.inverted ? (data.value <= data.min ? 100 : 0) : (data.value >= data.max ? 100 : 0);
-                    percent = Math.min(100, Math.max(0, percent));
-                    const row = document.createElement('div'), labelEl = document.createElement('div'),
-                        barContainer = document.createElement('div'), bar = document.createElement('div'),
-                        valueEl = document.createElement('div');
-                    row.className = 'stat-row'; labelEl.className = 'stat-label'; labelEl.textContent = label;
-                    barContainer.className = 'stat-bar-container'; bar.className = 'stat-bar';
-                    valueEl.className = 'stat-value'; valueEl.textContent = data.value.toLocaleString(undefined, { maximumFractionDigits: 2 });
-                    barContainer.appendChild(bar); row.append(labelEl, barContainer, valueEl); graphContainer.appendChild(row);
-                    requestAnimationFrame(() => { bar.style.width = `${percent}%`; });
+                const multipliers = getGlobalBoostMultipliers();
+            
+                if (unitB) {
+                    graphPanelHeader.textContent = `${unitA.Name} vs. ${unitB.Name}`;
+                    const bounds = getComparisonBounds([unitA, unitB], multipliers);
+            
+                    const levelIndexA = currentGraphLevelIndex;
+                    const levelIndexB = Math.min(currentGraphLevelIndex, unitB.Upgrades.length - 1);
+            
+                    const statsA = getUnitStatsAtLevel(unitA, levelIndexA, multipliers);
+                    const statsB = getUnitStatsAtLevel(unitB, levelIndexB, multipliers);
+            
+                    const statsToDisplay = {
+                        'DPS': { a: statsA.totalDPS, b: statsB.totalDPS, bounds: bounds.TotalDPS },
+                        'Damage': { a: statsA.totalDamage, b: statsB.totalDamage, bounds: bounds.TotalDamage },
+                        'Cooldown': { a: statsA.speed, b: statsB.speed, bounds: bounds.Speed },
+                        'Range': { a: statsA.range, b: statsB.range, bounds: bounds.Range },
+                        'Cost/DPS': { a: statsA.costPerDps, b: statsB.costPerDps, bounds: bounds.CostPerDps }
+                    };
+            
+                    for (const [label, data] of Object.entries(statsToDisplay)) {
+                        const calcPercent = (value, statBounds) => {
+                            const range = statBounds.max - statBounds.min;
+                            if (range <= 0) return value >= statBounds.max ? 100 : 0;
+                            const boundedValue = Math.max(statBounds.min, Math.min(statBounds.max, value));
+                            const percent = ((boundedValue - statBounds.min) / range) * 100;
+                            return statBounds.inverted ? 100 - percent : percent;
+                        };
+            
+                        const percentA = isFinite(data.a) ? calcPercent(data.a, data.bounds) : 0;
+                        const percentB = isFinite(data.b) ? calcPercent(data.b, data.bounds) : 0;
+            
+                        const row = document.createElement('div');
+                        row.className = 'stat-row';
+                        row.style.gridTemplateColumns = `var(--graph-col-width) 1fr var(--graph-col-width)`;
+                        
+                        const labelEl = document.createElement('div');
+                        labelEl.className = 'stat-label';
+                        labelEl.textContent = label;
+            
+                        const barContainer = document.createElement('div');
+                        barContainer.className = 'stat-bar-container';
+                        barContainer.style.display = 'flex';
+                        barContainer.style.gap = '2px';
+            
+                        const barA = document.createElement('div');
+                        barA.className = 'stat-bar';
+                        
+                        const barB = document.createElement('div');
+                        barB.className = 'stat-bar';
+                        barB.style.backgroundColor = 'var(--comparison-accent)';
+            
+                        barContainer.append(barA, barB);
+            
+                        const valueContainer = document.createElement('div');
+                        valueContainer.className = 'stat-value';
+                        valueContainer.style.display = 'flex';
+                        valueContainer.style.flexDirection = 'column';
+                        valueContainer.style.justifyContent = 'center';
+                        valueContainer.style.alignItems = 'flex-start';
+                        
+                        const valueAEl = document.createElement('div');
+                        valueAEl.textContent = `A: ${formatStat(data.a)}`;
+                        valueAEl.style.color = 'var(--primary-accent)';
+            
+                        const valueBEl = document.createElement('div');
+                        valueBEl.textContent = `B: ${formatStat(data.b)}`;
+                        valueBEl.style.color = 'var(--comparison-accent)';
+            
+                        valueContainer.append(valueAEl, valueBEl);
+                        row.append(labelEl, barContainer, valueContainer);
+                        graphContainer.appendChild(row);
+            
+                        requestAnimationFrame(() => {
+                            barA.style.width = `${percentA}%`;
+                            barB.style.width = `${percentB}%`;
+                        });
+                    }
+                } else {
+                    graphPanelHeader.textContent = 'Unit Stat Graph';
+                    const stats = getUnitStatsAtLevel(unitA, currentGraphLevelIndex, multipliers);
+                    let bounds = {};
+            
+                    if (globalCompareCheckbox.checked) {
+                        const dpsMultiplier = multipliers.dmg / multipliers.cd;
+                        const costMultiplier = multipliers.cost;
+                        bounds = {
+                            TotalDPS: {
+                                min: globalStatProfiles.totalDps.placement.min * dpsMultiplier,
+                                max: globalStatProfiles.totalDps.max.max * dpsMultiplier,
+                                inverted: false
+                            },
+                            TotalDamage: {
+                                min: globalStatProfiles.totalDamage.placement.min * multipliers.dmg,
+                                max: globalStatProfiles.totalDamage.max.max * multipliers.dmg,
+                                inverted: false
+                            },
+                            Range: {
+                                min: globalStatProfiles.range.placement.min * multipliers.range,
+                                max: globalStatProfiles.range.max.max * multipliers.range,
+                                inverted: false
+                            },
+                            Speed: {
+                                min: globalStatProfiles.speed.placement.min * multipliers.cd,
+                                max: globalStatProfiles.speed.max.max * multipliers.cd,
+                                inverted: true
+                            },
+                            CostPerDps: {
+                                min: globalStatProfiles.costPerDps.placement.min * (costMultiplier / dpsMultiplier),
+                                max: globalStatProfiles.costPerDps.max.max * (costMultiplier / dpsMultiplier),
+                                inverted: true
+                            }
+                        };
+                    } else {
+                        bounds = getComparisonBounds([unitA], multipliers);
+                    }
+            
+                    const statsToDisplay = {
+                        'DPS': { value: stats.totalDPS, bounds: bounds.TotalDPS },
+                        'Damage': { value: stats.totalDamage, bounds: bounds.TotalDamage },
+                        'Cooldown': { value: stats.speed, bounds: bounds.Speed },
+                        'Range': { value: stats.range, bounds: bounds.Range },
+                        'Cost/DPS': { value: stats.costPerDps, bounds: bounds.CostPerDps }
+                    };
+            
+                    for (const [label, data] of Object.entries(statsToDisplay)) {
+                        const range = data.bounds.max - data.bounds.min;
+                        let percent = 0;
+                        if (range > 0 && isFinite(data.value)) {
+                            const boundedValue = Math.max(data.bounds.min, Math.min(data.bounds.max, data.value));
+                            percent = ((boundedValue - data.bounds.min) / range) * 100;
+                            if (data.bounds.inverted) percent = 100 - percent;
+                        } else if (isFinite(data.value)) {
+                           percent = (data.value >= data.bounds.max) ? 100 : 0;
+                        }
+            
+                        const row = document.createElement('div');
+                        row.className = 'stat-row';
+                        const labelEl = document.createElement('div');
+                        labelEl.className = 'stat-label';
+                        labelEl.textContent = label;
+                        const barContainer = document.createElement('div');
+                        barContainer.className = 'stat-bar-container';
+                        const bar = document.createElement('div');
+                        bar.className = 'stat-bar';
+                        const valueEl = document.createElement('div');
+                        valueEl.className = 'stat-value';
+                        valueEl.textContent = formatStat(data.value);
+            
+                        barContainer.appendChild(bar);
+                        row.append(labelEl, barContainer, valueEl);
+                        graphContainer.appendChild(row);
+            
+                        requestAnimationFrame(() => { bar.style.width = `${percent}%`; });
+                    }
                 }
             }
-
+            
             function updateSuggestions(matches = []) {
                 if (matches.length > 0) {
                     const fragment = document.createDocumentFragment();
@@ -2815,9 +2905,6 @@
             function openGraphPanel() {
                 if (!currentUnitName) return;
                 
-                const graphHeader = document.getElementById('graphPanelHeader');
-                graphHeader.textContent = comparisonUnitName ? 'Unit Stat Graph (VS)' : 'Unit Stat Graph';
-
                 const unit = getCurrentUnitData();
                 if (!unit) return;
 
@@ -3071,63 +3158,110 @@
                 if (rarity === 'Mythical') rarity = 'Mythic';
                 processed.Rarity = rarity;
                 
-                processed.hasPerUpgradeTypes = unit.UpgradeStats?.some(upg => upg.Type) ?? false;
-                processed.hasPerUpgradeDegrees = unit.UpgradeStats?.some(upg => upg.Degrees) ?? false;
-
                 const upgrades = [];
-                const baseUpgrade = {
-                    ...unit.BaseStats,
-                    Price: 0,
-                    Type: unit.BaseStats.Type || unit.Type,
-                    Degrees: unit.Degrees,
-                };
-                upgrades.push(baseUpgrade);
+                const isSwitchUnit = unit.UpgradeStats && !Array.isArray(unit.UpgradeStats) && Object.keys(unit.UpgradeStats).length > 1;
 
-                let minDegrees = unit.Degrees;
-                let maxDegrees = unit.Degrees;
+                if (isSwitchUnit) {
+                    processed.isSwitchUnit = true;
+                    const formKeys = Object.keys(unit.UpgradeStats);
+                    const form1Key = formKeys[0];
+                    const form2Key = formKeys[1];
+                    const numUpgrades = unit.UpgradeStats[form1Key]?.length || 0;
 
-                if (unit.UpgradeStats) {
-                    let lastType = baseUpgrade.Type;
-                    let lastDegrees = baseUpgrade.Degrees;
+                    const baseUpgrade = { ...unit.BaseStats, Price: 0, Type: unit.Type, Degrees: unit.Degrees };
+                    upgrades.push(baseUpgrade);
 
-                    unit.UpgradeStats.forEach(upg => {
-                        const currentType = upg.Type || lastType;
-                        const currentDegrees = upg.Degrees || lastDegrees;
-                        upgrades.push({
-                            ...upg,
-                            Price: upg.UpgradePrice || 0,
-                            Type: currentType,
-                            Degrees: currentDegrees
+                    let lastStatsForm1 = { ...baseUpgrade };
+                    let lastStatsForm2 = { ...baseUpgrade };
+
+                    for (let i = 0; i < numUpgrades; i++) {
+                        const upg1 = unit.UpgradeStats[form1Key][i] || {};
+                        const upg2 = unit.UpgradeStats[form2Key][i] || {};
+                        const combinedUpgrade = { Price: upg1.UpgradePrice ?? upg2.UpgradePrice ?? 0 };
+                        const statsToCombine = ['Damage', 'Cooldown', 'Range', 'Type', 'Degrees'];
+                        
+                        statsToCombine.forEach(stat => {
+                            const val1 = upg1[stat] !== undefined ? upg1[stat] : lastStatsForm1[stat];
+                            const val2 = upg2[stat] !== undefined ? upg2[stat] : lastStatsForm2[stat];
+                            if (val1 === val2) {
+                                combinedUpgrade[stat] = val1;
+                            } else {
+                                combinedUpgrade[stat] = { form1: val1, form2: val2 };
+                            }
                         });
-                        lastType = currentType;
-                        lastDegrees = currentDegrees;
-                        if(upg.Degrees) {
-                            if (minDegrees === undefined || upg.Degrees < minDegrees) minDegrees = upg.Degrees;
-                            if (maxDegrees === undefined || upg.Degrees > maxDegrees) maxDegrees = upg.Degrees;
-                        }
-                    });
-                }
-                processed.Upgrades = upgrades;
-
-                if (minDegrees !== undefined) {
-                    if (minDegrees === maxDegrees) {
-                        processed.Type = `${unit.Type} (${maxDegrees}°)`;
-                    } else {
-                        processed.Type = `${unit.Type} (${minDegrees}°-${maxDegrees}°)`;
+                        upgrades.push(combinedUpgrade);
+                        lastStatsForm1 = { ...lastStatsForm1, ...upg1 };
+                        lastStatsForm2 = { ...lastStatsForm2, ...upg2 };
                     }
-                     processed.maxUpgradeType = `${unit.Type} (${maxDegrees}°)`;
-                } else {
-                    const typesInOrder = [upgrades[0].Type];
+                    processed.Upgrades = upgrades;
+                    
+                    const pathTypes = [upgrades[0].Type];
                     for (let i = 1; i < upgrades.length; i++) {
-                        const currentType = upgrades[i].Type;
-                        if (currentType && currentType !== typesInOrder[typesInOrder.length - 1]) {
-                            typesInOrder.push(currentType);
+                        const currentUpgradeType = upgrades[i].Type;
+                        let currentTypeStr = formatStat(currentUpgradeType);
+
+                        if (currentTypeStr !== pathTypes[pathTypes.length - 1]) {
+                            pathTypes.push(currentTypeStr);
                         }
                     }
-                    processed.Type = typesInOrder.join('-');
-                    processed.maxUpgradeType = upgrades.length > 0 ? upgrades[upgrades.length - 1].Type : (unit.Type || 'N/A');
+                    processed.Type = pathTypes.join('-');
+
+                    const lastUpgrade = upgrades[upgrades.length - 1];
+                    processed.maxUpgradeType = formatStat(lastUpgrade.Type);
+
+                } else {
+                    processed.hasPerUpgradeTypes = unit.UpgradeStats?.some(upg => upg.Type) ?? false;
+                    processed.hasPerUpgradeDegrees = unit.UpgradeStats?.some(upg => upg.Degrees) ?? false;
+
+                    const baseUpgrade = { ...unit.BaseStats, Price: 0, Type: unit.BaseStats.Type || unit.Type, Degrees: unit.Degrees };
+                    upgrades.push(baseUpgrade);
+
+                    let minDegrees = unit.Degrees;
+                    let maxDegrees = unit.Degrees;
+
+                    if (unit.UpgradeStats && Array.isArray(unit.UpgradeStats)) {
+                        let lastType = baseUpgrade.Type;
+                        let lastDegrees = baseUpgrade.Degrees;
+
+                        unit.UpgradeStats.forEach(upg => {
+                            const currentType = upg.Type || lastType;
+                            const currentDegrees = upg.Degrees || lastDegrees;
+                            upgrades.push({ ...upg, Price: upg.UpgradePrice || 0, Type: currentType, Degrees: currentDegrees });
+                            lastType = currentType;
+                            lastDegrees = currentDegrees;
+                            if(upg.Degrees) {
+                                if (minDegrees === undefined || upg.Degrees < minDegrees) minDegrees = upg.Degrees;
+                                if (maxDegrees === undefined || upg.Degrees > maxDegrees) maxDegrees = upg.Degrees;
+                            }
+                        });
+                    }
+                    processed.Upgrades = upgrades;
+                    
+                    if (minDegrees !== undefined) {
+                        if (minDegrees === maxDegrees) {
+                            processed.Type = `${unit.Type} (${maxDegrees}°)`;
+                        } else {
+                            processed.Type = `${unit.Type} (${minDegrees}°-${maxDegrees}°)`;
+                        }
+                        const finalUpgradeType = upgrades[upgrades.length-1].Type || unit.Type;
+                        processed.maxUpgradeType = `${finalUpgradeType} (${maxDegrees}°)`;
+                    } else {
+                        const typesInOrder = [upgrades[0].Type];
+                        for (let i = 1; i < upgrades.length; i++) {
+                            const currentType = upgrades[i].Type;
+                            if (currentType && currentType !== typesInOrder[typesInOrder.length - 1]) {
+                                typesInOrder.push(currentType);
+                            }
+                        }
+                        processed.Type = typesInOrder.join('-');
+                        processed.maxUpgradeType = upgrades.length > 0 ? upgrades[upgrades.length - 1].Type : (unit.Type || 'N/A');
+                    }
                 }
-                
+
+                const allTypes = processed.Upgrades.map(upg => formatStat(upg.Type));
+                const uniqueTypes = new Set(allTypes);
+                processed.typeChangesWithUpgrades = uniqueTypes.size > 1;
+
                 return processed;
             }
 
@@ -3446,3 +3580,4 @@
     </script>
 </body>
 </html>
+```
