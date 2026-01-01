@@ -2320,53 +2320,75 @@
                 unitStatsContainer.style.visibility = 'visible';
             }
             
+            const calculatePercentile = (arr, percentile) => {
+                if (!arr || arr.length === 0) return 0;
+                const sortedArr = [...arr].sort((a, b) => a - b);
+                if (percentile <= 0) return sortedArr[0];
+                if (percentile >= 100) return sortedArr[sortedArr.length - 1];
+                
+                const index = (percentile / 100) * (sortedArr.length - 1);
+                const lower = Math.floor(index);
+                const upper = Math.ceil(index);
+
+                if (lower === upper) return sortedArr[lower];
+
+                const weight = index - lower;
+                const value = sortedArr[lower] * (1 - weight) + sortedArr[upper] * weight;
+                return value || 0;
+            };
+
             function computeGlobalStatProfiles() {
-                const createProfile = () => ({ min: Infinity, max: -Infinity });
-                const profiles = {
-                    totalDps: { placement: createProfile(), max: createProfile() },
-                    totalDamage: { placement: createProfile(), max: createProfile() },
-                    range: { placement: createProfile(), max: createProfile() },
-                    speed: { placement: createProfile(), max: createProfile() },
-                    costPerDps: { placement: createProfile(), max: createProfile() }
+                const allStats = {
+                    totalDps: [], totalDamage: [], range: [], speed: [], costPerDps: []
                 };
-            
+
                 for (const unit of Object.values(allUnitData)) {
-                    if (!unit.Upgrades || unit.Upgrades.length === 0 || unit.BaseStats.Damage === undefined) continue;
+                    if (!unit.Upgrades || unit.Upgrades.length === 0 || unit.Upgrades[0].Damage === undefined) continue;
                     
                     const placements = unit.Max || 1;
-                    const lastUpgradeIndex = unit.Upgrades.length - 1;
-            
                     const cumulativeCosts = [unit.PlacePrice || 0];
-                    for (let i = 1; i <= lastUpgradeIndex; i++) {
-                        cumulativeCosts[i] = cumulativeCosts[i - 1] + (unit.Upgrades[i].Price || 0);
+                    for (let i = 1; i < unit.Upgrades.length; i++) {
+                        cumulativeCosts[i] = (cumulativeCosts[i - 1] || 0) + (unit.Upgrades[i].Price || 0);
                     }
             
-                    const pStats = unit.Upgrades[0];
-                    const pCost = cumulativeCosts[0];
-                    const pTotalDps = calculateDPS(pStats.Damage, pStats.Cooldown) * placements;
-                    if (isFinite(pTotalDps)) {
-                        profiles.totalDps.placement.min = Math.min(profiles.totalDps.placement.min, pTotalDps);
-                        profiles.totalDps.placement.max = Math.max(profiles.totalDps.placement.max, pTotalDps);
-                    }
+                    unit.Upgrades.forEach((stats, i) => {
+                        if (stats.Damage === undefined) return;
+
+                        const totalDPS = calculateDPS(stats.Damage, stats.Cooldown) * placements;
+                        if (isFinite(totalDPS) && totalDPS > 0) {
+                            allStats.totalDps.push(totalDPS);
+                            const costUpToSelectedLevel = cumulativeCosts[i];
+                            if (costUpToSelectedLevel !== undefined) {
+                                const costPerDps = costUpToSelectedLevel / totalDPS;
+                                if (isFinite(costPerDps)) allStats.costPerDps.push(costPerDps);
+                            }
+                        }
             
-                    const mStats = unit.Upgrades[lastUpgradeIndex];
-                    const mCost = cumulativeCosts[lastUpgradeIndex];
-                    const mTotalDps = calculateDPS(mStats.Damage, mStats.Cooldown) * placements;
-                     if (isFinite(mTotalDps)) {
-                        profiles.totalDps.max.min = Math.min(profiles.totalDps.max.min, mTotalDps);
-                        profiles.totalDps.max.max = Math.max(profiles.totalDps.max.max, mTotalDps);
-                    }
+                        const totalDamage = (typeof stats.Damage === 'object' ? (stats.Damage.form1 + stats.Damage.form2) / 2 : stats.Damage) * placements;
+                        if (isFinite(totalDamage)) allStats.totalDamage.push(totalDamage);
+            
+                        const range = typeof stats.Range === 'object' ? (stats.Range.form1 + stats.Range.form2) / 2 : stats.Range;
+                        if (isFinite(range)) allStats.range.push(range);
+            
+                        const speed = typeof stats.Cooldown === 'object' ? (stats.Cooldown.form1 + stats.Cooldown.form2) / 2 : stats.Cooldown;
+                        if (isFinite(speed) && speed > 0) allStats.speed.push(speed);
+                    });
                 }
             
-                const sanitize = profile => {
-                    Object.values(profile).forEach(level => {
-                        if (level.min === Infinity) level.min = 0;
-                        if (level.max === -Infinity) level.max = 0;
-                    });
-                };
-            
-                Object.values(profiles).forEach(sanitize);
-                globalStatProfiles = profiles;
+                const PERCENTILE_CAP = 98;
+                const finalProfiles = {};
+                for (const statName in allStats) {
+                    const values = allStats[statName];
+                    if (values.length > 0) {
+                        finalProfiles[statName] = {
+                            min: Math.min(...values),
+                            max: calculatePercentile(values, PERCENTILE_CAP)
+                        };
+                    } else {
+                        finalProfiles[statName] = { min: 0, max: 0 };
+                    }
+                }
+                globalStatProfiles = finalProfiles;
             }
             
             function updateComparisonControlUI() {
@@ -2509,25 +2531,33 @@
             
                         const row = document.createElement('div');
                         row.className = 'stat-row';
-                        row.style.gridTemplateColumns = `var(--graph-col-width) 1fr var(--graph-col-width)`;
                         
                         const labelEl = document.createElement('div');
                         labelEl.className = 'stat-label';
                         labelEl.textContent = label;
             
                         const barContainer = document.createElement('div');
-                        barContainer.className = 'stat-bar-container';
                         barContainer.style.display = 'flex';
+                        barContainer.style.flexDirection = 'column';
                         barContainer.style.gap = '2px';
-            
+                        barContainer.style.justifyContent = 'center';
+
+                        const barWrapperA = document.createElement('div');
+                        barWrapperA.className = 'stat-bar-container';
+                        barWrapperA.style.height = `calc(var(--graph-bar-height) * 0.5)`;
                         const barA = document.createElement('div');
                         barA.className = 'stat-bar';
-                        
+                        barWrapperA.appendChild(barA);
+
+                        const barWrapperB = document.createElement('div');
+                        barWrapperB.className = 'stat-bar-container';
+                        barWrapperB.style.height = `calc(var(--graph-bar-height) * 0.5)`;
                         const barB = document.createElement('div');
                         barB.className = 'stat-bar';
                         barB.style.backgroundColor = 'var(--comparison-accent)';
-            
-                        barContainer.append(barA, barB);
+                        barWrapperB.appendChild(barB);
+
+                        barContainer.append(barWrapperA, barWrapperB);
             
                         const valueContainer = document.createElement('div');
                         valueContainer.className = 'stat-value';
@@ -2563,31 +2593,37 @@
                         const costMultiplier = multipliers.cost;
                         bounds = {
                             TotalDPS: {
-                                min: globalStatProfiles.totalDps.placement.min * dpsMultiplier,
-                                max: globalStatProfiles.totalDps.max.max * dpsMultiplier,
+                                min: (globalStatProfiles.totalDps?.min || 0) * dpsMultiplier,
+                                max: (globalStatProfiles.totalDps?.max || 0) * dpsMultiplier,
                                 inverted: false
                             },
                             TotalDamage: {
-                                min: globalStatProfiles.totalDamage.placement.min * multipliers.dmg,
-                                max: globalStatProfiles.totalDamage.max.max * multipliers.dmg,
+                                min: (globalStatProfiles.totalDamage?.min || 0) * multipliers.dmg,
+                                max: (globalStatProfiles.totalDamage?.max || 0) * multipliers.dmg,
                                 inverted: false
                             },
                             Range: {
-                                min: globalStatProfiles.range.placement.min * multipliers.range,
-                                max: globalStatProfiles.range.max.max * multipliers.range,
+                                min: (globalStatProfiles.range?.min || 0) * multipliers.range,
+                                max: (globalStatProfiles.range?.max || 0) * multipliers.range,
                                 inverted: false
                             },
                             Speed: {
-                                min: globalStatProfiles.speed.placement.min * multipliers.cd,
-                                max: globalStatProfiles.speed.max.max * multipliers.cd,
+                                min: (globalStatProfiles.speed?.min || 0) * multipliers.cd,
+                                max: (globalStatProfiles.speed?.max || 0) * multipliers.cd,
                                 inverted: true
                             },
                             CostPerDps: {
-                                min: globalStatProfiles.costPerDps.placement.min * (costMultiplier / dpsMultiplier),
-                                max: globalStatProfiles.costPerDps.max.max * (costMultiplier / dpsMultiplier),
+                                min: (globalStatProfiles.costPerDps?.min || 0) * (costMultiplier / dpsMultiplier),
+                                max: (globalStatProfiles.costPerDps?.max || 0) * (costMultiplier / dpsMultiplier),
                                 inverted: true
                             }
                         };
+                        for(const key in bounds){
+                            if(bounds[key].max <= bounds[key].min){
+                                bounds[key].max = bounds[key].min * 1.01;
+                                if(bounds[key].max === 0) bounds[key].max = 1;
+                            }
+                        }
                     } else {
                         bounds = getComparisonBounds([unitA], multipliers);
                     }
@@ -3580,4 +3616,3 @@
     </script>
 </body>
 </html>
-```
