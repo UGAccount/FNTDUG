@@ -1700,24 +1700,29 @@
                         const headers = Array.from(rarityInfoWrapper.querySelectorAll('thead th'));
                         const valueIndex = headers.findIndex(th => th.textContent === 'Value');
                         const demandIndex = headers.findIndex(th => th.textContent === 'Demand');
+                        const statusIndex = headers.findIndex(th => th.textContent === 'Status');
 
-                        if (valueIndex > -1 && demandIndex > -1) {
+                        if (valueIndex > -1 && demandIndex > -1 && statusIndex > -1) {
                             const dataCells = rarityInfoWrapper.querySelectorAll('tbody td');
                             const valueCell = dataCells[valueIndex];
                             const demandCell = dataCells[demandIndex];
+                            const statusCell = dataCells[statusIndex];
 
                             const versionValueData = selectedVersionKey === 'shiny' ? unitData.Value.Shiny : unitData.Value.Normal;
                             
                             let displayValue = 'N/A';
                             let displayDemand = 'N/A';
+                            let displayStatus = 'N/A';
 
                             if (versionValueData) {
                                 displayValue = versionValueData.value || 'N/A';
                                 displayDemand = versionValueData.demand || 'N/A';
+                                displayStatus = versionValueData.status || 'N/A';
                             }
 
                             if (valueCell) valueCell.textContent = formatMangleValue(displayValue);
                             if (demandCell) demandCell.textContent = displayDemand;
+                            if (statusCell) statusCell.textContent = displayStatus;
                         }
                     }
                 }
@@ -1976,19 +1981,21 @@
 
                 const tradingValueData = currentStats.Value;
                 if (tradingValueData) {
-                    headers.splice(1, 0, 'Value', 'Demand');
+                    headers.splice(1, 0, 'Value', 'Demand', 'Status');
 
                     const versionValueData = selectedVersionKey === 'shiny' ? tradingValueData.Shiny : tradingValueData.Normal;
                     
                     let displayValue = 'N/A';
                     let displayDemand = 'N/A';
+                    let displayStatus = 'N/A';
                     
                     if (versionValueData) {
                         displayValue = versionValueData.value || 'N/A';
                         displayDemand = versionValueData.demand || 'N/A';
+                        displayStatus = versionValueData.status || 'N/A';
                     }
 
-                    rowData.splice(1, 0, formatMangleValue(displayValue), displayDemand);
+                    rowData.splice(1, 0, formatMangleValue(displayValue), displayDemand, displayStatus);
                 }
 
                 createTableInWrapper(headers, [rowData], rarityWrapper);
