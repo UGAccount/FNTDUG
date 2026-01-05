@@ -974,6 +974,15 @@
                 'Secret': 5, 'Nightmare': 6, 'Apex': 7, 'Hero': 8 
             };
             
+            const typeOrder = { 'Full': 1, 'FullAOE': 2, 'Cone': 3, 'Circle': 4, 'Line': 5, 'Summons': 6, 'Single': 7 };
+            const getTypeRank = (typeStr, degrees = 0, isSwitchUnit = false) => {
+                if (!typeStr) return 8;
+                const typeKey = typeStr.split(' ')[0];
+                const rank = typeOrder[typeKey] || 8;
+                const finalRank = rank - (degrees / 1000);
+                return finalRank + (isSwitchUnit ? 0.5 : 0);
+            };
+
             const formatMangleValue = (valueString) => {
                 if (valueString !== 'N/A' && valueString && /[\d]/.test(valueString)) {
                     const lastNumberMatch = valueString.match(/(\d+)$/);
@@ -1488,7 +1497,7 @@
                     elementalMultiplier = elementalAdvantages[unitElement].Boosts[enemyElement];
                 }
 
-                let finalDmg, boostedCd, boostedRange, fullDps, bestAttackTypeForSort;
+                let finalDmg, boostedCd, boostedRange, fullDps, bestAttackTypeForSort, maxDegrees;
 
                 if (unit.isSwitchUnit && typeof maxLevelStats.Damage === 'object') {
                     const boostedDmg1 = maxLevelStats.Damage.form1 * multipliers.dmg;
@@ -1517,19 +1526,28 @@
 
                     const type1 = (typeof maxLevelStats.Type === 'object') ? maxLevelStats.Type.form1 : maxLevelStats.Type;
                     const type2 = (typeof maxLevelStats.Type === 'object') ? maxLevelStats.Type.form2 : maxLevelStats.Type;
-                    
-                    const typeOrder = { 'Full': 1, 'FullAOE': 2, 'Cone': 3, 'Circle': 4, 'Line': 5, 'Summons': 6, 'Single': 7 };
-                    const rank1 = typeOrder[type1.split(' ')[0]] || 8;
-                    const rank2 = typeOrder[type2.split(' ')[0]] || 8;
-                    bestAttackTypeForSort = rank1 <= rank2 ? type1 : type2;
+                    const deg1 = (typeof maxLevelStats.Degrees === 'object' && maxLevelStats.Degrees) ? (maxLevelStats.Degrees.form1 || 0) : (maxLevelStats.Degrees || 0);
+                    const deg2 = (typeof maxLevelStats.Degrees === 'object' && maxLevelStats.Degrees) ? (maxLevelStats.Degrees.form2 || 0) : (maxLevelStats.Degrees || 0);
 
+                    const rank1 = getTypeRank(type1, deg1);
+                    const rank2 = getTypeRank(type2, deg2);
+
+                    if (rank1 <= rank2) {
+                        bestAttackTypeForSort = type1;
+                        maxDegrees = deg1;
+                    } else {
+                        bestAttackTypeForSort = type2;
+                        maxDegrees = deg2;
+                    }
                 } else {
                     const boostedDmg = maxLevelStats.Damage * multipliers.dmg;
                     boostedCd = maxLevelStats.Cooldown * multipliers.cd;
                     boostedRange = maxLevelStats.Range * multipliers.range;
                     finalDmg = boostedDmg * elementalMultiplier;
                     fullDps = calculateDPS(finalDmg, boostedCd) * placements;
-                    bestAttackTypeForSort = unit.maxUpgradeType || 'N/A';
+                    bestAttackTypeForSort = unit.maxUpgradeType.split(' (')[0];
+                    const degreesMatch = unit.maxUpgradeType.match(/\((\d+)/);
+                    maxDegrees = degreesMatch ? parseInt(degreesMatch[1], 10) : 0;
                 }
 
                 return {
@@ -1537,6 +1555,7 @@
                     rarity: unit.Rarity || 'N/A',
                     maxUpgradeType: unit.maxUpgradeType,
                     bestAttackTypeForSort: bestAttackTypeForSort,
+                    maxDegrees: maxDegrees,
                     isSwitchUnit: !!unit.isSwitchUnit,
                     element: unitElement,
                     placements: placements,
@@ -1599,14 +1618,7 @@
                     }
                 }
 
-                const typeOrder = { 'Full': 1, 'FullAOE': 2, 'Cone': 3, 'Circle': 4, 'Line': 5, 'Summons': 6, 'Single': 7 };
                 const getRarityRank = (rarity) => rarityOrder[rarity] || 99;
-                const getTypeRank = (typeStr, isSwitchUnit = false) => {
-                    if (!typeStr) return 8;
-                    const typeKey = typeStr.split(' ')[0];
-                    const rank = typeOrder[typeKey] || 8;
-                    return rank + (isSwitchUnit ? 0.5 : 0);
-                };
 
                 const defaultCriteria = [
                     { key: 'fullDps', direction: 'desc' },
@@ -1631,8 +1643,8 @@
                         let valA, valB;
 
                         if (key === 'type') {
-                            valA = getTypeRank(a.bestAttackTypeForSort, a.isSwitchUnit);
-                            valB = getTypeRank(b.bestAttackTypeForSort, b.isSwitchUnit);
+                            valA = getTypeRank(a.bestAttackTypeForSort, a.maxDegrees, a.isSwitchUnit);
+                            valB = getTypeRank(b.bestAttackTypeForSort, b.maxDegrees, b.isSwitchUnit);
                         } else if (key === 'rarity') {
                             valA = getRarityRank(a.rarity);
                             valB = getRarityRank(b.rarity);
