@@ -1071,6 +1071,7 @@
             
             const formatStat = (stat, precision = 2) => {
                 const formatSingleValue = (value) => {
+                    if (value === undefined || value === null) return '-';
                     if (typeof value === 'number') {
                         if (isFinite(value)) {
                             return String(parseFloat(value.toFixed(precision)));
@@ -1391,7 +1392,7 @@
                 const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                 const hasRangeStat = unitData.Upgrades.some(upg => upg.Range !== undefined);
                 const typeChangesWithUpgrades = unitData.typeChangesWithUpgrades;
-                const hasPerUpgradeDegrees = unitData.hasPerUpgradeDegrees;
+                const hasPerUpgradeDegrees = unitData.Upgrades.some(upg => upg.Degrees !== undefined);
                 
                 const elementalContainer = document.getElementById('elemental-dps-container');
                 if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
@@ -1409,7 +1410,7 @@
                         rowData.push(formatStat(upgrade.Type) || '-');
                     }
                     if (hasPerUpgradeDegrees) {
-                        rowData.push(formatStat(upgrade.Degrees) || '-');
+                        rowData.push(formatStat(upgrade.Degrees));
                     }
 
                     if (hasDamageStats) {
@@ -1827,7 +1828,7 @@
                     const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                     const hasRangeStat = stats.Upgrades.some(upg => upg.Range !== undefined);
                     const typeChangesWithUpgrades = stats.typeChangesWithUpgrades;
-                    const hasPerUpgradeDegrees = stats.hasPerUpgradeDegrees;
+                    const hasPerUpgradeDegrees = stats.Upgrades.some(upg => upg.Degrees !== undefined);
 
                     let headers = ['Level', 'Cost'];
                     if (typeChangesWithUpgrades) headers.push('Attack Type');
@@ -3212,109 +3213,154 @@
                 let rarity = unit.Rarity;
                 if (rarity === 'Mythical') rarity = 'Mythic';
                 processed.Rarity = rarity;
-                
+
                 const upgrades = [];
                 const isSwitchUnit = unit.UpgradeStats && !Array.isArray(unit.UpgradeStats) && Object.keys(unit.UpgradeStats).length > 1;
-                
-                const formatTypeWithDegrees = (type, degrees) => {
-                    if (type && degrees !== undefined && degrees !== null) {
-                        return `${type} (${degrees}°)`;
-                    }
-                    return type || null;
+
+                const baseUpgrade = {
+                    ...unit.BaseStats,
+                    Price: 0,
+                    Type: unit.BaseStats.Type || unit.Type,
+                    Degrees: unit.BaseStats.Degrees
                 };
+                upgrades.push(baseUpgrade);
 
                 if (isSwitchUnit) {
                     processed.isSwitchUnit = true;
                     const formKeys = Object.keys(unit.UpgradeStats);
-                    const form1Key = formKeys[0];
-                    const form2Key = formKeys[1];
+                    const form1Key = formKeys[0], form2Key = formKeys[1];
                     const numUpgrades = unit.UpgradeStats[form1Key]?.length || 0;
 
-                    const baseUpgrade = { ...unit.BaseStats, Price: 0, Type: unit.Type, Degrees: unit.Degrees };
-                    upgrades.push(baseUpgrade);
+                    let lastFullUpgrade = baseUpgrade;
+                    let lastType1, lastDegrees1, lastType2, lastDegrees2;
 
-                    let lastStatsForm1 = { ...baseUpgrade };
-                    let lastStatsForm2 = { ...baseUpgrade };
+                    if (typeof lastFullUpgrade.Type === 'object') {
+                        lastType1 = lastFullUpgrade.Type.form1;
+                        lastType2 = lastFullUpgrade.Type.form2;
+                    } else {
+                        lastType1 = lastType2 = lastFullUpgrade.Type;
+                    }
+                    if (typeof lastFullUpgrade.Degrees === 'object') {
+                        lastDegrees1 = lastFullUpgrade.Degrees.form1;
+                        lastDegrees2 = lastFullUpgrade.Degrees.form2;
+                    } else {
+                        lastDegrees1 = lastDegrees2 = lastFullUpgrade.Degrees;
+                    }
 
                     for (let i = 0; i < numUpgrades; i++) {
                         const upg1 = unit.UpgradeStats[form1Key][i] || {};
                         const upg2 = unit.UpgradeStats[form2Key][i] || {};
                         const combinedUpgrade = { Price: upg1.UpgradePrice ?? upg2.UpgradePrice ?? 0 };
-                        const statsToCombine = ['Damage', 'Cooldown', 'Range', 'Type', 'Degrees'];
-                        
-                        statsToCombine.forEach(stat => {
-                            const val1 = upg1[stat] !== undefined ? upg1[stat] : lastStatsForm1[stat];
-                            const val2 = upg2[stat] !== undefined ? upg2[stat] : lastStatsForm2[stat];
-                            if (val1 === val2) {
-                                combinedUpgrade[stat] = val1;
-                            } else {
-                                combinedUpgrade[stat] = { form1: val1, form2: val2 };
+
+                        ['Damage', 'Cooldown', 'Range', 'DamageBoost', 'CooldownBoost', 'RangeBoost'].forEach(stat => {
+                            const lastStatVal = lastFullUpgrade[stat];
+                            let prevVal1 = lastStatVal, prevVal2 = lastStatVal;
+                            if(typeof lastStatVal === 'object' && lastStatVal !== null) {
+                                prevVal1 = lastStatVal.form1;
+                                prevVal2 = lastStatVal.form2;
+                            }
+                            const finalVal1 = (upg1[stat] !== undefined) ? upg1[stat] : prevVal1;
+                            const finalVal2 = (upg2[stat] !== undefined) ? upg2[stat] : prevVal2;
+
+                            if (finalVal1 === finalVal2) {
+                                combinedUpgrade[stat] = finalVal1;
+                            } else if (finalVal1 !== undefined || finalVal2 !== undefined) {
+                                combinedUpgrade[stat] = { form1: finalVal1, form2: finalVal2 };
                             }
                         });
-                        upgrades.push(combinedUpgrade);
-                        lastStatsForm1 = { ...lastStatsForm1, ...upg1 };
-                        lastStatsForm2 = { ...lastStatsForm2, ...upg2 };
-                    }
-                    processed.Upgrades = upgrades;
-                    
-                    const pathTypes = [];
-                    upgrades.forEach(upg => {
-                        let currentTypeStr;
-                        if (typeof upg.Type === 'object') {
-                            const type1 = formatTypeWithDegrees(upg.Type.form1, upg.Degrees?.form1);
-                            const type2 = formatTypeWithDegrees(upg.Type.form2, upg.Degrees?.form2);
-                            currentTypeStr = type1 === type2 ? type1 : `${type1}/${type2}`;
+
+                        const currentType1 = upg1.Type || lastType1;
+                        let currentDegrees1;
+                        if (upg1.Type && upg1.Type !== lastType1) {
+                            currentDegrees1 = upg1.Degrees;
                         } else {
-                            currentTypeStr = formatTypeWithDegrees(upg.Type, upg.Degrees);
+                            currentDegrees1 = upg1.Degrees !== undefined ? upg1.Degrees : lastDegrees1;
                         }
-                        if (pathTypes.length === 0 || pathTypes[pathTypes.length - 1] !== currentTypeStr) {
-                            pathTypes.push(currentTypeStr);
-                        }
-                    });
-                    processed.Type = pathTypes.join(' - ');
 
-                    const lastUpgrade = upgrades[upgrades.length - 1];
-                    let maxUpgradeTypeStr;
-                    if (typeof lastUpgrade.Type === 'object') {
-                        const type1 = formatTypeWithDegrees(lastUpgrade.Type.form1, lastUpgrade.Degrees?.form1);
-                        const type2 = formatTypeWithDegrees(lastUpgrade.Type.form2, lastUpgrade.Degrees?.form2);
-                        maxUpgradeTypeStr = type1 === type2 ? type1 : `${type1}/${type2}`;
-                    } else {
-                        maxUpgradeTypeStr = formatTypeWithDegrees(lastUpgrade.Type, lastUpgrade.Degrees);
+                        const currentType2 = upg2.Type || lastType2;
+                        let currentDegrees2;
+                        if (upg2.Type && upg2.Type !== lastType2) {
+                            currentDegrees2 = upg2.Degrees;
+                        } else {
+                            currentDegrees2 = upg2.Degrees !== undefined ? upg2.Degrees : lastDegrees2;
+                        }
+
+                        if (currentType1 === currentType2) combinedUpgrade.Type = currentType1;
+                        else combinedUpgrade.Type = { form1: currentType1, form2: currentType2 };
+                        
+                        if (currentDegrees1 === currentDegrees2) {
+                            combinedUpgrade.Degrees = currentDegrees1;
+                        } else if (currentDegrees1 !== undefined || currentDegrees2 !== undefined) {
+                            combinedUpgrade.Degrees = { form1: currentDegrees1, form2: currentDegrees2 };
+                        }
+                        
+                        upgrades.push(combinedUpgrade);
+                        lastFullUpgrade = combinedUpgrade;
+                        lastType1 = currentType1; lastDegrees1 = currentDegrees1;
+                        lastType2 = currentType2; lastDegrees2 = currentDegrees2;
                     }
-                    processed.maxUpgradeType = maxUpgradeTypeStr;
-
-                    processed.hasPerUpgradeDegrees = unit.UpgradeStats[form1Key]?.some(upg => upg.Degrees !== undefined) ||
-                                                     unit.UpgradeStats[form2Key]?.some(upg => upg.Degrees !== undefined) ||
-                                                     (unit.Degrees !== undefined);
                 } else {
-                    const baseUpgrade = { ...unit.BaseStats, Price: 0, Type: unit.BaseStats.Type || unit.Type, Degrees: unit.Degrees };
-                    upgrades.push(baseUpgrade);
-
                     if (unit.UpgradeStats && Array.isArray(unit.UpgradeStats)) {
-                        let lastType = baseUpgrade.Type;
+                        let lastStats = { ...baseUpgrade };
                         unit.UpgradeStats.forEach(upg => {
-                            const currentType = upg.Type || lastType;
-                            const currentDegrees = upg.Degrees;
-                            upgrades.push({ ...upg, Price: upg.UpgradePrice || 0, Type: currentType, Degrees: currentDegrees });
-                            lastType = currentType;
+                            const currentType = upg.Type || lastStats.Type;
+                            let currentDegrees;
+                            if (upg.Type && upg.Type !== lastStats.Type) {
+                                currentDegrees = upg.Degrees;
+                            } else {
+                                currentDegrees = upg.Degrees !== undefined ? upg.Degrees : lastStats.Degrees;
+                            }
+                            
+                            const newStats = {
+                                ...lastStats,
+                                ...upg,
+                                Price: upg.UpgradePrice || 0,
+                                Type: currentType,
+                                Degrees: currentDegrees
+                            };
+                            upgrades.push(newStats);
+                            lastStats = newStats;
                         });
                     }
-                    processed.Upgrades = upgrades;
-                    processed.hasPerUpgradeDegrees = upgrades.some(upg => upg.Degrees !== undefined);
-                    
-                    const pathTypes = [];
-                    upgrades.forEach(upg => {
-                        const formattedType = formatTypeWithDegrees(upg.Type, upg.Degrees);
-                        if (formattedType && (pathTypes.length === 0 || pathTypes[pathTypes.length - 1] !== formattedType)) {
-                            pathTypes.push(formattedType);
-                        }
-                    });
-                    processed.Type = pathTypes.join(' - ');
-
-                    const lastUpgrade = upgrades[upgrades.length - 1];
-                    processed.maxUpgradeType = formatTypeWithDegrees(lastUpgrade.Type, lastUpgrade.Degrees) || 'N/A';
                 }
+                processed.Upgrades = upgrades;
+                
+                const pathTypes = [];
+                let lastPathTypeStr = '';
+                let lastMaxUpgradeStr = '';
+
+                processed.Upgrades.forEach(upg => {
+                    let currentTypeStr = formatStat(upg.Type);
+                    let currentDegreesStr = formatStat(upg.Degrees);
+                    let fullTypeStr = currentTypeStr;
+
+                    if (currentTypeStr.includes('/')) {
+                        const [type1, type2] = currentTypeStr.split('/');
+                        let deg1, deg2;
+                        if (currentDegreesStr.includes('/')) {
+                            [deg1, deg2] = currentDegreesStr.split('/');
+                        } else {
+                            deg1 = deg2 = currentDegreesStr;
+                        }
+                        
+                        let part1 = type1;
+                        if (deg1 !== '-') part1 += ` (${deg1}°)`;
+                        let part2 = type2;
+                        if (deg2 !== '-') part2 += ` (${deg2}°)`;
+                        fullTypeStr = part1 === part2 ? part1 : `${part1}/${part2}`;
+                    } else if (currentDegreesStr !== '-') {
+                        fullTypeStr += ` (${currentDegreesStr}°)`;
+                    }
+                    
+                    if (fullTypeStr && fullTypeStr !== lastPathTypeStr) {
+                        pathTypes.push(fullTypeStr);
+                        lastPathTypeStr = fullTypeStr;
+                    }
+                    lastMaxUpgradeStr = fullTypeStr;
+                });
+
+                processed.Type = pathTypes.join(' - ');
+                processed.maxUpgradeType = lastMaxUpgradeStr;
 
                 const allTypes = processed.Upgrades.map(upg => formatStat(upg.Type));
                 const uniqueTypes = new Set(allTypes);
