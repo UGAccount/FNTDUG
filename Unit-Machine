@@ -1391,7 +1391,7 @@
                 const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                 const hasRangeStat = unitData.Upgrades.some(upg => upg.Range !== undefined);
                 const typeChangesWithUpgrades = unitData.typeChangesWithUpgrades;
-                const hasPerUpgradeDegrees = unitData.Upgrades.some(upg => upg.Degrees);
+                const hasPerUpgradeDegrees = unitData.hasPerUpgradeDegrees;
                 
                 const elementalContainer = document.getElementById('elemental-dps-container');
                 if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
@@ -1827,7 +1827,7 @@
                     const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                     const hasRangeStat = stats.Upgrades.some(upg => upg.Range !== undefined);
                     const typeChangesWithUpgrades = stats.typeChangesWithUpgrades;
-                    const hasPerUpgradeDegrees = stats.Upgrades.some(upg => upg.Degrees);
+                    const hasPerUpgradeDegrees = stats.hasPerUpgradeDegrees;
 
                     let headers = ['Level', 'Cost'];
                     if (typeChangesWithUpgrades) headers.push('Attack Type');
@@ -3215,6 +3215,13 @@
                 
                 const upgrades = [];
                 const isSwitchUnit = unit.UpgradeStats && !Array.isArray(unit.UpgradeStats) && Object.keys(unit.UpgradeStats).length > 1;
+                
+                const formatTypeWithDegrees = (type, degrees) => {
+                    if (type && degrees !== undefined && degrees !== null) {
+                        return `${type} (${degrees}°)`;
+                    }
+                    return type || null;
+                };
 
                 if (isSwitchUnit) {
                     processed.isSwitchUnit = true;
@@ -3250,67 +3257,63 @@
                     }
                     processed.Upgrades = upgrades;
                     
-                    const pathTypes = [upgrades[0].Type];
-                    for (let i = 1; i < upgrades.length; i++) {
-                        const currentUpgradeType = upgrades[i].Type;
-                        let currentTypeStr = formatStat(currentUpgradeType);
-
-                        if (currentTypeStr !== pathTypes[pathTypes.length - 1]) {
+                    const pathTypes = [];
+                    upgrades.forEach(upg => {
+                        let currentTypeStr;
+                        if (typeof upg.Type === 'object') {
+                            const type1 = formatTypeWithDegrees(upg.Type.form1, upg.Degrees?.form1);
+                            const type2 = formatTypeWithDegrees(upg.Type.form2, upg.Degrees?.form2);
+                            currentTypeStr = type1 === type2 ? type1 : `${type1}/${type2}`;
+                        } else {
+                            currentTypeStr = formatTypeWithDegrees(upg.Type, upg.Degrees);
+                        }
+                        if (pathTypes.length === 0 || pathTypes[pathTypes.length - 1] !== currentTypeStr) {
                             pathTypes.push(currentTypeStr);
                         }
-                    }
-                    processed.Type = pathTypes.join('-');
+                    });
+                    processed.Type = pathTypes.join(' - ');
 
                     const lastUpgrade = upgrades[upgrades.length - 1];
-                    processed.maxUpgradeType = formatStat(lastUpgrade.Type);
+                    let maxUpgradeTypeStr;
+                    if (typeof lastUpgrade.Type === 'object') {
+                        const type1 = formatTypeWithDegrees(lastUpgrade.Type.form1, lastUpgrade.Degrees?.form1);
+                        const type2 = formatTypeWithDegrees(lastUpgrade.Type.form2, lastUpgrade.Degrees?.form2);
+                        maxUpgradeTypeStr = type1 === type2 ? type1 : `${type1}/${type2}`;
+                    } else {
+                        maxUpgradeTypeStr = formatTypeWithDegrees(lastUpgrade.Type, lastUpgrade.Degrees);
+                    }
+                    processed.maxUpgradeType = maxUpgradeTypeStr;
 
+                    processed.hasPerUpgradeDegrees = unit.UpgradeStats[form1Key]?.some(upg => upg.Degrees !== undefined) ||
+                                                     unit.UpgradeStats[form2Key]?.some(upg => upg.Degrees !== undefined) ||
+                                                     (unit.Degrees !== undefined);
                 } else {
-                    processed.hasPerUpgradeTypes = unit.UpgradeStats?.some(upg => upg.Type) ?? false;
-                    processed.hasPerUpgradeDegrees = unit.UpgradeStats?.some(upg => upg.Degrees) ?? false;
-
                     const baseUpgrade = { ...unit.BaseStats, Price: 0, Type: unit.BaseStats.Type || unit.Type, Degrees: unit.Degrees };
                     upgrades.push(baseUpgrade);
 
-                    let minDegrees = unit.Degrees;
-                    let maxDegrees = unit.Degrees;
-
                     if (unit.UpgradeStats && Array.isArray(unit.UpgradeStats)) {
                         let lastType = baseUpgrade.Type;
-                        let lastDegrees = baseUpgrade.Degrees;
-
                         unit.UpgradeStats.forEach(upg => {
                             const currentType = upg.Type || lastType;
-                            const currentDegrees = upg.Degrees || lastDegrees;
+                            const currentDegrees = upg.Degrees;
                             upgrades.push({ ...upg, Price: upg.UpgradePrice || 0, Type: currentType, Degrees: currentDegrees });
                             lastType = currentType;
-                            lastDegrees = currentDegrees;
-                            if(upg.Degrees) {
-                                if (minDegrees === undefined || upg.Degrees < minDegrees) minDegrees = upg.Degrees;
-                                if (maxDegrees === undefined || upg.Degrees > maxDegrees) maxDegrees = upg.Degrees;
-                            }
                         });
                     }
                     processed.Upgrades = upgrades;
+                    processed.hasPerUpgradeDegrees = upgrades.some(upg => upg.Degrees !== undefined);
                     
-                    if (minDegrees !== undefined) {
-                        if (minDegrees === maxDegrees) {
-                            processed.Type = `${unit.Type} (${maxDegrees}°)`;
-                        } else {
-                            processed.Type = `${unit.Type} (${minDegrees}°-${maxDegrees}°)`;
+                    const pathTypes = [];
+                    upgrades.forEach(upg => {
+                        const formattedType = formatTypeWithDegrees(upg.Type, upg.Degrees);
+                        if (formattedType && (pathTypes.length === 0 || pathTypes[pathTypes.length - 1] !== formattedType)) {
+                            pathTypes.push(formattedType);
                         }
-                        const finalUpgradeType = upgrades[upgrades.length-1].Type || unit.Type;
-                        processed.maxUpgradeType = `${finalUpgradeType} (${maxDegrees}°)`;
-                    } else {
-                        const typesInOrder = [upgrades[0].Type];
-                        for (let i = 1; i < upgrades.length; i++) {
-                            const currentType = upgrades[i].Type;
-                            if (currentType && currentType !== typesInOrder[typesInOrder.length - 1]) {
-                                typesInOrder.push(currentType);
-                            }
-                        }
-                        processed.Type = typesInOrder.join('-');
-                        processed.maxUpgradeType = upgrades.length > 0 ? upgrades[upgrades.length - 1].Type : (unit.Type || 'N/A');
-                    }
+                    });
+                    processed.Type = pathTypes.join(' - ');
+
+                    const lastUpgrade = upgrades[upgrades.length - 1];
+                    processed.maxUpgradeType = formatTypeWithDegrees(lastUpgrade.Type, lastUpgrade.Degrees) || 'N/A';
                 }
 
                 const allTypes = processed.Upgrades.map(upg => formatStat(upg.Type));
