@@ -1488,7 +1488,7 @@
                     elementalMultiplier = elementalAdvantages[unitElement].Boosts[enemyElement];
                 }
 
-                let finalDmg, boostedCd, boostedRange, fullDps, bestAttackTypeForSort;
+                let finalDmg, boostedCd, boostedRange, fullDps, bestAttackTypeForSort, maxDegrees;
 
                 if (unit.isSwitchUnit && typeof maxLevelStats.Damage === 'object') {
                     const boostedDmg1 = maxLevelStats.Damage.form1 * multipliers.dmg;
@@ -1523,6 +1523,12 @@
                     const rank2 = typeOrder[type2.split(' ')[0]] || 8;
                     bestAttackTypeForSort = rank1 <= rank2 ? type1 : type2;
 
+                    if (typeof maxLevelStats.Degrees === 'object' && maxLevelStats.Degrees !== null) {
+                        maxDegrees = Math.max(maxLevelStats.Degrees.form1, maxLevelStats.Degrees.form2);
+                    } else {
+                        maxDegrees = maxLevelStats.Degrees;
+                    }
+
                 } else {
                     const boostedDmg = maxLevelStats.Damage * multipliers.dmg;
                     boostedCd = maxLevelStats.Cooldown * multipliers.cd;
@@ -1530,6 +1536,7 @@
                     finalDmg = boostedDmg * elementalMultiplier;
                     fullDps = calculateDPS(finalDmg, boostedCd) * placements;
                     bestAttackTypeForSort = unit.maxUpgradeType || 'N/A';
+                    maxDegrees = maxLevelStats.Degrees;
                 }
 
                 return {
@@ -1543,7 +1550,8 @@
                     fullDps: fullDps,
                     damage: finalDmg,
                     cd: boostedCd,
-                    range: boostedRange
+                    range: boostedRange,
+                    maxDegrees: maxDegrees
                 };
             }
 
@@ -1631,8 +1639,10 @@
                         let valA, valB;
 
                         if (key === 'type') {
-                            valA = getTypeRank(a.bestAttackTypeForSort, a.isSwitchUnit);
-                            valB = getTypeRank(b.bestAttackTypeForSort, b.isSwitchUnit);
+                            const aHasDegrees = a.maxDegrees !== undefined && a.maxDegrees !== null;
+                            const bHasDegrees = b.maxDegrees !== undefined && b.maxDegrees !== null;
+                            valA = aHasDegrees ? -a.maxDegrees : getTypeRank(a.bestAttackTypeForSort, a.isSwitchUnit);
+                            valB = bHasDegrees ? -b.maxDegrees : getTypeRank(b.bestAttackTypeForSort, b.isSwitchUnit);
                         } else if (key === 'rarity') {
                             valA = getRarityRank(a.rarity);
                             valB = getRarityRank(b.rarity);
