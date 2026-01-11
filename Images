@@ -154,13 +154,24 @@
     "Default Lobby": "https://iili.io/KtqGe07.png"
   },
     "Pets": {
-      "Ghost Bonnie": "https://iili.io/KtqV1us.png",
-      "Mummy Freddy": "https://iili.io/KtqVWMl.png",
-      "Harvest Festival Foxy": "https://iili.io/KtqVjFS.png",
-      "Gang Freddy": "https://iili.io/KtqVPcP.png",
-      "Puppet": "https://iili.io/KtqVUox.png",
-      "Mangle": "https://iili.io/KtqVrPV.png",
-      "Golden Freddy": "https://iili.io/KtqV6KB.png"
+    "Phantom BB": "https://iili.io/fkmkeJp.png",
+    "Phantom Foxy": "https://iili.io/fkmkWWg.png",
+    "Springtrap": "https://iili.io/fkmphut.png",
+    "8-Bit Shadow Bonnie": "https://iili.io/fkmkjqJ.png",
+    "Deer Mangle": "https://iili.io/fkmkXsa.png",
+    "Elf Endo": "https://iili.io/fkmkw0v.png",
+    "Grinch Foxy": "https://iili.io/fkmkveI.png",
+    "Bonnie": "https://iili.io/fkmkUzX.png",
+    "Ghost Bonnie": "https://iili.io/fkmkk5N.png",
+    "Ice Queen Toy Chica": "https://iili.io/fkmk8bt.png",
+    "Jack'O Chica": "https://iili.io/fkmkLdl.png",
+    "Golden Freddy": "https://iili.io/fkmv9qb.png",
+    "Harvest Festival Foxy": "https://iili.io/fkmkQ72.png",
+    "Mangle": "https://iili.io/fkmvH1j.png",
+    "Mummy Freddy": "https://iili.io/fkmkP1f.png",
+    "Puppet": "https://iili.io/fkmk6qG.png",
+    "Freddy": "https://iili.io/fkmktm7.png",
+    "Gang Freddy": "https://iili.io/fkmkpLu.png"
     },
     "Units": {
     "Shiny Phantom Bonnie": "https://iili.io/fXVrzhv.png",
