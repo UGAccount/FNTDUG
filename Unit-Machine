@@ -983,13 +983,94 @@
                 return finalRank + (isSwitchUnit ? 0.5 : 0);
             };
 
-            const formatMangleValue = (valueString) => {
-                if (valueString !== 'N/A' && valueString && /[\d]/.test(valueString)) {
-                    const lastNumberMatch = valueString.match(/(\d+)$/);
-                    const suffix = (lastNumberMatch && parseInt(lastNumberMatch[1], 10) === 1) ? ' Mangle' : ' Mangles';
-                    return valueString + suffix;
+            const formatLargeNumber = (num) => {
+                if (num < 1000) return num.toString().replace(/\.0$/, '');
+                const suffixes = ['', 'k', 'm', 'b', 't'];
+                const i = Math.floor(Math.log10(num) / 3);
+                let value = (num / Math.pow(1000, i));
+                if (value >= 1000) {
+                    value /= 1000;
+                    i++;
                 }
-                return valueString;
+                const precision = value < 10 && value % 1 !== 0 ? 1 : 0;
+                return value.toFixed(precision) + suffixes[i];
+            };
+
+            const formatRangeWithSuffix = (valueStr, formatter) => {
+                if (!valueStr.includes('-')) {
+                    const num = parseFloat(valueStr);
+                    return isNaN(num) ? valueStr : formatter(num);
+                }
+                const parts = valueStr.split('-').map(p => parseFloat(p.trim()));
+                if (parts.some(isNaN)) return valueStr;
+
+                const formattedParts = parts.map(formatter);
+                const suffix1Match = formattedParts[0].match(/[a-zA-Z]+$/);
+                const suffix2Match = formattedParts[1].match(/[a-zA-Z]+$/);
+                const suffix1 = suffix1Match ? suffix1Match[0] : '';
+                const suffix2 = suffix2Match ? suffix2Match[0] : '';
+
+                if (suffix1 === suffix2 && suffix1 !== '') {
+                    const num1 = formattedParts[0].replace(suffix1, '');
+                    const num2 = formattedParts[1].replace(suffix2, '');
+                    return `${num1}-${num2}${suffix1}`;
+                }
+                return formattedParts.join('-');
+            };
+            
+            const getPluralSuffix = (valueString, singular, plural) => {
+                if (!valueString || valueString === 'N/A' || !/[\d]/.test(valueString)) {
+                    return '';
+                }
+                const lastNumberMatch = valueString.match(/(\d+(\.\d+)?)(?!.*\d)/);
+                return (lastNumberMatch && parseFloat(lastNumberMatch[1]) === 1) ? ` ${singular}` : ` ${plural}`;
+            };
+
+            const formatValueAndSoul = (versionValueData) => {
+                if (!versionValueData) return 'N/A';
+
+                const formatValueWithK = (valStr) => {
+                    if (!valStr || valStr === "N/A") return valStr;
+                    return valStr.replace(/(\d[\d,]*)/g, (match) => {
+                        const num = parseFloat(match.replace(/,/g, ''));
+                        if (!isNaN(num) && num >= 1000) {
+                            return formatLargeNumber(num);
+                        }
+                        return match;
+                    });
+                };
+                
+                const mangleValue = versionValueData.value;
+                let mangleDisplay = 'N/A';
+                if (mangleValue && mangleValue !== 'N/A') {
+                    const formattedMangleValue = formatValueWithK(mangleValue);
+                    const mangleSuffix = getPluralSuffix(formattedMangleValue, 'Mangle', 'Mangles');
+                    mangleDisplay = formattedMangleValue + mangleSuffix;
+                }
+
+                let soulDisplay = 'N/A';
+                if (versionValueData.hasOwnProperty('soul')) {
+                    const soulProp = versionValueData.soul;
+                    if (soulProp === "N/A" && mangleValue && mangleValue !== "N/A") {
+                        const mangleNumbersStr = mangleValue.split('-').map(s => s.trim().replace(/,/g, ''));
+                        if (!mangleNumbersStr.some(s => isNaN(parseFloat(s)))) {
+                            const soulNumbersStr = mangleNumbersStr.map(n => (parseFloat(n) * 10000).toString()).join('-');
+                            const formattedSoulValue = formatRangeWithSuffix(soulNumbersStr, formatLargeNumber);
+                            const soulSuffix = getPluralSuffix(formattedSoulValue, 'Soul', 'Souls');
+                            soulDisplay = formattedSoulValue + soulSuffix;
+                        }
+                    } else if (soulProp && soulProp !== 'N/A') {
+                        const formattedSoulValue = formatValueWithK(soulProp);
+                        const soulSuffix = getPluralSuffix(formattedSoulValue, 'Soul', 'Souls');
+                        soulDisplay = formattedSoulValue + soulSuffix;
+                    }
+                }
+                
+                const parts = [];
+                if (mangleDisplay !== 'N/A') parts.push(mangleDisplay);
+                if (soulDisplay !== 'N/A') parts.push(soulDisplay);
+
+                return parts.length > 0 ? parts.join(' / ') : 'N/A';
             };
 
             const createUnitSlug = (name) => {
@@ -1709,7 +1790,15 @@
                 const rarityInfoWrapper = document.getElementById('rarity-info-table-wrapper');
                 if (rarityInfoWrapper && currentUnitName && allUnitData[currentUnitName]) {
                     const unitData = allUnitData[currentUnitName];
-                    if (unitData.Value) {
+                    const versionValueData = selectedVersionKey === 'shiny' ? unitData.Value?.Shiny : unitData.Value?.Normal;
+
+                    const showValueColumns = versionValueData && !(
+                        (!versionValueData.value || versionValueData.value === 'N/A') &&
+                        (!versionValueData.demand || versionValueData.demand === 'N/A') &&
+                        (!versionValueData.status || versionValueData.status === 'N/A')
+                    );
+                    
+                    if (showValueColumns) {
                         const headers = Array.from(rarityInfoWrapper.querySelectorAll('thead th'));
                         const valueIndex = headers.findIndex(th => th.textContent === 'Value');
                         const demandIndex = headers.findIndex(th => th.textContent === 'Demand');
@@ -1720,26 +1809,13 @@
                             const valueCell = dataCells[valueIndex];
                             const demandCell = dataCells[demandIndex];
                             const statusCell = dataCells[statusIndex];
-
-                            const versionValueData = selectedVersionKey === 'shiny' ? unitData.Value.Shiny : unitData.Value.Normal;
                             
-                            let displayValue = 'N/A';
-                            let displayDemand = 'N/A';
-                            let displayStatus = 'N/A';
-
-                            if (versionValueData) {
-                                displayValue = versionValueData.value || 'N/A';
-                                displayDemand = versionValueData.demand || 'N/A';
-                                displayStatus = versionValueData.status || 'N/A';
-                            }
-
-                            if (valueCell) valueCell.textContent = formatMangleValue(displayValue);
-                            if (demandCell) demandCell.textContent = displayDemand;
-                            if (statusCell) statusCell.textContent = displayStatus;
+                            if (valueCell) valueCell.textContent = formatValueAndSoul(versionValueData);
+                            if (demandCell) demandCell.textContent = versionValueData.demand || 'N/A';
+                            if (statusCell) statusCell.textContent = versionValueData.status || 'N/A';
                         }
                     }
                 }
-
 
                 if (isDpsRankingsMode && !document.getElementById('main-stats-table')) {
                     renderUnitTables();
@@ -1979,8 +2055,8 @@
                 rarityWrapper.className = 'aux-table';
                 rarityWrapper.id = 'rarity-info-table-wrapper';
                 
-                const headers = ['Rarity', 'Attack Type', 'Element', 'Placements'];
-                const rowData = [
+                let headers = ['Rarity', 'Attack Type', 'Element', 'Placements'];
+                let rowData = [
                     currentStats.Rarity || 'N/A',
                     currentStats.Type || 'N/A',
                     currentStats.Element || 'Neutral',
@@ -1994,21 +2070,21 @@
 
                 const tradingValueData = currentStats.Value;
                 if (tradingValueData) {
-                    headers.splice(1, 0, 'Value', 'Demand', 'Status');
-
                     const versionValueData = selectedVersionKey === 'shiny' ? tradingValueData.Shiny : tradingValueData.Normal;
-                    
-                    let displayValue = 'N/A';
-                    let displayDemand = 'N/A';
-                    let displayStatus = 'N/A';
-                    
-                    if (versionValueData) {
-                        displayValue = versionValueData.value || 'N/A';
-                        displayDemand = versionValueData.demand || 'N/A';
-                        displayStatus = versionValueData.status || 'N/A';
-                    }
 
-                    rowData.splice(1, 0, formatMangleValue(displayValue), displayDemand, displayStatus);
+                    const showValueColumns = versionValueData && !(
+                        (!versionValueData.value || versionValueData.value === 'N/A') &&
+                        (!versionValueData.demand || versionValueData.demand === 'N/A') &&
+                        (!versionValueData.status || versionValueData.status === 'N/A')
+                    );
+                    
+                    if (showValueColumns) {
+                        headers.splice(1, 0, 'Value', 'Demand', 'Status');
+                        const displayValue = formatValueAndSoul(versionValueData);
+                        const displayDemand = versionValueData.demand || 'N/A';
+                        const displayStatus = versionValueData.status || 'N/A';
+                        rowData.splice(1, 0, displayValue, displayDemand, displayStatus);
+                    }
                 }
 
                 createTableInWrapper(headers, [rowData], rarityWrapper);
@@ -2243,7 +2319,7 @@
                 const versionDropdown = createCustomDropdown('versionDropdown', 'Version:', versions, selectedVersionKey, (value) => {
                     selectedVersionKey = value;
                     updateUnitVisuals();
-                    updateView();
+                    renderUnitTables();
                     populateGallery();
                 });
                 
@@ -2913,7 +2989,7 @@
                     if (currentUnitName === unitName) {
                         selectedVersionKey = isNowShiny ? 'shiny' : 'normal';
                         updateUnitVisuals();
-                        updateView();
+                        renderUnitTables();
                     }
                 });
                 imageContainer.appendChild(shinyBtn);
