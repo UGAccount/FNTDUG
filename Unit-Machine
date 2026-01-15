@@ -3297,7 +3297,7 @@
                     ...unit.BaseStats,
                     Price: 0,
                     Type: unit.BaseStats.Type || unit.Type,
-                    Degrees: unit.BaseStats.Degrees
+                    Degrees: unit.BaseStats.Degrees || unit.Degrees
                 };
                 upgrades.push(baseUpgrade);
 
