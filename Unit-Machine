@@ -1205,6 +1205,7 @@
                 });
                 table.append(thead, tbody);
                 wrapper.appendChild(table);
+                container.appendChild(wrapper);
             };
             
             function makeButtonHoldable(button, action, initialDelay = 400, repeatDelay = 100) {
@@ -3296,7 +3297,7 @@
                     ...unit.BaseStats,
                     Price: 0,
                     Type: unit.BaseStats.Type || unit.Type,
-                    Degrees: unit.BaseStats.Degrees !== undefined ? unit.BaseStats.Degrees : unit.Degrees
+                    Degrees: unit.BaseStats.Degrees
                 };
                 upgrades.push(baseUpgrade);
 
