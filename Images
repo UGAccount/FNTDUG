@@ -1,6 +1,8 @@
 {
   "Images": {
     "Presents": {
+    "Uncommon Present": "https://iili.io/fg6RKuf.png",
+    "Rare Present": "https://iili.io/fg6AyGI.png",
     "Cloaked Sparky Present": "https://iili.io/fNys2St.png",
     "Phantom Bonnie Present": "https://iili.io/fO9dNyv.png",
     "Balloon Boy Present": "https://iili.io/fO92qMP.png",
@@ -23,6 +25,7 @@
     "Grinch Foxy Present": "https://iili.io/fO9ds9f.png",
     "Krampus Purple Guy Present": "https://iili.io/fO9dDnS.png",
     "Turkey Chica Present": "https://iili.io/fO929cu.png",
+    "Popeyes Toy Freddy Present": "https://iili.io/fg6RJ3X.png",
     "Halloween Present": "https://iili.io/fO92H8b.png",
     "Dreadbear Present": "https://iili.io/fO9dQwl.png",
     "Headless Horseman Present": "https://iili.io/fO9dZt2.png",
@@ -33,7 +36,10 @@
     "Season 1 Present": "https://iili.io/fO92YPt.png",
     "Hero Present 1": "https://iili.io/fO92uNR.png",
     "Hero Present 2": "https://iili.io/fO92Atp.png",
-    "Hero Present 3": "https://iili.io/fO925oN.png"
+    "Hero Present 3": "https://iili.io/fO925oN.png",
+    "Old Man Consequences Present": "https://iili.io/fg6R94t.png",
+    "Time Lord Withered Freddy Present": "https://iili.io/fg6R2vs.png",
+    "Boss Raid Present": "https://iili.io/fg6Rdan.png"
 },
   "Gamepasses": {
     "Event Premium": "https://iili.io/fuTNZpj.png",
