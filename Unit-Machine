@@ -693,7 +693,13 @@
         display: grid; grid-template-columns: repeat(var(--gallery-cols-desktop), 1fr); gap: var(--spacing-md);
         overflow-y: scroll; padding-right: var(--spacing-md);
     }
-    .gallery-item { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); }
+    .gallery-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-sm);
+        min-width: 0;
+    }
     .gallery-image-container {
         position: relative; width: 100%; padding: var(--border-width);
         border-radius: var(--border-radius);
@@ -1788,36 +1794,6 @@
 
                 if (!document.getElementById('main-stats-table') && !isDpsRankingsMode) return;
                 
-                const rarityInfoWrapper = document.getElementById('rarity-info-table-wrapper');
-                if (rarityInfoWrapper && currentUnitName && allUnitData[currentUnitName]) {
-                    const unitData = allUnitData[currentUnitName];
-                    const versionValueData = selectedVersionKey === 'shiny' ? unitData.Value?.Shiny : unitData.Value?.Normal;
-
-                    const showValueColumns = versionValueData && !(
-                        (!versionValueData.value || versionValueData.value === 'N/A') &&
-                        (!versionValueData.demand || versionValueData.demand === 'N/A') &&
-                        (!versionValueData.status || versionValueData.status === 'N/A')
-                    );
-                    
-                    if (showValueColumns) {
-                        const headers = Array.from(rarityInfoWrapper.querySelectorAll('thead th'));
-                        const valueIndex = headers.findIndex(th => th.textContent === 'Value');
-                        const demandIndex = headers.findIndex(th => th.textContent === 'Demand');
-                        const statusIndex = headers.findIndex(th => th.textContent === 'Status');
-
-                        if (valueIndex > -1 && demandIndex > -1 && statusIndex > -1) {
-                            const dataCells = rarityInfoWrapper.querySelectorAll('tbody td');
-                            const valueCell = dataCells[valueIndex];
-                            const demandCell = dataCells[demandIndex];
-                            const statusCell = dataCells[statusIndex];
-                            
-                            if (valueCell) valueCell.textContent = formatValueAndSoul(versionValueData);
-                            if (demandCell) demandCell.textContent = versionValueData.demand || 'N/A';
-                            if (statusCell) statusCell.textContent = versionValueData.status || 'N/A';
-                        }
-                    }
-                }
-
                 if (isDpsRankingsMode && !document.getElementById('main-stats-table')) {
                     renderUnitTables();
                 }
@@ -2052,9 +2028,11 @@
                     unitStatsContainer.appendChild(noteWrapper);
                 }
                 
+                const tradingValueData = currentStats.Value;
+                const versionValueData = tradingValueData ? (selectedVersionKey === 'shiny' ? tradingValueData.Shiny : tradingValueData.Normal) : null;
+
                 const rarityWrapper = document.createElement('div');
                 rarityWrapper.className = 'aux-table';
-                rarityWrapper.id = 'rarity-info-table-wrapper';
                 
                 let headers = ['Rarity', 'Attack Type', 'Element', 'Placements'];
                 let rowData = [
@@ -2069,27 +2047,36 @@
                     rowData.push(`${currentStats.SwitchSpeed}s`);
                 }
 
-                const tradingValueData = currentStats.Value;
-                if (tradingValueData) {
-                    const versionValueData = selectedVersionKey === 'shiny' ? tradingValueData.Shiny : tradingValueData.Normal;
-
-                    const showValueColumns = versionValueData && !(
-                        (!versionValueData.value || versionValueData.value === 'N/A') &&
-                        (!versionValueData.demand || versionValueData.demand === 'N/A') &&
-                        (!versionValueData.status || versionValueData.status === 'N/A')
-                    );
-                    
-                    if (showValueColumns) {
-                        headers.splice(1, 0, 'Value', 'Demand', 'Status');
-                        const displayValue = formatValueAndSoul(versionValueData);
-                        const displayDemand = versionValueData.demand || 'N/A';
-                        const displayStatus = versionValueData.status || 'N/A';
-                        rowData.splice(1, 0, displayValue, displayDemand, displayStatus);
-                    }
+                const existsValue = versionValueData?.exists ? formatLargeNumber(parseFloat(String(versionValueData.exists).replace(/,/g, ''))) : 'N/A';
+                const placementsIndex = headers.indexOf('Placements');
+                if (placementsIndex !== -1) {
+                    headers.splice(placementsIndex + 1, 0, 'Exists');
+                    rowData.splice(placementsIndex + 1, 0, existsValue);
                 }
 
                 createTableInWrapper(headers, [rowData], rarityWrapper);
                 unitStatsContainer.appendChild(rarityWrapper);
+                
+                if (versionValueData) {
+                    const shouldShowValueTable = !(
+                        (!versionValueData.value || versionValueData.value === 'N/A') &&
+                        (!versionValueData.demand || versionValueData.demand === 'N/A') &&
+                        (!versionValueData.status || versionValueData.status === 'N/A')
+                    );
+
+                    if (shouldShowValueTable) {
+                        const valueTableWrapper = document.createElement('div');
+                        valueTableWrapper.className = 'aux-table';
+                        const valueHeaders = ['Value', 'Demand', 'Status'];
+                        const valueRowData = [
+                            formatValueAndSoul(versionValueData),
+                            versionValueData.demand || 'N/A',
+                            versionValueData.status || 'N/A'
+                        ];
+                        createTableInWrapper(valueHeaders, [valueRowData], valueTableWrapper);
+                        unitStatsContainer.appendChild(valueTableWrapper);
+                    }
+                }
 
                 const obtainabilityMethods = currentStats.Obtainability && currentStats.Obtainability.length > 0 ? currentStats.Obtainability : [];
                 const obtainabilityWrapper = document.createElement('div');
