@@ -40,10 +40,16 @@
     "Old Man Consequences Present": "https://iili.io/fg6R94t.png",
     "Time Lord Withered Freddy Present": "https://iili.io/fg6R2vs.png",
     "Boss Raid Present": "https://iili.io/fg6Rdan.png",
-    "AFK Present": "https://iili.io/fP5puEJ.png"
+    "AFK Present": "https://iili.io/fP5puEJ.png",
+    "Tarnished Spring Bonnie Present": "https://iili.io/fZKoGlR.png",
+    "Blighted Endo Freddy Present": "https://iili.io/fZKocog.png",
+    "OG Present": "https://iili.io/fZKo0iJ.png",
+    "Rockin Bonnie Present": "https://iili.io/fZKouSV.png",
+    "War Machine Foxy Present": "https://iili.io/fZKoWHN.png",
+    "Mecha Cupcake Present": "https://iili.io/fZKohNt.png"
 },
   "Gamepasses": {
-    "Event Premium": "https://iili.io/fuTNZpj.png",
+    "Event Premium": "https://iili.io/fZKNX6u.png",
     "Shiny Hunter": "https://iili.io/KtqMeQR.png",
     "Quick Open": "https://iili.io/KtqMvBp.png",
     "Premium": "https://iili.io/KtqM8EN.png",
@@ -154,7 +160,11 @@
       "Battery": "https://iili.io/KtqVCa1.png",
       "Plush": "https://iili.io/KtqVn8F.png",
       "Spring": "https://iili.io/KtqVoyg.png",
-      "Television": "https://iili.io/KtqVzua.png"
+      "Television": "https://iili.io/KtqVzua.png",
+    "Gravestone": "https://iili.io/fZKXugR.png",
+    "Grenade": "https://iili.io/fZKXT0v.png",
+    "Beach Ball": "https://iili.io/fZKXIqJ.png",
+    "Cowboy Hat": "https://iili.io/fZKXxsa.png"
     },
     "Food": {
       "Pizza": "https://iili.io/KtqVIwJ.png",
@@ -255,6 +265,7 @@
     "Bite of ’87 Training Program": "https://iili.io/fPZZdBt.png"
     },
     "Pets": {
+    "Old Man Consequences": "https://iili.io/fZKo7N1.png",
     "Phantom BB": "https://iili.io/fkmkeJp.png",
     "Phantom Foxy": "https://iili.io/fkmkWWg.png",
     "Springtrap": "https://iili.io/fkmphut.png",
@@ -412,7 +423,27 @@
     "Withered Golden Freddy": "https://iili.io/fPZ53ua.png",
     "Shiny Withered Golden Freddy": "https://iili.io/fPZ5jMQ.png",
     "Yeti Oni Bonnie": "https://iili.io/fPZR9mG.png",
-    "Shiny Yeti Oni Bonnie": "https://iili.io/fPZAp7n.png"
+    "Shiny Yeti Oni Bonnie": "https://iili.io/fPZAp7n.png",
+  "Blighted Endo Freddy": "https://iili.io/fZKxdWg.png",
+  "Shiny Blighted Endo Freddy": "https://iili.io/fZKoNxn.png",
+  "Deadeye Freddy": "https://iili.io/fZKot0x.png",
+  "Shiny Deadeye Freddy": "https://iili.io/fZKoeiG.png",
+  "Freddy With a Glock": "https://iili.io/fZKop5B.png",
+  "Shiny Freddy With a Glock": "https://iili.io/fZKo4O7.png",
+  "Gravelord Foxy": "https://iili.io/fZKx2sa.png",
+  "Shiny Gravelord Foxy": "https://iili.io/fZKxJzF.png",
+  "Leviathan Mangle": "https://iili.io/fZKoyOP.png",
+  "Shiny Leviathan Mangle": "https://iili.io/fZKoSUl.png",
+  "Mecha Cupcake": "https://iili.io/fZKx9b1.png",
+  "Shiny Mecha Cupcake": "https://iili.io/fZKogJ2.png",
+  "Rockin Bonnie": "https://iili.io/fZKxfgR.png",
+  "Shiny Rockin Bonnie": "https://iili.io/fZKo6b9.png",
+  "Tarnished Spring Bonnie": "https://iili.io/fZKxBJp.png",
+  "Shiny Tarnished Spring Bonnie": "https://iili.io/fZKosWu.png",
+  "Valkyrie Chica": "https://iili.io/fZKxneI.png",
+  "Shiny Valkyrie Chica": "https://iili.io/fZKoLib.png",
+  "War Machine Foxy": "https://iili.io/fZKxobt.png",
+  "Shiny War Machine Foxy": "https://iili.io/fZKoZfj.png"
 },
     "Charts": {
       "Efficiency Chart": "https://iili.io/fhLh6qF.png",
