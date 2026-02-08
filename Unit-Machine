@@ -76,6 +76,7 @@
         --z-modal: 1000;
         --z-image: 1;
         --z-shiny-overlay: 2;
+        --z-image-buttons: 3;
         
         --button-small-size: 24px;
         --search-bar-width-factor: 7.5;
@@ -87,7 +88,7 @@
         --shiny-item-offset: 24px;
         --scrollbar-size: var(--spacing-md);
         --graph-col-width: 80px;
-        --graph-bar-height: calc(var(--component-height) * 0.55);
+        --graph-bar-height: 24px;
         --gallery-cols-desktop: 4;
         --gallery-cols-mobile: 3;
     }
@@ -153,35 +154,43 @@
         z-index: var(--z-image);
     }
 
-    #unitImageWrapper.rarity-uncommon, .gallery-image-container.rarity-uncommon { 
+    .skin-hanger-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        left: auto;
+        z-index: var(--z-image-buttons);
+    }
+
+    #unitImageWrapper.rarity-uncommon, .gallery-image-container.rarity-uncommon, .skin-image-wrapper.rarity-uncommon { 
         background: var(--rarity-uncommon-gradient);
         --unit-background: radial-gradient(circle, rgb(46, 128, 38) 30%, rgb(5, 25, 10) 70%);
     }
-    #unitImageWrapper.rarity-rare, .gallery-image-container.rarity-rare {
+    #unitImageWrapper.rarity-rare, .gallery-image-container.rarity-rare, .skin-image-wrapper.rarity-rare {
         background: var(--rarity-rare-gradient);
         --unit-background: radial-gradient(circle, rgb(44, 83, 128) 30%, rgb(2, 5, 15) 70%);
     }
-    #unitImageWrapper.rarity-epic, .gallery-image-container.rarity-epic {
+    #unitImageWrapper.rarity-epic, .gallery-image-container.rarity-epic, .skin-image-wrapper.rarity-epic {
         background: var(--rarity-epic-gradient);
         --unit-background: radial-gradient(circle, rgb(128, 26, 128) 30%, rgb(15, 2, 20) 70%);
     }
-    #unitImageWrapper.rarity-mythic, .gallery-image-container.rarity-mythic {
+    #unitImageWrapper.rarity-mythic, .gallery-image-container.rarity-mythic, .skin-image-wrapper.rarity-mythic {
         background: var(--rarity-mythic-gradient);
         --unit-background: radial-gradient(circle, rgb(128, 128, 0) 30%, rgb(40, 25, 0) 70%);
     }
-    #unitImageWrapper.rarity-secret, .gallery-image-container.rarity-secret {
+    #unitImageWrapper.rarity-secret, .gallery-image-container.rarity-secret, .skin-image-wrapper.rarity-secret {
         background: var(--rarity-secret-gradient);
         --unit-background: radial-gradient(circle, rgb(128, 68, 0) 30%, rgb(30, 0, 0) 70%);
     }
-    #unitImageWrapper.rarity-nightmare, .gallery-image-container.rarity-nightmare {
+    #unitImageWrapper.rarity-nightmare, .gallery-image-container.rarity-nightmare, .skin-image-wrapper.rarity-nightmare {
         background: var(--rarity-nightmare-gradient);
         --unit-background: radial-gradient(circle, rgb(35, 44, 128) 30%, rgb(5, 5, 8) 70%);
     }
-    #unitImageWrapper.rarity-apex, .gallery-image-container.rarity-apex {
+    #unitImageWrapper.rarity-apex, .gallery-image-container.rarity-apex, .skin-image-wrapper.rarity-apex {
         background: var(--rarity-apex-gradient);
         --unit-background: radial-gradient(circle, rgb(94, 48, 128) 30%, rgb(15, 0, 5) 70%);
     }
-    #unitImageWrapper.rarity-hero, .gallery-image-container.rarity-hero {
+    #unitImageWrapper.rarity-hero, .gallery-image-container.rarity-hero, .skin-image-wrapper.rarity-hero {
         background: var(--rarity-hero-gradient);
         --unit-background: radial-gradient(circle, rgb(128, 125, 66) 30%, rgb(15, 15, 5) 70%);
     }
@@ -676,15 +685,25 @@
     }
     .stat-label { font-weight: var(--font-weight-bold); text-align: right; user-select: none; }
     .stat-bar-container {
-        background: var(--bg-medium); border-radius: var(--border-radius);
-        overflow: hidden; border: var(--border-width) solid var(--text-light);
-        height: var(--graph-bar-height);
+        display: flex; flex-direction: column; justify-content: center;
+        width: 100%; height: 100%; position: relative;
+    }
+    .comparison-bar-track {
+        background: var(--bg-medium);
+        width: 100%; height: 8px; border-radius: 4px; overflow: hidden;
+        margin: 4px 0;
     }
     .stat-bar {
-        height: 100%; width: 0; background-color: var(--primary-accent);
+        height: 100%; width: 0;
         transition: width var(--transition-slow) cubic-bezier(0.25, 1, 0.5, 1);
     }
+    .stat-bar.primary { background-color: var(--primary-accent); }
+    .stat-bar.secondary { background-color: var(--comparison-accent); }
+    
     .stat-value { text-align: left; user-select: none; }
+    .stat-value-item { font-size: var(--font-size-sm); line-height: 1.2; }
+    .val-primary { color: var(--primary-accent); }
+    .val-secondary { color: var(--comparison-accent); }
 
     #galleryPanel .modal-panel-content { max-height: var(--gallery-content-max-height); }
     .gallery-controls { display: flex; gap: var(--spacing-sm); align-items: center; }
@@ -705,7 +724,14 @@
         border-radius: var(--border-radius);
         cursor: pointer;
     }
-
+    
+    .skin-image-wrapper {
+        position: relative; width: 100%; padding: var(--border-width);
+        border-radius: var(--border-radius);
+        cursor: default;
+        aspect-ratio: 1 / 1;
+    }
+    
     .gallery-image {
         width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
         border-radius: calc(var(--border-radius) - var(--border-width));
@@ -715,7 +741,7 @@
         z-index: var(--z-image);
     }
     .gallery-action-button {
-        position: absolute; right: var(--spacing-xs); z-index: 1; opacity: 0;
+        position: absolute; right: var(--spacing-xs); z-index: var(--z-image-buttons); opacity: 0;
         transition: opacity var(--transition-fast);
         cursor: pointer;
         pointer-events: none;
@@ -728,6 +754,10 @@
         right: auto;
     }
     .gallery-compare-button { top: calc(var(--spacing-xs) * 2 + var(--button-small-size)); display: none; }
+    .gallery-skin-button {
+        bottom: var(--spacing-xs);
+        left: var(--spacing-xs);
+    }
 
     .gallery-image-container.buttons-visible .gallery-action-button {
         opacity: 1;
@@ -742,21 +772,99 @@
     }
     .gallery-name { color: var(--text-light); }
 
-    #galleryContainer::-webkit-scrollbar, .presets-list::-webkit-scrollbar, .modal-panel-content::-webkit-scrollbar { 
+    #skinsPanel .modal-panel-content {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #skinsContainer {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        padding-right: var(--spacing-sm);
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+
+    .skin-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+    
+    .skin-image-wrapper {
+        width: 100%;
+        max-width: 150px;
+    }
+    
+    .skin-info {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    @media (min-width: 768px) {
+        #skinsContainer.layout-single {
+            align-items: center;
+            justify-content: center;
+        }
+        #skinsContainer.layout-single .skin-card {
+            flex-direction: row;
+            gap: var(--spacing-lg);
+            text-align: left;
+        }
+        #skinsContainer.layout-single .skin-info {
+            text-align: left;
+            align-items: flex-start;
+        }
+
+        #skinsContainer.layout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            align-items: start;
+        }
+        
+        #skinsContainer.layout-odd .skin-card:last-child {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: var(--spacing-lg);
+        }
+        #skinsContainer.layout-odd .skin-card:last-child .skin-info {
+             text-align: left;
+             align-items: flex-start;
+        }
+        #skinsContainer.layout-odd .skin-card:last-child .skin-image-wrapper {
+            width: 150px;
+        }
+    }
+
+    .skin-obtainability {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    #galleryContainer::-webkit-scrollbar, .presets-list::-webkit-scrollbar, .modal-panel-content::-webkit-scrollbar, #skinsContainer::-webkit-scrollbar { 
         height: var(--scrollbar-size); width: var(--scrollbar-size);
     }
-    #galleryContainer::-webkit-scrollbar-track, .presets-list::-webkit-scrollbar-track, .modal-panel-content::-webkit-scrollbar-track { 
+    #galleryContainer::-webkit-scrollbar-track, .presets-list::-webkit-scrollbar-track, .modal-panel-content::-webkit-scrollbar-track, #skinsContainer::-webkit-scrollbar-track { 
         background: var(--bg-dark); border: var(--border-default); 
         border-radius: var(--border-radius); 
     }
-    #galleryContainer::-webkit-scrollbar-thumb, .presets-list::-webkit-scrollbar-thumb, .modal-panel-content::-webkit-scrollbar-thumb { 
+    #galleryContainer::-webkit-scrollbar-thumb, .presets-list::-webkit-scrollbar-thumb, .modal-panel-content::-webkit-scrollbar-thumb, #skinsContainer::-webkit-scrollbar-thumb { 
         background-color: var(--primary-accent); border-radius: var(--border-radius); 
         border: var(--border-default); 
     }
     @media (hover: hover) {
         #galleryContainer::-webkit-scrollbar-thumb:hover,
         .presets-list::-webkit-scrollbar-thumb:hover,
-        .modal-panel-content::-webkit-scrollbar-thumb:hover {
+        .modal-panel-content::-webkit-scrollbar-thumb:hover,
+        #skinsContainer::-webkit-scrollbar-thumb:hover {
             background-color: var(--primary-accent-hover);
         }
     }
@@ -773,12 +881,12 @@
             grid-template-columns: repeat(var(--gallery-cols-mobile), 1fr);
         }
 
-        #galleryContainer, .presets-list {
+        #galleryContainer, .presets-list, #skinsContainer {
             padding-right: 0;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
-        #galleryContainer::-webkit-scrollbar, .presets-list::-webkit-scrollbar {
+        #galleryContainer::-webkit-scrollbar, .presets-list::-webkit-scrollbar, #skinsContainer::-webkit-scrollbar {
             display: none;
         }
     }
@@ -895,6 +1003,18 @@
         </div>
     </div>
 
+    <div id="skinsPanel" class="modal-panel">
+        <div class="modal-panel-content">
+            <div class="panel-header">
+                <div class="modal-header-title">Skins</div>
+                <button id="closeSkinsButton" class="action-button" aria-label="Close skins">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="skinsContainer"></div>
+        </div>
+    </div>
+
     <div id="settingsPanel" class="modal-panel">
         <div class="modal-panel-content">
             <div class="panel-header">
@@ -937,7 +1057,10 @@
                 presetsListContainer = document.getElementById('presetsListContainer'),
                 unitImageDisplayContainer = document.getElementById('unitImageDisplayContainer'),
                 unitImageWrapper = document.getElementById('unitImageWrapper'),
-                displayedUnitImage = document.getElementById('displayedUnitImage');
+                displayedUnitImage = document.getElementById('displayedUnitImage'),
+                skinsPanel = document.getElementById('skinsPanel'),
+                closeSkinsButton = document.getElementById('closeSkinsButton'),
+                skinsContainer = document.getElementById('skinsContainer');
 
 
             let allUnitData = {}, fuse, currentUnitName = null, previousUnitName = null, comparisonUnitName = null, customLevel = 1, currentGraphLevelIndex = -1,
@@ -948,7 +1071,8 @@
                 boosterData = {},
                 enchantMultipliers = {},
                 enchants = {},
-                unitImages = {};
+                unitImages = {},
+                skinImages = {};
             
             let pendingMainBoosts = null;
             
@@ -1148,12 +1272,12 @@
                 if (typeof damage === 'object' && damage !== null && damage.hasOwnProperty('form1')) {
                     const cd1 = (typeof cooldown === 'object' && cooldown !== null) ? cooldown.form1 : cooldown;
                     const cd2 = (typeof cooldown === 'object' && cooldown !== null) ? cooldown.form2 : cooldown;
-                    if (cd1 === 0 || cd2 === 0) return Infinity;
+                    if (cd1 <= 0 || cd2 <= 0) return 0;
                     const dps1 = damage.form1 / cd1;
                     const dps2 = damage.form2 / cd2;
                     return (dps1 + dps2) / 2;
                 }
-                if (cooldown === 0) return Infinity;
+                if (cooldown <= 0) return 0;
                 return damage / cooldown;
             };
             
@@ -1475,15 +1599,17 @@
                 const tbody = document.getElementById('upgrades-tbody');
                 if (!tbody) return;
 
-                const hasDamageStats = unitData.Upgrades.some(upg => upg.Damage !== undefined);
+                const hasDamage = unitData.Upgrades.some(upg => upg.Damage !== undefined);
+                const hasCooldown = unitData.Upgrades.some(upg => upg.Cooldown !== undefined);
+                const hasRange = unitData.Upgrades.some(upg => upg.Range !== undefined);
+
                 const hasBoostStats = unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
                 const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
-                const hasRangeStat = unitData.Upgrades.some(upg => upg.Range !== undefined);
                 const typeChangesWithUpgrades = unitData.typeChangesWithUpgrades;
                 const hasPerUpgradeDegrees = unitData.Upgrades.some(upg => upg.Degrees !== undefined);
                 
                 const elementalContainer = document.getElementById('elemental-dps-container');
-                if (elementalContainer) elementalContainer.style.display = hasDamageStats ? '' : 'none';
+                if (elementalContainer) elementalContainer.style.display = hasDamage ? '' : 'none';
 
                 const multipliers = getGlobalBoostMultipliers();
                 const upgradeRows = [];
@@ -1501,35 +1627,53 @@
                         rowData.push(formatStat(upgrade.Degrees));
                     }
 
-                    if (hasDamageStats) {
-                        let modDmg, modCd, modRange;
+                    let modDmg = 0, modCd = 0, modRange = 0, dps = 0;
+
+                    if (hasDamage) {
                         if (typeof upgrade.Damage === 'object') {
                             modDmg = {
                                 form1: upgrade.Damage.form1 * multipliers.dmg,
                                 form2: upgrade.Damage.form2 * multipliers.dmg
                             };
-                            modCd = {
-                                form1: (typeof upgrade.Cooldown === 'object' ? upgrade.Cooldown.form1 : upgrade.Cooldown) * multipliers.cd,
-                                form2: (typeof upgrade.Cooldown === 'object' ? upgrade.Cooldown.form2 : upgrade.Cooldown) * multipliers.cd
-                            };
-                            if (typeof upgrade.Range === 'object') {
-                                modRange = {
-                                    form1: upgrade.Range.form1 * multipliers.range,
-                                    form2: upgrade.Range.form2 * multipliers.range
-                                };
-                            } else {
-                                modRange = upgrade.Range * multipliers.range;
-                            }
                         } else {
                             modDmg = upgrade.Damage * multipliers.dmg;
-                            modCd = upgrade.Cooldown * multipliers.cd;
-                            modRange = upgrade.Range * multipliers.range;
                         }
-
-                        const dps = calculateDPS(modDmg, modCd);
-                        if (dps > maxDPS) maxDPS = dps;
-                        rowData.push(formatStat(dps, 2), formatStat(modDmg, 2), formatStat(modCd, 3), formatStat(modRange, 1));
                     }
+
+                    if (hasCooldown) {
+                        const rawCd = upgrade.Cooldown !== undefined ? upgrade.Cooldown : 0;
+                        if (typeof rawCd === 'object') {
+                            modCd = {
+                                form1: rawCd.form1 * multipliers.cd,
+                                form2: rawCd.form2 * multipliers.cd
+                            };
+                        } else {
+                            modCd = rawCd * multipliers.cd;
+                        }
+                    }
+
+                    if (hasRange) {
+                        const rawRange = upgrade.Range !== undefined ? upgrade.Range : 0;
+                         if (typeof rawRange === 'object') {
+                            modRange = {
+                                form1: rawRange.form1 * multipliers.range,
+                                form2: rawRange.form2 * multipliers.range
+                            };
+                        } else {
+                            modRange = rawRange * multipliers.range;
+                        }
+                    }
+
+                    if (hasDamage && hasCooldown) {
+                         dps = calculateDPS(modDmg, modCd);
+                         if (typeof dps === 'number' && dps > maxDPS) maxDPS = dps;
+                    }
+
+                    if (hasDamage && hasCooldown) rowData.push(formatStat(dps, 2));
+                    if (hasDamage) rowData.push(formatStat(modDmg, 2));
+                    if (hasCooldown) rowData.push(formatStat(modCd, 3));
+                    if (hasRange) rowData.push(formatStat(modRange, 1));
+
                     if (hasDpsBoost) {
                         const dmgBoost = upgrade.DamageBoost || 1.0;
                         const cdBoost = upgrade.CooldownBoost || 1.0;
@@ -1543,15 +1687,12 @@
                         if (upgrade.RangeBoost) boostParts.push(`${upgrade.RangeBoost}x Range`);
                         rowData.push(boostParts.join(', '));
                     }
-                    if (hasRangeStat && !hasDamageStats) {
-                        rowData.push(upgrade.Range);
-                    }
                     upgradeRows.push(rowData);
                 });
 
                 tbody.replaceChildren(...upgradeRows.map(rowData => createTableRow('td', rowData)));
 
-                if (hasDamageStats) {
+                if (hasDamage) {
                     const totalDPS = maxDPS * (unitData.Max || 1);
                     const summaryWrapper = document.getElementById('summary-table-wrapper');
                     const totalDpsCell = summaryWrapper?.querySelector('td');
@@ -1597,8 +1738,8 @@
                     const boostedCd2 = cd2 * multipliers.cd;
                     const finalDmg1 = boostedDmg1 * elementalMultiplier;
                     const finalDmg2 = boostedDmg2 * elementalMultiplier;
-                    const dps1 = finalDmg1 / boostedCd1;
-                    const dps2 = finalDmg2 / boostedCd2;
+                    const dps1 = (cd1 <= 0 || boostedCd1 <= 0) ? 0 : finalDmg1 / boostedCd1;
+                    const dps2 = (cd2 <= 0 || boostedCd2 <= 0) ? 0 : finalDmg2 / boostedCd2;
 
                     fullDps = ((dps1 + dps2) / 2) * placements;
                     finalDmg = { form1: finalDmg1, form2: finalDmg2 };
@@ -1876,20 +2017,26 @@
                     const stats = getCurrentUnitData();
                     if (!stats) return;
                     
-                    const hasDamageStats = stats.Upgrades.some(upg => upg.Damage !== undefined);
+                    const hasDamage = stats.Upgrades.some(upg => upg.Damage !== undefined);
+                    const hasCooldown = stats.Upgrades.some(upg => upg.Cooldown !== undefined);
+                    const hasRange = stats.Upgrades.some(upg => upg.Range !== undefined);
+
                     const hasBoostStats = stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
                     const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
-                    const hasRangeStat = stats.Upgrades.some(upg => upg.Range !== undefined);
                     const typeChangesWithUpgrades = stats.typeChangesWithUpgrades;
                     const hasPerUpgradeDegrees = stats.Upgrades.some(upg => upg.Degrees !== undefined);
 
                     let headers = ['Level', 'Cost'];
                     if (typeChangesWithUpgrades) headers.push('Attack Type');
                     if (hasPerUpgradeDegrees) headers.push('Degrees');
-                    if (hasDamageStats) headers.push('DPS', 'Damage', 'Cooldown', 'Range');
+                    
+                    if (hasDamage && hasCooldown) headers.push('DPS');
+                    if (hasDamage) headers.push('Damage');
+                    if (hasCooldown) headers.push('Cooldown');
+                    if (hasRange) headers.push('Range');
+
                     if (hasDpsBoost) headers.push('DPS Boost');
                     if (hasBoostStats) headers.push('Boosts');
-                    if (hasRangeStat && !hasDamageStats) headers.push('Range');
 
                     headers.forEach(headerText => {
                         const th = document.createElement('th');
@@ -1982,6 +2129,20 @@
 
                 if (selectedVersionKey === 'shiny') {
                     unitImageWrapper.classList.add('shiny-border', 'shiny-overlay');
+                }
+
+                unitImageWrapper.querySelector('.skin-hanger-button')?.remove();
+                if (baseUnitStats.Skins && baseUnitStats.Skins.length > 0) {
+                    const skinsBtn = document.createElement('button');
+                    skinsBtn.className = 'action-button action-button--small skin-hanger-button';
+                    skinsBtn.setAttribute('aria-label', `View skins for ${currentUnitName}`);
+                    skinsBtn.innerHTML = '<i class="fas fa-shirt"></i>';
+                    skinsBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        triggerAnimation(skinsBtn);
+                        openSkinsPanel(currentUnitName);
+                    });
+                    unitImageWrapper.appendChild(skinsBtn);
                 }
             }
 
@@ -2353,10 +2514,12 @@
                 unitStatsContainer.appendChild(wrapper);
 
                 const maxUpgrade = currentStats.Upgrades[currentStats.Upgrades.length - 1];
-                const hasDamageStats = currentStats.Upgrades.some(upg => upg.Damage !== undefined);
+                const hasDamage = currentStats.Upgrades.some(upg => upg.Damage !== undefined);
+                const hasCooldown = currentStats.Upgrades.some(upg => upg.Cooldown !== undefined);
+
                 const hasBoostStats = maxUpgrade.DamageBoost || maxUpgrade.CooldownBoost || maxUpgrade.RangeBoost;
 
-                if (hasDamageStats || hasBoostStats) {
+                if (hasDamage || hasBoostStats) {
                     const summaryWrapper = document.createElement('div');
                     summaryWrapper.className = 'aux-table';
                     summaryWrapper.id = 'summary-table-wrapper';
@@ -2377,20 +2540,22 @@
                         if (totalRangeBoost !== 1.0) boostParts.push(`${totalRangeBoost.toFixed(2)}x Range`);
                         const totalBoostsString = boostParts.join(', ') || 'None';
 
-                        if (hasDamageStats) {
+                        if (hasDamage && hasCooldown) {
                             headers = ['Total DPS', 'Total DPS Boost', 'Total Boosts'];
                             rowData = ['...', totalDpsBoostPercent, totalBoostsString];
                         } else {
                             headers = ['Total DPS Boost', 'Total Boosts'];
                             rowData = [totalDpsBoostPercent, totalBoostsString];
                         }
-                    } else {
+                    } else if (hasDamage && hasCooldown) {
                         headers = ['Total DPS'];
                         rowData = ['...'];
                     }
                     
-                    createTableInWrapper(headers, [rowData], summaryWrapper);
-                    unitStatsContainer.appendChild(summaryWrapper);
+                    if (headers.length > 0) {
+                        createTableInWrapper(headers, [rowData], summaryWrapper);
+                        unitStatsContainer.appendChild(summaryWrapper);
+                    }
                 }
                 
                 const elementalContainer = document.createElement('div');
@@ -2530,7 +2695,16 @@
                 const totalDPS = calculateDPS(boostedDmg, boostedCd) * placements;
                 const totalDamage = (typeof boostedDmg === 'object' ? (boostedDmg.form1 + boostedDmg.form2) / 2 : boostedDmg) * placements;
                 const range = typeof boostedRange === 'object' ? (boostedRange.form1 + boostedRange.form2) / 2 : boostedRange;
-                const speed = typeof boostedCd === 'object' ? (boostedCd.form1 + boostedCd.form2) / 2 : boostedCd;
+                let speed = 0;
+                if (typeof boostedCd === 'object') {
+                    speed = (boostedCd.form1 + boostedCd.form2) / 2;
+                } else {
+                    speed = boostedCd;
+                }
+                
+                if (speed <= 0) {
+                    speed = 0; 
+                }
             
                 const placementCost = (unit.PlacePrice || 0) * multipliers.cost;
                 const upgradeCosts = unit.Upgrades.slice(1, levelIndex + 1).reduce((acc, upg) => acc + ((upg.Price || 0) * multipliers.cost), 0);
@@ -2550,7 +2724,7 @@
                             allStats.totalDPS.push(stats.totalDPS);
                             allStats.totalDamage.push(stats.totalDamage);
                             allStats.range.push(stats.range);
-                            allStats.speed.push(stats.speed);
+                            if (stats.speed > 0) allStats.speed.push(stats.speed);
                             if (isFinite(stats.costPerDps)) {
                                 allStats.costPerDps.push(stats.costPerDps);
                             }
@@ -2603,6 +2777,9 @@
             
                     for (const [label, data] of Object.entries(statsToDisplay)) {
                         const calcPercent = (value, statBounds) => {
+                            if (label === 'Cooldown' && value <= 0) return 0;
+                            if (label === 'Cost/DPS' && !isFinite(value)) return 0;
+
                             const range = statBounds.max - statBounds.min;
                             if (range <= 0) return value >= statBounds.max ? 100 : 0;
                             const boundedValue = Math.max(statBounds.min, Math.min(statBounds.max, value));
@@ -2621,42 +2798,38 @@
                         labelEl.textContent = label;
             
                         const barContainer = document.createElement('div');
-                        barContainer.style.display = 'flex';
-                        barContainer.style.flexDirection = 'column';
-                        barContainer.style.gap = '2px';
-                        barContainer.style.justifyContent = 'center';
+                        barContainer.className = 'stat-bar-container';
 
-                        const barWrapperA = document.createElement('div');
-                        barWrapperA.className = 'stat-bar-container';
-                        barWrapperA.style.height = `calc(var(--graph-bar-height) * 0.5)`;
+                        const trackA = document.createElement('div');
+                        trackA.className = 'comparison-bar-track';
                         const barA = document.createElement('div');
-                        barA.className = 'stat-bar';
-                        barWrapperA.appendChild(barA);
+                        barA.className = 'stat-bar primary';
+                        trackA.appendChild(barA);
 
-                        const barWrapperB = document.createElement('div');
-                        barWrapperB.className = 'stat-bar-container';
-                        barWrapperB.style.height = `calc(var(--graph-bar-height) * 0.5)`;
+                        const trackB = document.createElement('div');
+                        trackB.className = 'comparison-bar-track';
                         const barB = document.createElement('div');
-                        barB.className = 'stat-bar';
-                        barB.style.backgroundColor = 'var(--comparison-accent)';
-                        barWrapperB.appendChild(barB);
+                        barB.className = 'stat-bar secondary';
+                        trackB.appendChild(barB);
 
-                        barContainer.append(barWrapperA, barWrapperB);
+                        barContainer.append(trackA, trackB);
             
                         const valueContainer = document.createElement('div');
                         valueContainer.className = 'stat-value';
-                        valueContainer.style.display = 'flex';
-                        valueContainer.style.flexDirection = 'column';
-                        valueContainer.style.justifyContent = 'center';
-                        valueContainer.style.alignItems = 'flex-start';
                         
+                        const formatValueForGraph = (val, lbl) => {
+                             if (lbl === 'Cooldown' && val <= 0) return 'N/A';
+                             if (lbl === 'Cost/DPS' && !isFinite(val)) return 'N/A';
+                             return formatStat(val);
+                        };
+
                         const valueAEl = document.createElement('div');
-                        valueAEl.textContent = `A: ${formatStat(data.a)}`;
-                        valueAEl.style.color = 'var(--primary-accent)';
+                        valueAEl.className = 'stat-value-item val-primary';
+                        valueAEl.textContent = formatValueForGraph(data.a, label);
             
                         const valueBEl = document.createElement('div');
-                        valueBEl.textContent = `B: ${formatStat(data.b)}`;
-                        valueBEl.style.color = 'var(--comparison-accent)';
+                        valueBEl.className = 'stat-value-item val-secondary';
+                        valueBEl.textContent = formatValueForGraph(data.b, label);
             
                         valueContainer.append(valueAEl, valueBEl);
                         row.append(labelEl, barContainer, valueContainer);
@@ -2723,12 +2896,22 @@
                     for (const [label, data] of Object.entries(statsToDisplay)) {
                         const range = data.bounds.max - data.bounds.min;
                         let percent = 0;
-                        if (range > 0 && isFinite(data.value)) {
-                            const boundedValue = Math.max(data.bounds.min, Math.min(data.bounds.max, data.value));
-                            percent = ((boundedValue - data.bounds.min) / range) * 100;
-                            if (data.bounds.inverted) percent = 100 - percent;
-                        } else if (isFinite(data.value)) {
-                           percent = (data.value >= data.bounds.max) ? 100 : 0;
+                        let displayValue = formatStat(data.value);
+                        
+                        if (label === 'Cooldown' && data.value <= 0) {
+                            percent = 0;
+                            displayValue = 'N/A';
+                        } else if (label === 'Cost/DPS' && !isFinite(data.value)) {
+                            percent = 0;
+                            displayValue = 'N/A';
+                        } else {
+                            if (range > 0 && isFinite(data.value)) {
+                                const boundedValue = Math.max(data.bounds.min, Math.min(data.bounds.max, data.value));
+                                percent = ((boundedValue - data.bounds.min) / range) * 100;
+                                if (data.bounds.inverted) percent = 100 - percent;
+                            } else if (isFinite(data.value)) {
+                               percent = (data.value >= data.bounds.max) ? 100 : 0;
+                            }
                         }
             
                         const row = document.createElement('div');
@@ -2738,13 +2921,19 @@
                         labelEl.textContent = label;
                         const barContainer = document.createElement('div');
                         barContainer.className = 'stat-bar-container';
+                        
+                        const track = document.createElement('div');
+                        track.className = 'comparison-bar-track';
                         const bar = document.createElement('div');
-                        bar.className = 'stat-bar';
+                        bar.className = 'stat-bar primary';
+                        
+                        track.appendChild(bar);
+                        barContainer.appendChild(track);
+                        
                         const valueEl = document.createElement('div');
-                        valueEl.className = 'stat-value';
-                        valueEl.textContent = formatStat(data.value);
+                        valueEl.className = 'stat-value val-primary';
+                        valueEl.textContent = displayValue;
             
-                        barContainer.appendChild(bar);
                         row.append(labelEl, barContainer, valueEl);
                         graphContainer.appendChild(row);
             
@@ -2825,7 +3014,7 @@
                     dpsRankingsButton.disabled = false;
                     
                     const hasDamageStats = allUnitData[unitName].Upgrades.some(upg => upg.Damage !== undefined);
-                    graphButton.disabled = !hasDamageStats;
+                    graphButton.disabled = false;
                     
                     populateGallery();
                     updateGalleryCompareButtons();
@@ -2959,6 +3148,19 @@
                     imageContainer.appendChild(compareBtn);
                 }
 
+                if (unitData.Skins && unitData.Skins.length > 0) {
+                    const skinsBtn = document.createElement('button');
+                    skinsBtn.className = 'action-button action-button--small gallery-action-button gallery-skin-button';
+                    skinsBtn.setAttribute('aria-label', `View skins for ${unitName}`);
+                    skinsBtn.innerHTML = '<i class="fas fa-shirt"></i>';
+                    skinsBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        triggerAnimation(skinsBtn);
+                        openSkinsPanel(unitName);
+                    });
+                    imageContainer.appendChild(skinsBtn);
+                }
+
                 const shinyBtn = document.createElement('button');
                 shinyBtn.className = 'action-button action-button--small gallery-action-button gallery-shiny-button';
                 shinyBtn.setAttribute('aria-label', `Toggle shiny for ${unitName}`);
@@ -3052,6 +3254,61 @@
                 graphPanel.classList.add('show');
             }
             
+            function openSkinsPanel(unitName) {
+                const unitData = allUnitData[unitName];
+                if (!unitData || !unitData.Skins || unitData.Skins.length === 0) return;
+
+                skinsContainer.innerHTML = '';
+                
+                const skinCount = unitData.Skins.length;
+                skinsContainer.className = ''; 
+
+                if (skinCount === 1) {
+                    skinsContainer.classList.add('layout-single');
+                } else {
+                    skinsContainer.classList.add('layout-grid');
+                    if (skinCount % 2 !== 0 && skinCount > 1) {
+                        skinsContainer.classList.add('layout-odd');
+                    }
+                }
+
+                unitData.Skins.forEach(skin => {
+                    const card = document.createElement('div');
+                    card.className = 'skin-card';
+
+                    const imageContainer = document.createElement('div');
+                    imageContainer.className = 'skin-image-wrapper';
+
+                    if (skin.Rarity) {
+                        const rarityClassName = rarityClassMap[skin.Rarity];
+                        if (rarityClassName) imageContainer.classList.add(rarityClassName);
+                    }
+
+                    const img = document.createElement('img');
+                    img.className = 'gallery-image';
+                    img.src = skinImages[normalizeUnitName(skin.Name)] || `https://placehold.co/150x150/1c1c1c/FFFFFF/?text=?`;
+                    img.alt = skin.Name;
+                    img.loading = 'lazy';
+                    imageContainer.appendChild(img);
+
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'skin-info';
+
+                    const nameEl = document.createElement('p');
+                    nameEl.className = 'gallery-name';
+                    nameEl.textContent = skin.Name;
+
+                    const obtainabilityEl = document.createElement('p');
+                    obtainabilityEl.className = 'skin-obtainability';
+                    obtainabilityEl.textContent = skin.Obtainability;
+                    
+                    infoDiv.append(nameEl, obtainabilityEl);
+                    card.append(imageContainer, infoDiv);
+                    skinsContainer.appendChild(card);
+                });
+                skinsPanel.classList.add('show');
+            }
+
             function resetToSingleUnitView() {
                 isDpsRankingsMode = false;
 
@@ -3447,10 +3704,17 @@
                     
                     const responseData = await statsResponse.json();
                     const imagesData = await imagesResponse.json();
+                    
                     const rawUnitImages = imagesData.Images.Units || {};
                     unitImages = {};
                     for (const [name, url] of Object.entries(rawUnitImages)) {
                         unitImages[normalizeUnitName(name)] = url;
+                    }
+
+                    const rawSkinImages = imagesData.Images.Skins || {};
+                    skinImages = {};
+                    for (const [name, url] of Object.entries(rawSkinImages)) {
+                        skinImages[normalizeUnitName(name)] = url;
                     }
                     
                     const rawEnchantData = responseData.Enchants;
@@ -3483,6 +3747,7 @@
                             Passives: unit.Passives || {},
                             Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
+                            Skins: unit.Skins,
                             Value: unitValues[unit.Name] || null,
                             BackendNote: unit.Note || undefined,
                         };
@@ -3576,6 +3841,7 @@
             menuButton.addEventListener('click', handleMenuClick);
 
             closeBoostsButton.addEventListener('click', () => triggerAnimation(closeBoostsButton));
+            closeSkinsButton.addEventListener('click', () => triggerAnimation(closeSkinsButton));
             graphButton.addEventListener('click', () => { if (!graphButton.disabled) triggerAnimation(graphButton); });
             galleryButton.addEventListener('click', () => triggerAnimation(galleryButton));
             closeGraphButton.addEventListener('click', () => triggerAnimation(closeGraphButton));
@@ -3583,6 +3849,8 @@
 
             boostsButton.addEventListener('click', () => boostsPanel.classList.add('show'));
             closeBoostsButton.addEventListener('click', () => boostsPanel.classList.remove('show'));
+            
+            closeSkinsButton.addEventListener('click', () => skinsPanel.classList.remove('show'));
 
             galleryButton.addEventListener('click', () => galleryPanel.classList.add('show'));
             closeGalleryButton.addEventListener('click', () => galleryPanel.classList.remove('show'));
@@ -3719,6 +3987,7 @@
                 }
                 if (e.target === boostsPanel) boostsPanel.classList.remove('show');
                 if (e.target === settingsPanel) settingsPanel.classList.remove('show');
+                if (e.target === skinsPanel) skinsPanel.classList.remove('show');
                 if (e.target === graphPanel) {
                     comparisonUnitName = null;
                     graphPanel.classList.remove('show');
