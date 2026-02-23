@@ -41,6 +41,7 @@
     "Time Lord Withered Freddy Present": "https://iili.io/fg6R2vs.png",
     "Boss Raid Present": "https://iili.io/fg6Rdan.png",
     "AFK Present": "https://iili.io/fP5puEJ.png",
+    "Season 1 Clan Present": "https://iili.io/qFjuMqG.png",
     "Tarnished Spring Bonnie Present": "https://iili.io/fZKoGlR.png",
     "Blighted Endo Freddy Present": "https://iili.io/fZKocog.png",
     "OG Present": "https://iili.io/fZKo0iJ.png",
@@ -132,6 +133,7 @@
       "Tshirt": "https://iili.io/KtqMR29.png",
       "Arcade": "https://iili.io/KtqMYmb.png",
       "Fazbear Mafia": "https://iili.io/KtqMMrP.png",
+      "Establishment Card Pack 2": "https://iili.io/qFjuuqJ.png",
     "Coin Card Apex": "https://iili.io/fPaGOG4.png",
     "Faz Rating Card Apex": "https://iili.io/fPaGS87.png",
     "Luck Card Apex": "https://iili.io/fPaG8aS.png",
@@ -454,7 +456,15 @@
   "War Machine Foxy": "https://iili.io/fZKxobt.png",
   "Shiny War Machine Foxy": "https://iili.io/fZKoZfj.png",
   "Shiny Sweetheart Toy Foxy": "https://iili.io/qd2veNn.png",
-  "Sweetheart Toy Foxy": "https://iili.io/qd2vOAX.png"
+  "Sweetheart Toy Foxy": "https://iili.io/qd2vOAX.png",
+    "Dead Soul Freddy": "https://iili.io/qFju7Jp.png",
+    "Soul Prisoner Foxy": "https://iili.io/qFjueI9.png"
+    "Cerberus Freddy": "https://iili.io/qFjuY5N.png",
+    "Hades Bonnie": "https://iili.io/qFju1Xn.png",
+    "Shiny Dead Soul Freddy": "https://iili.io/qFjuhdl.png",
+    "Shiny Soul Prisoner Foxy": "https://iili.io/qFjuNm7.png",
+    "Shiny Cerberus Freddy": "https://iili.io/qFjuWg4.png",
+    "Shiny Hades Bonnie": "https://iili.io/qFjuweS.png"
 },
     "Charts": {
       "Efficiency Chart": "https://iili.io/fhLh6qF.png",
