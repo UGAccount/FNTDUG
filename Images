@@ -1,6 +1,7 @@
 {
   "Images": {
     "Presents": {
+    "UFO Tangle Present": "https://iili.io/q1e4w9j.png",
     "Crying Child Present": "https://iili.io/qIX2Yjs.png",
     "Nightmarionne Present": "https://iili.io/qIX27un.png",
     "Freddles Present": "https://iili.io/qIX20G4.png",
@@ -310,7 +311,8 @@
     "Jack'O Springtrap": "https://iili.io/fmgT7BR.png",
     "Puppeteer": "https://iili.io/fmgTuIa.png",
     "Tragedy": "https://iili.io/fmgTAhJ.png",
-    "Remnant Fredbear": "https://iili.io/qTNINaa.png"
+    "Remnant Fredbear": "https://iili.io/qTNINaa.png",
+    "Deep Sea Nautilus": "https://iili.io/q1e4OwQ.png"
     },
     "Units": {
     "Balloon Boy": "https://iili.io/fPZ5UNa.png",
@@ -513,7 +515,9 @@
     "Shiny Nightmare Endo": "https://iili.io/qIVgzzJ.png",
     "Nightmare Cupcake": "https://iili.io/qIVgGs4.png",
     "Nightmare Fredbear": "https://iili.io/qIVg1zG.png",
-    "Shiny Nightmare Cupcake": "https://iili.io/qIVgjd7.png"
+    "Shiny Nightmare Cupcake": "https://iili.io/qIVgjd7.png",
+    "Shiny UFO Tangle": "https://iili.io/q1e4NAx.png",
+    "UFO Tangle": "https://iili.io/q1e4voB.png"
 },
     "Charts": {
       "Efficiency Chart": "https://iili.io/fhLh6qF.png",
