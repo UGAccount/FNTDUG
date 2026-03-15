@@ -38,6 +38,7 @@
         --rarity-mythic-gradient: linear-gradient(to bottom right, rgb(255, 184, 31), rgb(255, 255, 0));
         --rarity-secret-gradient: linear-gradient(to bottom right, rgb(255, 136, 0), rgb(255, 12, 12));
         --rarity-nightmare-gradient: linear-gradient(to bottom right, rgb(70, 89, 255), rgb(48, 53, 74));
+        --rarity-exclusive-gradient: linear-gradient(90deg, rgb(140, 255, 203) 0%, rgb(20, 115, 91) 25.1%, rgb(51, 231, 255) 50%, rgb(20, 68, 112) 68%, rgb(21, 74, 118) 74.6%, rgb(79, 164, 255) 100%);
         --rarity-apex-gradient: linear-gradient(to bottom right, rgb(189, 97, 255) 0%, rgb(56, 0, 22) 50%, rgb(255, 56, 106) 100%);
         --rarity-hero-gradient: linear-gradient(to bottom right, rgb(255, 205, 25) 0%, rgb(53, 56, 21) 50%, rgb(255, 251, 133) 100%);
         --rarity-shiny-gradient: linear-gradient(to bottom right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
@@ -185,6 +186,10 @@
     #unitImageWrapper.rarity-nightmare, .gallery-image-container.rarity-nightmare, .skin-image-wrapper.rarity-nightmare {
         background: var(--rarity-nightmare-gradient);
         --unit-background: radial-gradient(circle, rgb(35, 44, 128) 30%, rgb(5, 5, 8) 70%);
+    }
+    #unitImageWrapper.rarity-exclusive, .gallery-image-container.rarity-exclusive, .skin-image-wrapper.rarity-exclusive {
+        background: var(--rarity-exclusive-gradient);
+        --unit-background: radial-gradient(circle, rgb(116, 240, 255) 30%, rgb(17, 79, 66) 70%);
     }
     #unitImageWrapper.rarity-apex, .gallery-image-container.rarity-apex, .skin-image-wrapper.rarity-apex {
         background: var(--rarity-apex-gradient);
@@ -1062,7 +1067,6 @@
                 closeSkinsButton = document.getElementById('closeSkinsButton'),
                 skinsContainer = document.getElementById('skinsContainer');
 
-
             let allUnitData = {}, fuse, currentUnitName = null, previousUnitName = null, comparisonUnitName = null, customLevel = 1, currentGraphLevelIndex = -1,
                 selectedVersionKey = 'normal', selectedEnchantKey = 'None', selectedElementKey = 'Neutral', boosterSelections = [],
                 globalStatProfiles = {}, currentSort = { mode: 'rarity', direction: 'asc' }, isDpsRankingsMode = false,
@@ -1079,7 +1083,7 @@
             const MAX_LEVEL = 60;
        
             const elementalAdvantages = {
-                "Neutral": {},
+                "Neutral": { "Boosts": { "Nature": 0.85, "Electricity": 0.85, "Fire": 0.85, "Light": 0.85, "Dark": 0.85, "Rust": 0.85, "Water": 0.85 } },
                 "Nature": { "Boosts": { "Water": 1.3, "Fire": 0.7 } },
                 "Electricity": { "Boosts": { "Water": 1.3, "Rust": 0.85 } },
                 "Fire": { "Boosts": { "Rust": 1.3, "Water": 0.85 } },
@@ -1096,13 +1100,14 @@
                 'Mythic': 'rarity-mythic',
                 'Secret': 'rarity-secret',
                 'Nightmare': 'rarity-nightmare',
+                'Exclusive': 'rarity-exclusive',
                 'Apex': 'rarity-apex',
                 'Hero': 'rarity-hero'
             };
 
             const rarityOrder = { 
                 'Uncommon': 1, 'Rare': 2, 'Epic': 3, 'Mythic': 4, 
-                'Secret': 5, 'Nightmare': 6, 'Apex': 7, 'Hero': 8 
+                'Secret': 5, 'Nightmare': 6, 'Exclusive': 7, 'Apex': 8, 'Hero': 9 
             };
             
             const typeOrder = { 'Full': 1, 'FullAOE': 2, 'Cone': 3, 'Circle': 4, 'Line': 5, 'Summons': 6, 'Single': 7 };
@@ -1554,12 +1559,8 @@
                 return 1 + (number / 100);
             }
 
-            function getGlobalBoostMultipliers() {
+            function getGlobalBoostMultipliers(unitElement) {
                 const multipliers = { dmg: 1.0, cd: 1.0, range: 1.0, cost: 1.0 };
-                
-                if (selectedVersionKey === 'shiny') {
-                    multipliers.dmg *= 1.10;
-                }
                 
                 const enchant = enchantMultipliers[selectedEnchantKey];
                 if (enchant) {
@@ -1568,8 +1569,6 @@
                     multipliers.range *= (enchant.range || 1.0);
                     multipliers.cost *= (enchant.cost || 1.0);
                 }
-
-                multipliers.dmg *= calculateLevelMultiplier(customLevel);
 
                 boosterSelections.forEach(selection => {
                     const unitBoosterData = boosterData[selection.name];
@@ -1589,6 +1588,26 @@
                 if (mainCdInput) multipliers.cd *= parsePercentage(mainCdInput.value, 'cd');
                 if (mainRngInput) multipliers.range *= parsePercentage(mainRngInput.value);
                 
+                if (selectedVersionKey === 'shiny') {
+                    multipliers.dmg *= 1.10;
+                }
+                
+                const elementInherentBoosts = {
+                    "Neutral": { dmg: 1.03, range: 1.03, cd: 0.97 },
+                    "Light": { cd: 0.97 },
+                    "Dark": { dmg: 1.03 },
+                    "Rust": { dmg: 1.06, cd: 1.03 }
+                };
+
+                const elBoosts = elementInherentBoosts[unitElement || 'Neutral'];
+                if (elBoosts) {
+                    if (elBoosts.dmg) multipliers.dmg *= elBoosts.dmg;
+                    if (elBoosts.cd) multipliers.cd *= elBoosts.cd;
+                    if (elBoosts.range) multipliers.range *= elBoosts.range;
+                }
+
+                multipliers.dmg *= calculateLevelMultiplier(customLevel);
+
                 return multipliers;
             }
 
@@ -1611,7 +1630,7 @@
                 const elementalContainer = document.getElementById('elemental-dps-container');
                 if (elementalContainer) elementalContainer.style.display = hasDamage ? '' : 'none';
 
-                const multipliers = getGlobalBoostMultipliers();
+                const multipliers = getGlobalBoostMultipliers(unitData.Element);
                 const upgradeRows = [];
                 let maxDPS = 0;
 
@@ -1718,9 +1737,9 @@
                 const maxLevelStats = unit.Upgrades[unit.Upgrades.length - 1];
                 if (maxLevelStats.Damage === undefined) return null;
 
-                const multipliers = getGlobalBoostMultipliers();
-                const placements = unit.Max || 1;
                 const unitElement = unit.Element || 'Neutral';
+                const multipliers = getGlobalBoostMultipliers(unitElement);
+                const placements = unit.Max || 1;
                 const enemyElement = selectedElementKey;
                 let elementalMultiplier = 1.0;
                 if (elementalAdvantages[unitElement]?.Boosts?.[enemyElement] !== undefined) {
@@ -2714,11 +2733,12 @@
                 return { totalDPS, totalDamage, range, speed, costPerDps };
             }
             
-            function getComparisonBounds(units, multipliers) {
+            function getComparisonBounds(units) {
                 const allStats = { totalDPS: [], totalDamage: [], range: [], speed: [], costPerDps: [] };
             
                 units.forEach(unit => {
                     if (unit && unit.Upgrades) {
+                        const multipliers = getGlobalBoostMultipliers(unit.Element);
                         unit.Upgrades.forEach((_, i) => {
                             const stats = getUnitStatsAtLevel(unit, i, multipliers);
                             allStats.totalDPS.push(stats.totalDPS);
@@ -2755,17 +2775,19 @@
                 if (!unitA) return;
             
                 graphContainer.innerHTML = '';
-                const multipliers = getGlobalBoostMultipliers();
             
                 if (unitB) {
                     graphPanelHeader.textContent = `${unitA.Name} vs. ${unitB.Name}`;
-                    const bounds = getComparisonBounds([unitA, unitB], multipliers);
+                    const bounds = getComparisonBounds([unitA, unitB]);
             
                     const levelIndexA = currentGraphLevelIndex;
                     const levelIndexB = Math.min(currentGraphLevelIndex, unitB.Upgrades.length - 1);
             
-                    const statsA = getUnitStatsAtLevel(unitA, levelIndexA, multipliers);
-                    const statsB = getUnitStatsAtLevel(unitB, levelIndexB, multipliers);
+                    const multipliersA = getGlobalBoostMultipliers(unitA.Element);
+                    const multipliersB = getGlobalBoostMultipliers(unitB.Element);
+
+                    const statsA = getUnitStatsAtLevel(unitA, levelIndexA, multipliersA);
+                    const statsB = getUnitStatsAtLevel(unitB, levelIndexB, multipliersB);
             
                     const statsToDisplay = {
                         'DPS': { a: statsA.totalDPS, b: statsB.totalDPS, bounds: bounds.TotalDPS },
@@ -2842,12 +2864,13 @@
                     }
                 } else {
                     graphPanelHeader.textContent = 'Unit Stat Graph';
-                    const stats = getUnitStatsAtLevel(unitA, currentGraphLevelIndex, multipliers);
+                    const multipliersA = getGlobalBoostMultipliers(unitA.Element);
+                    const stats = getUnitStatsAtLevel(unitA, currentGraphLevelIndex, multipliersA);
                     let bounds = {};
             
                     if (globalCompareCheckbox.checked) {
-                        const dpsMultiplier = multipliers.dmg / multipliers.cd;
-                        const costMultiplier = multipliers.cost;
+                        const dpsMultiplier = multipliersA.dmg / multipliersA.cd;
+                        const costMultiplier = multipliersA.cost;
                         bounds = {
                             TotalDPS: {
                                 min: (globalStatProfiles.totalDps?.min || 0) * dpsMultiplier,
@@ -2855,18 +2878,18 @@
                                 inverted: false
                             },
                             TotalDamage: {
-                                min: (globalStatProfiles.totalDamage?.min || 0) * multipliers.dmg,
-                                max: (globalStatProfiles.totalDamage?.max || 0) * multipliers.dmg,
+                                min: (globalStatProfiles.totalDamage?.min || 0) * multipliersA.dmg,
+                                max: (globalStatProfiles.totalDamage?.max || 0) * multipliersA.dmg,
                                 inverted: false
                             },
                             Range: {
-                                min: (globalStatProfiles.range?.min || 0) * multipliers.range,
-                                max: (globalStatProfiles.range?.max || 0) * multipliers.range,
+                                min: (globalStatProfiles.range?.min || 0) * multipliersA.range,
+                                max: (globalStatProfiles.range?.max || 0) * multipliersA.range,
                                 inverted: false
                             },
                             Speed: {
-                                min: (globalStatProfiles.speed?.min || 0) * multipliers.cd,
-                                max: (globalStatProfiles.speed?.max || 0) * multipliers.cd,
+                                min: (globalStatProfiles.speed?.min || 0) * multipliersA.cd,
+                                max: (globalStatProfiles.speed?.max || 0) * multipliersA.cd,
                                 inverted: true
                             },
                             CostPerDps: {
@@ -2882,7 +2905,7 @@
                             }
                         }
                     } else {
-                        bounds = getComparisonBounds([unitA], multipliers);
+                        bounds = getComparisonBounds([unitA]);
                     }
             
                     const statsToDisplay = {
