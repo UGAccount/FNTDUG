@@ -1190,7 +1190,7 @@
                     if (soulProp === "N/A" && mangleValue && mangleValue !== "N/A") {
                         const mangleNumbersStr = mangleValue.split('-').map(s => s.trim().replace(/,/g, ''));
                         if (!mangleNumbersStr.some(s => isNaN(parseFloat(s)))) {
-                            const soulNumbersStr = mangleNumbersStr.map(n => (parseFloat(n) * 10000).toString()).join('-');
+                            const soulNumbersStr = mangleNumbersStr.map(n => parseFloat((parseFloat(n) * 10000).toFixed(6)).toString()).join('-');
                             const formattedSoulValue = formatRangeWithSuffix(soulNumbersStr, formatLargeNumber);
                             const soulSuffix = getPluralSuffix(formattedSoulValue, 'Soul', 'Souls');
                             soulDisplay = formattedSoulValue + soulSuffix;
