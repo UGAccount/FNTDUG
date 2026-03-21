@@ -280,6 +280,13 @@
         }
     }
 
+    .search-stack {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: var(--spacing-sm);
+    }
+
     .search-container {
         display: flex;
         width: 100%;
@@ -290,9 +297,11 @@
     .input-container {
         position: relative;
         flex-grow: 1;
+        display: flex;
+        align-items: center;
     }
 
-    #unitSearchInput, #galleryFilterInput, .level-input-wrapper, #presetNameInput {
+    #unitSearchInput, #compareSearchInput, #galleryFilterInput, .level-input-wrapper, #presetNameInput {
         height: var(--component-height);
         width: 100%;
         padding: 0 var(--component-padding);
@@ -304,13 +313,32 @@
         transition: border-color var(--transition-default), box-shadow var(--transition-default);
     }
     
-    #unitSearchInput { cursor: pointer; }
+    #unitSearchInput, #compareSearchInput {
+        padding-right: calc(var(--component-padding) + var(--button-small-size) + 5px);
+        cursor: pointer;
+    }
     #galleryFilterInput { flex-shrink: 1; flex-grow: 1; }
     
-    #unitSearchInput:focus, #galleryFilterInput:focus, .level-input-wrapper:focus-within, #presetNameInput:focus {
+    #unitSearchInput:focus, #compareSearchInput:focus, #galleryFilterInput:focus, .level-input-wrapper:focus-within, #presetNameInput:focus {
         outline: none;
         border-color: var(--primary-accent);
         box-shadow: var(--focus-shadow);
+    }
+
+    .inside-input-button {
+        position: absolute;
+        right: 7px;
+        z-index: 10;
+    }
+
+    .inside-input-button.active {
+        background-color: var(--comparison-accent);
+        border-color: var(--comparison-accent);
+    }
+    @media (hover: hover) {
+        .inside-input-button.active:hover {
+            background-color: #b05252;
+        }
     }
     
     .level-input-container {
@@ -429,6 +457,20 @@
     .dropdown-trigger-text {
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
     }
+    .dropdown-trigger-input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--text-light);
+        font-family: inherit;
+        font-size: var(--font-size-base);
+        flex-grow: 1;
+        width: 100%;
+        min-width: 0;
+        padding-top: 2px;
+        margin: 0;
+        text-align: left;
+    }
     .dropdown-trigger::after {
         content: ''; position: absolute; right: var(--dropdown-arrow-offset); top: 50%;
         width: 0; height: 0; border-left: var(--dropdown-arrow-size) solid transparent;
@@ -438,7 +480,7 @@
     }
     .dropdown-trigger.open::after { transform: translateY(-50%) rotate(180deg); }
 
-    #unitSearchSuggestions, .dropdown-options {
+    #unitSearchSuggestions, #compareSearchSuggestions, .dropdown-options {
         position: absolute; left: 0; top: calc(100% + var(--spacing-sm));
         overflow-y: auto; background-color: var(--bg-dark);
         border: var(--border-default); border-radius: var(--border-radius);
@@ -451,7 +493,7 @@
                     transform var(--transition-fast) var(--transition-timing), 
                     visibility 0s var(--transition-fast);
     }
-    #unitSearchSuggestions.show, .dropdown-options.show {
+    #unitSearchSuggestions.show, #compareSearchSuggestions.show, .dropdown-options.show {
         opacity: 1;
         visibility: visible;
         transform: translateY(0);
@@ -459,11 +501,11 @@
                     transform var(--transition-fast) var(--transition-timing), 
                     visibility 0s;
     }
-    #unitSearchSuggestions { right: 0; z-index: var(--z-suggestions); }
+    #unitSearchSuggestions, #compareSearchSuggestions { right: 0; z-index: var(--z-suggestions); }
     .dropdown-options { width: 100%; z-index: var(--z-dropdown); }
-    #unitSearchSuggestions::-webkit-scrollbar, .dropdown-options::-webkit-scrollbar { display: none; }
+    #unitSearchSuggestions::-webkit-scrollbar, #compareSearchSuggestions::-webkit-scrollbar, .dropdown-options::-webkit-scrollbar { display: none; }
 
-    #unitSearchSuggestions div, .dropdown-options div {
+    #unitSearchSuggestions div, #compareSearchSuggestions div, .dropdown-options div {
         display: flex; align-items: center; position: relative;
         min-height: var(--dropdown-item-height); padding: var(--component-padding);
         font-size: var(--font-size-base); font-weight: var(--font-weight-normal);
@@ -472,7 +514,7 @@
         cursor: pointer; text-align: left; user-select: none;
         transition: padding-left var(--transition-fast) ease-in-out, background-color var(--transition-fast);
     }
-    #unitSearchSuggestions div:first-child, .dropdown-options div:first-child { border-top: none; }
+    #unitSearchSuggestions div:first-child, #compareSearchSuggestions div:first-child, .dropdown-options div:first-child { border-top: none; }
     
     .booster-option { 
         white-space: normal; 
@@ -499,7 +541,7 @@
     .booster-option.shiny::after { content: "\f005"; left: var(--selected-item-indent); }
     
     @media (hover: hover) {
-        #unitSearchSuggestions div:hover, .dropdown-options div:hover {
+        #unitSearchSuggestions div:hover, #compareSearchSuggestions div:hover, .dropdown-options div:hover {
             background-color: var(--primary-accent-hover);
             padding-left: var(--spacing-lg);
         }
@@ -525,6 +567,13 @@
                     visibility 0s;
     }
 
+    .paired-table-wrapper {
+        display: inline-flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        min-width: 100%;
+    }
+
     .table-wrapper {
         width: 100%;
         overflow-x: auto;
@@ -535,8 +584,13 @@
         display: none;
     }
     table {
-        border-collapse: separate; border-spacing: 0; min-width: 100%;
+        border-collapse: separate; border-spacing: 0; 
+        width: 100%;
+        min-width: 100%;
         overflow: hidden; border: var(--border-default); border-radius: var(--border-radius);
+    }
+    .secondary-table {
+        border-color: var(--comparison-accent);
     }
     th, td {
         padding: var(--component-padding); font-size: var(--font-size-base);
@@ -546,9 +600,18 @@
     th {
         background-color: var(--primary-accent); color: var(--text-light); font-weight: var(--font-weight-bold);
     }
+    .secondary-table th {
+        background-color: var(--comparison-accent);
+    }
     td { color: var(--text-light); border-top: var(--border-default); }
+    .secondary-table td { border-top-color: var(--comparison-accent); }
+    
     th:not(:last-child), td:not(:last-child) { border-right: var(--border-default); }
+    .secondary-table th:not(:last-child), .secondary-table td:not(:last-child) { border-right-color: var(--comparison-accent); }
+
     .main-header-row th { border-top: var(--border-default); }
+    .secondary-table .main-header-row th { border-top-color: var(--comparison-accent); }
+    
     th:not(.dropdown-header-cell):not(.sortable-header) {
         padding-top: var(--spacing-sm); padding-bottom: var(--spacing-sm);
     }
@@ -906,27 +969,37 @@
         }
         .search-container { justify-content: center; }
         .input-container { flex-grow: 0; }
-        #unitSearchInput { width: var(--search-bar-width-lg); }
-        #unitStatsContainer { display: grid; justify-content: center; }
+        #unitSearchInput, #compareSearchInput { width: var(--search-bar-width-lg); }
+        #unitStatsContainer { justify-content: center; }
     }
 </style>
 </head>
 <body>
     <div class="main-container">
-        <div class="search-container">
-            <div class="input-container">
-                <input type="text" id="unitSearchInput" placeholder="Search for a unit...">
-                <div id="unitSearchSuggestions"></div>
+        <div class="search-stack">
+            <div class="search-container">
+                <div class="input-container">
+                    <input type="text" id="unitSearchInput" placeholder="Search for a unit...">
+                    <button id="toggleCompareBtn" class="action-button action-button--small inside-input-button" disabled title="Compare Unit"><i class="fas fa-code-compare"></i></button>
+                    <div id="unitSearchSuggestions"></div>
+                </div>
+                <button id="searchButton" class="action-button" aria-label="Search"><i class="fas fa-search"></i></button>
+                <button id="boostsButton" class="action-button" aria-label="Boosts"><i class="fas fa-star"></i></button>
+                <div class="menu-container">
+                    <button id="menuButton" class="action-button" aria-label="Menu"><i class="fas fa-bars"></i></button>
+                    <div id="menuFlyout" class="menu-flyout">
+                        <button id="galleryButton" class="action-button" aria-label="Gallery"><i class="fas fa-images"></i></button>
+                        <button id="graphButton" class="action-button" aria-label="Graph"><i class="fas fa-chart-bar"></i></button>
+                        <button id="dpsRankingsButton" class="action-button" aria-label="DPS Rankings"><i class="fas fa-trophy"></i></button>
+                        <button id="settingsButton" class="action-button" aria-label="Settings"><i class="fas fa-cog"></i></button>
+                    </div>
+                </div>
             </div>
-            <button id="searchButton" class="action-button" aria-label="Search"><i class="fas fa-search"></i></button>
-            <button id="boostsButton" class="action-button" aria-label="Boosts"><i class="fas fa-star"></i></button>
-            <div class="menu-container">
-                <button id="menuButton" class="action-button" aria-label="Menu"><i class="fas fa-bars"></i></button>
-                <div id="menuFlyout" class="menu-flyout">
-                    <button id="galleryButton" class="action-button" aria-label="Gallery"><i class="fas fa-images"></i></button>
-                    <button id="graphButton" class="action-button" aria-label="Graph"><i class="fas fa-chart-bar"></i></button>
-                    <button id="dpsRankingsButton" class="action-button" aria-label="DPS Rankings"><i class="fas fa-trophy"></i></button>
-                    <button id="settingsButton" class="action-button" aria-label="Settings" disabled><i class="fas fa-cog"></i></button>
+            <div id="compareContainer" class="search-container hidden">
+                <div class="input-container">
+                    <input type="text" id="compareSearchInput" placeholder="Search unit to compare...">
+                    <button id="clearCompareBtn" class="action-button action-button--small inside-input-button" title="Clear Comparison"><i class="fas fa-times"></i></button>
+                    <div id="compareSearchSuggestions"></div>
                 </div>
             </div>
         </div>
@@ -1028,6 +1101,13 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
+            <div class="settings-section">
+                <div class="section-title">Features</div>
+                <div class="custom-checkbox">
+                    <input type="checkbox" id="inputForSelectionsCheckbox" name="inputForSelections">
+                    <label for="inputForSelectionsCheckbox"><span>Input For Selections</span></label>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1056,6 +1136,7 @@
                 dpsRankingsButton = document.getElementById('dpsRankingsButton'),
                 settingsButton = document.getElementById('settingsButton'), settingsPanel = document.getElementById('settingsPanel'),
                 closeSettingsButton = document.getElementById('closeSettingsButton'), saveBoostsCheckbox = document.getElementById('saveBoostsCheckbox'),
+                inputForSelectionsCheckbox = document.getElementById('inputForSelectionsCheckbox'),
                 resetBoostsButton = document.getElementById('resetBoostsButton'), savePresetButton = document.getElementById('savePresetButton'),
                 presetSaveForm = document.getElementById('presetSaveForm'), presetNameInput = document.getElementById('presetNameInput'),
                 confirmSavePresetButton = document.getElementById('confirmSavePresetButton'), cancelSavePresetButton = document.getElementById('cancelSavePresetButton'),
@@ -1065,13 +1146,18 @@
                 displayedUnitImage = document.getElementById('displayedUnitImage'),
                 skinsPanel = document.getElementById('skinsPanel'),
                 closeSkinsButton = document.getElementById('closeSkinsButton'),
-                skinsContainer = document.getElementById('skinsContainer');
+                skinsContainer = document.getElementById('skinsContainer'),
+                toggleCompareBtn = document.getElementById('toggleCompareBtn'),
+                compareContainer = document.getElementById('compareContainer'),
+                compareSearchInput = document.getElementById('compareSearchInput'),
+                clearCompareBtn = document.getElementById('clearCompareBtn'),
+                compareSearchSuggestions = document.getElementById('compareSearchSuggestions');
 
-            let allUnitData = {}, fuse, currentUnitName = null, previousUnitName = null, comparisonUnitName = null, customLevel = 1, currentGraphLevelIndex = -1,
+            let allUnitData = {}, fuse, currentUnitName = null, previousUnitName = null, comparisonUnitName = null, secondaryUnitName = null, customLevel = 1, currentGraphLevelIndex = -1,
                 selectedVersionKey = 'normal', selectedEnchantKey = 'None', selectedElementKey = 'Neutral', boosterSelections = [],
-                globalStatProfiles = {}, currentSort = { mode: 'rarity', direction: 'asc' }, isDpsRankingsMode = false,
+                globalStatProfiles = {}, currentSort = { mode: 'rarity', direction: 'asc' }, isDpsRankingsMode = false, isCompareMode = false,
                 dpsRankingsSort = { key: 'fullDps', direction: 'desc' },
-                settings = { saveBoosts: false, savedBoosts: null, presets: [] },
+                settings = { saveBoosts: false, inputForSelections: false, savedBoosts: null, presets: [] },
                 boosterData = {},
                 enchantMultipliers = {},
                 enchants = {},
@@ -1324,24 +1410,47 @@
                 return tr;
             };
 
-            const createTableInWrapper = (headers, rows, container, wrapperId = null) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'table-wrapper';
-                if (wrapperId) wrapper.id = wrapperId;
+            const createTableNode = (headers, rows, isSecondary = false, rowClass = null) => {
                 const table = document.createElement('table');
+                if (isSecondary) table.classList.add('secondary-table');
+                
                 const thead = document.createElement('thead');
                 const tbody = document.createElement('tbody');
-                thead.appendChild(createTableRow('th', headers));
-                rows.forEach((rowData, index) => {
-                    let rowClass = null;
-                    if (wrapperId === 'note-table-wrapper') {
-                        rowClass = 'note-row';
-                    }
+                
+                if (headers.length > 0) {
+                    thead.appendChild(createTableRow('th', headers));
+                }
+                
+                rows.forEach(rowData => {
                     tbody.appendChild(createTableRow('td', rowData, rowClass));
                 });
                 table.append(thead, tbody);
-                wrapper.appendChild(table);
-                container.appendChild(wrapper);
+                return table;
+            };
+
+            const createSectionWrapper = (buildPrimary, buildSecondary) => {
+                let primaryTable = null, secondaryTable = null;
+                if (buildPrimary) primaryTable = buildPrimary();
+                if (buildSecondary) secondaryTable = buildSecondary();
+                
+                if (!primaryTable && !secondaryTable) return null;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'aux-table';
+                const tableWrapper = document.createElement('div');
+                tableWrapper.className = 'table-wrapper';
+                const pairedWrapper = document.createElement('div');
+                pairedWrapper.className = 'paired-table-wrapper';
+                
+                if (primaryTable) pairedWrapper.appendChild(primaryTable);
+                if (secondaryTable) {
+                    secondaryTable.classList.add('secondary-table');
+                    pairedWrapper.appendChild(secondaryTable);
+                }
+                
+                tableWrapper.appendChild(pairedWrapper);
+                wrapper.appendChild(tableWrapper);
+                return wrapper;
             };
             
             function makeButtonHoldable(button, action, initialDelay = 400, repeatDelay = 100) {
@@ -1370,7 +1479,7 @@
             }
 
             const toggleDropdownHandler = (trigger, optionsDiv, e) => {
-                e?.stopPropagation();
+                if (e) e.stopPropagation();
                 document.querySelectorAll('.dropdown-trigger.open').forEach(t => {
                     if (t !== trigger) {
                         t.classList.remove('open', 'focused');
@@ -1392,46 +1501,147 @@
             };
 
             const createCustomDropdown = (id, label, options, defaultValue, onChange, disabled = false) => {
-                const container = document.createElement('div'), trigger = document.createElement('div'), optionsDiv = document.createElement('div'),
-                      triggerText = document.createElement('span');
-                triggerText.className = 'dropdown-trigger-text';
+                const container = document.createElement('div');
+                const trigger = document.createElement('div');
+                const optionsDiv = document.createElement('div');
                 container.className = 'custom-dropdown';
                 trigger.id = id;
                 trigger.className = 'dropdown-trigger';
                 trigger.tabIndex = disabled ? -1 : 0;
-                trigger.appendChild(triggerText);
+                
                 const labelText = label ? `${label} ` : '';
-                triggerText.textContent = `${labelText}${options[defaultValue]}`;
-                trigger.dataset.value = defaultValue;
                 optionsDiv.className = 'dropdown-options';
+                
+                let labelSpan, inputBox, triggerText;
+                const isInputMode = settings.inputForSelections;
+                
+                if (isInputMode) {
+                    labelSpan = document.createElement('span');
+                    labelSpan.textContent = labelText;
+                    labelSpan.style.whiteSpace = 'nowrap';
+                    inputBox = document.createElement('input');
+                    inputBox.type = 'text';
+                    inputBox.className = 'dropdown-trigger-input';
+                    inputBox.value = (options[defaultValue] || '').replace(/\s*\(.*?\)/g, '');
+                    inputBox.disabled = disabled;
+                    trigger.append(labelSpan, inputBox);
+                    trigger.addEventListener('click', (e) => {
+                        if (e.target !== inputBox && !disabled) inputBox.focus();
+                    });
+                } else {
+                    triggerText = document.createElement('span');
+                    triggerText.className = 'dropdown-trigger-text';
+                    triggerText.textContent = `${labelText}${options[defaultValue]}`;
+                    trigger.appendChild(triggerText);
+                }
+                
+                trigger.dataset.value = defaultValue;
+                
+                const optionEls = [];
                 Object.entries(options).forEach(([value, text]) => {
                     const option = document.createElement('div');
                     option.textContent = text;
                     option.dataset.value = value;
-                    option.addEventListener('click', () => {
-                        triggerText.textContent = `${labelText}${text}`;
+                    option.dataset.rawName = text.replace(/\s*\(.*?\)/g, '');
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (isInputMode) {
+                            inputBox.value = option.dataset.rawName;
+                        } else {
+                            triggerText.textContent = `${labelText}${text}`;
+                        }
                         trigger.dataset.value = value;
                         optionsDiv.classList.remove('show');
                         trigger.classList.remove('open', 'focused');
                         onChange(value);
                     });
                     optionsDiv.appendChild(option);
+                    optionEls.push(option);
                 });
+                
                 const toggle = (e) => {
+                    if (disabled) return;
                     const isOpen = toggleDropdownHandler(trigger, optionsDiv, e);
                     if (isOpen) {
                         const currentValue = trigger.dataset.value;
-                        optionsDiv.querySelectorAll('div').forEach(opt => {
+                        optionEls.forEach(opt => {
                             opt.classList.toggle('selected', opt.dataset.value === currentValue);
+                            opt.style.display = '';
                         });
                     }
                 };
+
                 if (!disabled) {
-                    trigger.addEventListener('click', toggle);
-                    trigger.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); } });
+                    if (isInputMode) {
+                        inputBox.addEventListener('focus', (e) => {
+                            if (!optionsDiv.classList.contains('show')) toggle(e);
+                        });
+                        inputBox.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (!optionsDiv.classList.contains('show')) toggle(e);
+                        });
+                        inputBox.addEventListener('input', (e) => {
+                            if (!optionsDiv.classList.contains('show')) toggle(e);
+                            const filter = inputBox.value.toLowerCase();
+                            optionEls.forEach(opt => {
+                                if (opt.dataset.rawName.toLowerCase().includes(filter)) {
+                                    opt.style.display = '';
+                                } else {
+                                    opt.style.display = 'none';
+                                }
+                            });
+                        });
+                        inputBox.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const match = optionEls.find(o => o.style.display !== 'none');
+                                if (match) {
+                                    match.click();
+                                    inputBox.blur();
+                                }
+                            } else if (e.key === 'Escape') {
+                                optionsDiv.classList.remove('show');
+                                trigger.classList.remove('open', 'focused');
+                                inputBox.blur();
+                            }
+                        });
+                        inputBox.addEventListener('blur', () => {
+                            setTimeout(() => {
+                                const currentSelected = optionEls.find(o => o.dataset.value === trigger.dataset.value);
+                                if (currentSelected) inputBox.value = currentSelected.dataset.rawName;
+                            }, 150);
+                        });
+                    } else {
+                        trigger.addEventListener('click', toggle);
+                        let searchBuffer = '';
+                        let searchTimeout;
+                        trigger.addEventListener('keydown', (e) => { 
+                            if (e.key === 'Enter' || e.key === ' ') { 
+                                e.preventDefault(); toggle(e); 
+                            } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                                e.preventDefault();
+                                searchBuffer += e.key.toLowerCase();
+                                clearTimeout(searchTimeout);
+                                searchTimeout = setTimeout(() => { searchBuffer = ''; }, 500);
+                                
+                                const match = optionEls.find(o => o.dataset.rawName.toLowerCase().startsWith(searchBuffer));
+                                if (match) {
+                                    triggerText.textContent = `${labelText}${match.textContent}`;
+                                    trigger.dataset.value = match.dataset.value;
+                                    optionEls.forEach(opt => {
+                                        opt.classList.toggle('selected', opt.dataset.value === match.dataset.value);
+                                    });
+                                    if (optionsDiv.classList.contains('show')) {
+                                        match.scrollIntoView({ block: 'nearest' });
+                                    }
+                                    onChange(match.dataset.value);
+                                }
+                            }
+                        });
+                    }
                 }
-                container.append(trigger, optionsDiv);
                 
+                container.append(trigger, optionsDiv);
                 if (disabled) {
                     container.style.pointerEvents = 'none';
                     container.style.opacity = '0.5';
@@ -1611,13 +1821,7 @@
                 return multipliers;
             }
 
-            function populateSingleUnitTbody() {
-                const unitData = getCurrentUnitData();
-                if (!unitData) return;
-
-                const tbody = document.getElementById('upgrades-tbody');
-                if (!tbody) return;
-
+            function generateUpgradeRowsAndSummary(unitData, isSecondary) {
                 const hasDamage = unitData.Upgrades.some(upg => upg.Damage !== undefined);
                 const hasCooldown = unitData.Upgrades.some(upg => upg.Cooldown !== undefined);
                 const hasRange = unitData.Upgrades.some(upg => upg.Range !== undefined);
@@ -1626,9 +1830,6 @@
                 const hasDpsBoost = hasBoostStats && unitData.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
                 const typeChangesWithUpgrades = unitData.typeChangesWithUpgrades;
                 const hasPerUpgradeDegrees = unitData.Upgrades.some(upg => upg.Degrees !== undefined);
-                
-                const elementalContainer = document.getElementById('elemental-dps-container');
-                if (elementalContainer) elementalContainer.style.display = hasDamage ? '' : 'none';
 
                 const multipliers = getGlobalBoostMultipliers(unitData.Element);
                 const upgradeRows = [];
@@ -1709,27 +1910,71 @@
                     upgradeRows.push(rowData);
                 });
 
-                tbody.replaceChildren(...upgradeRows.map(rowData => createTableRow('td', rowData)));
+                let summaryData = null;
+                let elementalData = null;
+                const maxUpgrade = unitData.Upgrades[unitData.Upgrades.length - 1];
+                const hasDamageBoostStats = maxUpgrade.DamageBoost || maxUpgrade.CooldownBoost || maxUpgrade.RangeBoost;
 
-                if (hasDamage) {
-                    const totalDPS = maxDPS * (unitData.Max || 1);
-                    const summaryWrapper = document.getElementById('summary-table-wrapper');
-                    const totalDpsCell = summaryWrapper?.querySelector('td');
-                    if (totalDpsCell) totalDpsCell.textContent = formatStat(totalDPS, 2);
+                if (hasDamage || hasDamageBoostStats) {
+                    let sHeaders = [];
+                    let sRowData = [];
+
+                    if (hasDamageBoostStats) {
+                        const totalDmgBoost = maxUpgrade.DamageBoost || 1.0;
+                        const totalCdBoost = maxUpgrade.CooldownBoost || 1.0;
+                        const totalRangeBoost = maxUpgrade.RangeBoost || 1.0;
+
+                        const totalDpsBoostPercent = (((totalDmgBoost / totalCdBoost) - 1) * 100).toFixed(1) + '%';
+                        
+                        const boostParts = [];
+                        if (totalDmgBoost !== 1.0) boostParts.push(`${totalDmgBoost.toFixed(2)}x DMG`);
+                        if (totalCdBoost !== 1.0) boostParts.push(`${totalCdBoost.toFixed(2)}x CD`);
+                        if (totalRangeBoost !== 1.0) boostParts.push(`${totalRangeBoost.toFixed(2)}x Range`);
+                        const totalBoostsString = boostParts.join(', ') || 'None';
+
+                        if (hasDamage && hasCooldown) {
+                            sHeaders = ['Total DPS', 'Total DPS Boost', 'Total Boosts'];
+                            sRowData = [formatStat(maxDPS * (unitData.Max || 1), 2), totalDpsBoostPercent, totalBoostsString];
+                        } else {
+                            sHeaders = ['Total DPS Boost', 'Total Boosts'];
+                            sRowData = [totalDpsBoostPercent, totalBoostsString];
+                        }
+                    } else if (hasDamage && hasCooldown) {
+                        sHeaders = ['Total DPS'];
+                        sRowData = [formatStat(maxDPS * (unitData.Max || 1), 2)];
+                    }
                     
-                    if (elementalContainer) {
-                        elementalContainer.innerHTML = '';
-                        const advantages = elementalAdvantages[selectedElementKey]?.Boosts;
-                        if (selectedElementKey !== 'Neutral' && advantages) {
+                    if (sHeaders.length > 0) {
+                        summaryData = { headers: sHeaders, data: [sRowData] };
+                    }
+                    
+                    if (hasDamage) {
+                        const elementToUse = isSecondary ? (unitData.Element || 'Neutral') : selectedElementKey;
+                        const advantages = elementalAdvantages[elementToUse]?.Boosts;
+                        if (elementToUse !== 'Neutral' && advantages) {
                             const boosts = Object.entries(advantages).filter(([, val]) => val !== 1.0);
                             if (boosts.length > 0) {
-                                const headers = boosts.map(([key]) => `${key} DPS`);
-                                const data = [boosts.map(([, val]) => formatStat(totalDPS * val, 2))];
-                                createTableInWrapper(headers, data, elementalContainer);
+                                const eHeaders = boosts.map(([key]) => `${key} DPS`);
+                                const eData = [boosts.map(([, val]) => formatStat(maxDPS * (unitData.Max || 1) * val, 2))];
+                                elementalData = { headers: eHeaders, data: eData };
                             }
                         }
                     }
                 }
+
+                let headers = ['Level', 'Cost'];
+                if (typeChangesWithUpgrades) headers.push('Attack Type');
+                if (hasPerUpgradeDegrees) headers.push('Degrees');
+                
+                if (hasDamage && hasCooldown) headers.push('DPS');
+                if (hasDamage) headers.push('Damage');
+                if (hasCooldown) headers.push('Cooldown');
+                if (hasRange) headers.push('Range');
+
+                if (hasDpsBoost) headers.push('DPS Boost');
+                if (hasBoostStats) headers.push('Boosts');
+
+                return { headers, rows: upgradeRows, summaryData, elementalData };
             }
 
             function calculateBoostedMaxStats(unit) {
@@ -1944,6 +2189,28 @@
                     saveSettings();
                 }
             }
+            
+            function renderSummaryAndElementalContainers(primaryData, secondaryData) {
+                const container = document.getElementById('bottom-stats-container');
+                if (!container) return;
+                container.innerHTML = '';
+
+                if (primaryData.summaryData || (secondaryData && secondaryData.summaryData)) {
+                    const summaryWrapper = createSectionWrapper(
+                        () => primaryData.summaryData ? createTableNode(primaryData.summaryData.headers, primaryData.summaryData.data, false) : null,
+                        () => (secondaryData && secondaryData.summaryData) ? createTableNode(secondaryData.summaryData.headers, secondaryData.summaryData.data, true) : null
+                    );
+                    if (summaryWrapper) container.appendChild(summaryWrapper);
+                }
+
+                if (primaryData.elementalData || (secondaryData && secondaryData.elementalData)) {
+                    const elementalWrapper = createSectionWrapper(
+                        () => primaryData.elementalData ? createTableNode(primaryData.elementalData.headers, primaryData.elementalData.data, false) : null,
+                        () => (secondaryData && secondaryData.elementalData) ? createTableNode(secondaryData.elementalData.headers, secondaryData.elementalData.data, true) : null
+                    );
+                    if (elementalWrapper) container.appendChild(elementalWrapper);
+                }
+            }
 
             function updateView() {
                 if (!currentUnitName && !isDpsRankingsMode) return;
@@ -1960,19 +2227,30 @@
 
                 const elementDropdownTrigger = document.getElementById('elementDropdown');
                 if (elementDropdownTrigger) {
-                    const triggerText = elementDropdownTrigger.querySelector('.dropdown-trigger-text');
+                    const triggerTextSpan = elementDropdownTrigger.querySelector('.dropdown-trigger-text');
+                    const triggerInput = elementDropdownTrigger.querySelector('.dropdown-trigger-input');
+                    const labelText = isDpsRankingsMode ? 'Enemy Element: ' : 'Element: ';
+                    
+                    if (triggerTextSpan) {
+                        triggerTextSpan.textContent = `${labelText}${elements[selectedElementKey]}`;
+                    } else if (triggerInput) {
+                        const labelSpan = elementDropdownTrigger.querySelector('span');
+                        if (labelSpan) labelSpan.textContent = labelText;
+                        triggerInput.value = elements[selectedElementKey].replace(/\s*\(.*?\)/g, '');
+                    }
+                    
                     if (isDpsRankingsMode) {
-                        triggerText.textContent = `Enemy Element: ${elements[selectedElementKey]}`;
                         elementDropdownTrigger.style.pointerEvents = 'auto';
                         elementDropdownTrigger.style.opacity = '1';
                         elementDropdownTrigger.style.cursor = 'pointer';
                         elementDropdownTrigger.tabIndex = 0;
+                        if (triggerInput) triggerInput.disabled = false;
                     } else {
-                        triggerText.textContent = `Element: ${elements[selectedElementKey]}`;
                         elementDropdownTrigger.style.pointerEvents = 'none';
                         elementDropdownTrigger.style.opacity = '0.6';
                         elementDropdownTrigger.style.cursor = 'not-allowed';
                         elementDropdownTrigger.tabIndex = -1;
+                        if (triggerInput) triggerInput.disabled = true;
                     }
                 }
 
@@ -1984,9 +2262,11 @@
                 const upgradesTbody = document.getElementById('upgrades-tbody');
                 if (!statsHeaderRow || !upgradesTbody) return;
 
-                statsHeaderRow.innerHTML = ''; 
-
                 if (isDpsRankingsMode) {
+                    const secTable = document.getElementById('main-stats-table-secondary');
+                    if (secTable) secTable.remove();
+
+                    statsHeaderRow.innerHTML = ''; 
                     const sortKeyMap = { 
                         'Full DPS': 'fullDps', 
                         'Rarity': 'rarity', 
@@ -2031,78 +2311,76 @@
                         th.appendChild(contentWrapper);
                         statsHeaderRow.appendChild(th);
                     });
+                    
+                    const elementHeaderCell = document.getElementById('element-header-cell');
+                    const boostHeaderCell = document.getElementById('boost-header-cell');
+                    if (elementHeaderCell && boostHeaderCell) {
+                        elementHeaderCell.colSpan = rankingHeaders.length;
+                        boostHeaderCell.colSpan = rankingHeaders.length;
+                    }
+
                     populateRankingsTbody();
                 } else {
                     const stats = getCurrentUnitData();
                     if (!stats) return;
                     
-                    const hasDamage = stats.Upgrades.some(upg => upg.Damage !== undefined);
-                    const hasCooldown = stats.Upgrades.some(upg => upg.Cooldown !== undefined);
-                    const hasRange = stats.Upgrades.some(upg => upg.Range !== undefined);
+                    const primaryData = generateUpgradeRowsAndSummary(stats, false);
+                    const secondaryData = (isCompareMode && secondaryUnitName && allUnitData[secondaryUnitName]) 
+                        ? generateUpgradeRowsAndSummary(allUnitData[secondaryUnitName], true) 
+                        : null;
 
-                    const hasBoostStats = stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost || upg.RangeBoost);
-                    const hasDpsBoost = hasBoostStats && stats.Upgrades.some(upg => upg.DamageBoost || upg.CooldownBoost);
-                    const typeChangesWithUpgrades = stats.typeChangesWithUpgrades;
-                    const hasPerUpgradeDegrees = stats.Upgrades.some(upg => upg.Degrees !== undefined);
+                    const primaryTbodyRef = document.getElementById('upgrades-tbody');
+                    const primaryHeaderRef = document.getElementById('stats-header-row');
+                    if (primaryTbodyRef && primaryHeaderRef) {
+                        primaryHeaderRef.replaceChildren(...primaryData.headers.map(h => { const th = document.createElement('th'); th.textContent = h; return th; }));
+                        primaryTbodyRef.replaceChildren(...primaryData.rows.map(r => createTableRow('td', r)));
+                    }
 
-                    let headers = ['Level', 'Cost'];
-                    if (typeChangesWithUpgrades) headers.push('Attack Type');
-                    if (hasPerUpgradeDegrees) headers.push('Degrees');
-                    
-                    if (hasDamage && hasCooldown) headers.push('DPS');
-                    if (hasDamage) headers.push('Damage');
-                    if (hasCooldown) headers.push('Cooldown');
-                    if (hasRange) headers.push('Range');
+                    const secondaryTbodyRef = document.getElementById('upgrades-tbody-secondary');
+                    const secondaryHeaderRef = document.getElementById('stats-header-row-secondary');
+                    if (secondaryTbodyRef && secondaryHeaderRef && secondaryData) {
+                        secondaryHeaderRef.replaceChildren(...secondaryData.headers.map(h => { const th = document.createElement('th'); th.textContent = h; return th; }));
+                        secondaryTbodyRef.replaceChildren(...secondaryData.rows.map(r => createTableRow('td', r)));
+                    }
 
-                    if (hasDpsBoost) headers.push('DPS Boost');
-                    if (hasBoostStats) headers.push('Boosts');
+                    const elementHeaderCell = document.getElementById('element-header-cell');
+                    const boostHeaderCell = document.getElementById('boost-header-cell');
+                    if (primaryHeaderRef && elementHeaderCell && boostHeaderCell) {
+                        const columnCount = primaryData.headers.length;
+                        elementHeaderCell.colSpan = columnCount;
+                        boostHeaderCell.colSpan = columnCount;
+                    }
 
-                    headers.forEach(headerText => {
-                        const th = document.createElement('th');
-                        th.textContent = headerText;
-                        statsHeaderRow.appendChild(th);
-                    });
-                    populateSingleUnitTbody();
-                }
-                
-                const elementHeaderCell = document.getElementById('element-header-cell');
-                const boostHeaderCell = document.getElementById('boost-header-cell');
-                if (statsHeaderRow && elementHeaderCell && boostHeaderCell) {
-                    const columnCount = statsHeaderRow.children.length;
-                    elementHeaderCell.colSpan = columnCount;
-                    boostHeaderCell.colSpan = columnCount;
+                    renderSummaryAndElementalContainers(primaryData, secondaryData);
                 }
             }
 
             function adjustObtainabilityLayout() {
-                const wrapper = document.getElementById('obtainability-wrapper');
-                if (!wrapper) return;
-                
-                const table = wrapper.querySelector('table');
-                if (!table || !table.dataset.methods) return;
+                document.querySelectorAll('.obtainability-table').forEach(table => {
+                    if (!table || !table.dataset.methods) return;
+                    const methods = JSON.parse(table.dataset.methods);
+                    const thead = table.querySelector('thead');
+                    const tbody = table.querySelector('tbody');
+                    
+                    if (!thead || !tbody || methods.length === 0) return;
 
-                const methods = JSON.parse(table.dataset.methods);
-                const thead = table.querySelector('thead');
-                const tbody = table.querySelector('tbody');
-                
-                if (!thead || !tbody || methods.length === 0) return;
+                    thead.innerHTML = '';
+                    tbody.innerHTML = '';
 
-                thead.innerHTML = '';
-                tbody.innerHTML = '';
+                    const isMobileView = window.innerWidth < 768;
 
-                const isMobileView = window.innerWidth < 768;
-
-                if (isMobileView || methods.length === 1) {
-                    thead.appendChild(createTableRow('th', ['Obtainability']));
-                    methods.forEach(method => {
-                        tbody.appendChild(createTableRow('td', [method], 'note-row'));
-                    });
-                } else {
-                    const headerRow = createTableRow('th', ['Obtainability']);
-                    headerRow.firstElementChild.colSpan = methods.length;
-                    thead.appendChild(headerRow);
-                    tbody.appendChild(createTableRow('td', methods, 'note-row'));
-                }
+                    if (isMobileView || methods.length === 1) {
+                        thead.appendChild(createTableRow('th', ['Obtainability']));
+                        methods.forEach(method => {
+                            tbody.appendChild(createTableRow('td', [method], 'note-row'));
+                        });
+                    } else {
+                        const headerRow = createTableRow('th', ['Obtainability']);
+                        headerRow.firstElementChild.colSpan = methods.length;
+                        thead.appendChild(headerRow);
+                        tbody.appendChild(createTableRow('td', methods, 'note-row'));
+                    }
+                });
             }
 
             function setDropdownMinWidths() {
@@ -2165,6 +2443,102 @@
                 }
             }
 
+            function buildAbilitiesTable(stats, isSecondary) {
+                if (!stats) return null;
+                const passives = stats.Passives || {};
+                const actives = stats.Actives || [];
+                const allAbilities = Object.entries(passives);
+
+                actives.forEach(active => {
+                    const activeName = `Active: ${active.Name}`;
+                    let activeDesc = active.Description;
+                    if (active.Upgrade !== undefined) {
+                        const upgradeLevelText = active.Upgrade === 0 ? 'Placement' : `UPG ${active.Upgrade}`;
+                        let details = `(Unlocks at ${upgradeLevelText}`;
+                        if (active.Cooldown !== undefined) {
+                            const cooldownText = typeof active.Cooldown === 'number' ? `${active.Cooldown}s` : active.Cooldown;
+                            details += `, Cooldown: ${cooldownText}`;
+                        }
+                        details += ')';
+                        activeDesc += ` ${details}`;
+                    }
+                    allAbilities.push([activeName, activeDesc]);
+                });
+
+                if (allAbilities.length === 0) return null;
+                
+                const table = document.createElement('table');
+                if (isSecondary) table.classList.add('secondary-table');
+                const thead = document.createElement('thead');
+                const tbody = document.createElement('tbody');
+                
+                const headerText = allAbilities.length > 1 ? 'Abilities' : 'Ability';
+                thead.appendChild(createTableRow('th', [headerText, 'Description']));
+                
+                allAbilities.forEach(([name, description]) => {
+                    const tr = document.createElement('tr');
+                    const tdName = document.createElement('td');
+                    tdName.textContent = name;
+                    tdName.classList.add('passive-name-cell');
+                    const tdDesc = document.createElement('td');
+                    tdDesc.textContent = description;
+                    tdDesc.classList.add('note-cell');
+                    tr.append(tdName, tdDesc);
+                    tbody.appendChild(tr);
+                });
+                
+                table.append(thead, tbody);
+                return table;
+            }
+
+            function buildRarityTable(stats, isSecondary) {
+                if (!stats) return null;
+                let headers = ['Rarity', 'Attack Type', 'Element', 'Placements'];
+                let rowData = [stats.Rarity || 'N/A', stats.Type || 'N/A', stats.Element || 'Neutral', stats.Max || 'N/A'];
+                if (stats.SwitchSpeed) {
+                    headers.push('Switch Time');
+                    rowData.push(`${stats.SwitchSpeed}s`);
+                }
+                const valueData = stats.Value ? (selectedVersionKey === 'shiny' ? stats.Value.Shiny : stats.Value.Normal) : null;
+                const existsValue = valueData?.exists ? formatLargeNumber(parseFloat(String(valueData.exists).replace(/,/g, ''))) : 'N/A';
+                
+                const placementsIndex = headers.indexOf('Placements');
+                if (placementsIndex !== -1) {
+                    headers.splice(placementsIndex + 1, 0, 'Exists');
+                    rowData.splice(placementsIndex + 1, 0, existsValue);
+                }
+                return createTableNode(headers, [rowData], isSecondary);
+            }
+
+            function buildValueTable(stats, isSecondary) {
+                if (!stats) return null;
+                const valueData = stats.Value ? (selectedVersionKey === 'shiny' ? stats.Value.Shiny : stats.Value.Normal) : null;
+                if (!valueData) return null;
+                
+                const shouldShowValueTable = !(
+                    (!valueData.value || valueData.value === 'N/A') &&
+                    (!valueData.demand || valueData.demand === 'N/A') &&
+                    (!valueData.status || valueData.status === 'N/A')
+                );
+                if (!shouldShowValueTable) return null;
+                
+                const headers = ['Value', 'Demand', 'Status'];
+                const rowData = [formatValueAndSoul(valueData), valueData.demand || 'N/A', valueData.status || 'N/A'];
+                return createTableNode(headers, [rowData], isSecondary);
+            }
+
+            function buildObtainabilityTable(stats, isSecondary) {
+                if (!stats) return null;
+                const methods = stats.Obtainability && stats.Obtainability.length > 0 ? stats.Obtainability : ['Data Not Available'];
+                const table = document.createElement('table');
+                table.classList.add('obtainability-table');
+                if (isSecondary) table.classList.add('secondary-table');
+                table.dataset.methods = JSON.stringify(methods);
+                table.appendChild(document.createElement('thead'));
+                table.appendChild(document.createElement('tbody'));
+                return table;
+            }
+
             function renderUnitTables() {
                 const currentBoosts = getBoostsState();
                 let mainDmgValue = currentBoosts.mainDmg;
@@ -2189,7 +2563,7 @@
                 }
                 
                 if (isDpsRankingsMode && !stats) {
-                    currentUnitName = 'Freddy';
+                    currentUnitName = Object.keys(allUnitData)[0];
                 }
                 const currentStats = getCurrentUnitData();
                 if (!currentStats) {
@@ -2198,146 +2572,58 @@
                 }
                 
                 selectedElementKey = isDpsRankingsMode ? selectedElementKey : (currentStats.Element || 'Neutral');
-
                 updateUnitVisuals();
-
-                if (currentStats.BackendNote) {
-                    const noteWrapper = document.createElement('div');
-                    noteWrapper.className = 'aux-table';
-                    createTableInWrapper(['Note'], [[currentStats.BackendNote]], noteWrapper, 'note-table-wrapper');
-                    unitStatsContainer.appendChild(noteWrapper);
-                }
                 
-                const tradingValueData = currentStats.Value;
-                const versionValueData = tradingValueData ? (selectedVersionKey === 'shiny' ? tradingValueData.Shiny : tradingValueData.Normal) : null;
+                const secStats = (isCompareMode && secondaryUnitName) ? allUnitData[secondaryUnitName] : null;
 
-                const rarityWrapper = document.createElement('div');
-                rarityWrapper.className = 'aux-table';
+                const noteWrapper = createSectionWrapper(
+                    () => currentStats.BackendNote ? createTableNode(['Note'], [[currentStats.BackendNote]], false, 'note-row') : null,
+                    () => (secStats && secStats.BackendNote) ? createTableNode(['Note'], [[secStats.BackendNote]], true, 'note-row') : null
+                );
+                if (noteWrapper) unitStatsContainer.appendChild(noteWrapper);
+
+                const rarityWrapper = createSectionWrapper(
+                    () => buildRarityTable(currentStats, false),
+                    () => buildRarityTable(secStats, true)
+                );
+                if (rarityWrapper) unitStatsContainer.appendChild(rarityWrapper);
+
+                const valueWrapper = createSectionWrapper(
+                    () => buildValueTable(currentStats, false),
+                    () => buildValueTable(secStats, true)
+                );
+                if (valueWrapper) unitStatsContainer.appendChild(valueWrapper);
+
+                const obtainabilityWrapper = createSectionWrapper(
+                    () => buildObtainabilityTable(currentStats, false),
+                    () => buildObtainabilityTable(secStats, true)
+                );
+                if (obtainabilityWrapper) unitStatsContainer.appendChild(obtainabilityWrapper);
+
+                const abilityWrapper = createSectionWrapper(
+                    () => buildAbilitiesTable(currentStats, false),
+                    () => buildAbilitiesTable(secStats, true)
+                );
+                if (abilityWrapper) unitStatsContainer.appendChild(abilityWrapper);
+
+                const auxMain = document.createElement('div');
+                auxMain.className = 'main-table-container';
                 
-                let headers = ['Rarity', 'Attack Type', 'Element', 'Placements'];
-                let rowData = [
-                    currentStats.Rarity || 'N/A',
-                    currentStats.Type || 'N/A',
-                    currentStats.Element || 'Neutral',
-                    currentStats.Max || 'N/A'
-                ];
+                const mainTableWrapper = document.createElement('div');
+                mainTableWrapper.className = 'table-wrapper';
                 
-                if (currentStats.SwitchSpeed) {
-                    headers.push('Switch Time');
-                    rowData.push(`${currentStats.SwitchSpeed}s`);
-                }
-
-                const existsValue = versionValueData?.exists ? formatLargeNumber(parseFloat(String(versionValueData.exists).replace(/,/g, ''))) : 'N/A';
-                const placementsIndex = headers.indexOf('Placements');
-                if (placementsIndex !== -1) {
-                    headers.splice(placementsIndex + 1, 0, 'Exists');
-                    rowData.splice(placementsIndex + 1, 0, existsValue);
-                }
-
-                createTableInWrapper(headers, [rowData], rarityWrapper);
-                unitStatsContainer.appendChild(rarityWrapper);
+                const pairedMainWrapper = document.createElement('div');
+                pairedMainWrapper.className = 'paired-table-wrapper';
                 
-                if (versionValueData) {
-                    const shouldShowValueTable = !(
-                        (!versionValueData.value || versionValueData.value === 'N/A') &&
-                        (!versionValueData.demand || versionValueData.demand === 'N/A') &&
-                        (!versionValueData.status || versionValueData.status === 'N/A')
-                    );
+                const primaryData = generateUpgradeRowsAndSummary(currentStats, false);
+                const secondaryData = secStats ? generateUpgradeRowsAndSummary(secStats, true) : null;
 
-                    if (shouldShowValueTable) {
-                        const valueTableWrapper = document.createElement('div');
-                        valueTableWrapper.className = 'aux-table';
-                        const valueHeaders = ['Value', 'Demand', 'Status'];
-                        const valueRowData = [
-                            formatValueAndSoul(versionValueData),
-                            versionValueData.demand || 'N/A',
-                            versionValueData.status || 'N/A'
-                        ];
-                        createTableInWrapper(valueHeaders, [valueRowData], valueTableWrapper);
-                        unitStatsContainer.appendChild(valueTableWrapper);
-                    }
-                }
+                const primaryTable = document.createElement('table');
+                primaryTable.id = 'main-stats-table';
+                const primaryThead = document.createElement('thead');
+                const primaryTbody = document.createElement('tbody');
+                primaryTbody.id = 'upgrades-tbody';
 
-                const obtainabilityMethods = currentStats.Obtainability && currentStats.Obtainability.length > 0 ? currentStats.Obtainability : [];
-                const obtainabilityWrapper = document.createElement('div');
-                obtainabilityWrapper.className = 'aux-table';
-                obtainabilityWrapper.id = 'obtainability-wrapper';
-
-                if (obtainabilityMethods.length > 0) {
-                    const tableWrapper = document.createElement('div');
-                    tableWrapper.className = 'table-wrapper';
-                    const table = document.createElement('table');
-                    table.dataset.methods = JSON.stringify(obtainabilityMethods);
-                    
-                    table.appendChild(document.createElement('thead'));
-                    table.appendChild(document.createElement('tbody'));
-                    
-                    tableWrapper.appendChild(table);
-                    obtainabilityWrapper.appendChild(tableWrapper);
-                } else {
-                    createTableInWrapper(['Obtainability'], [['Data Not Available']], obtainabilityWrapper);
-                }
-                unitStatsContainer.appendChild(obtainabilityWrapper);
-
-
-                const passives = currentStats.Passives || {};
-                const actives = currentStats.Actives || [];
-                const allAbilities = Object.entries(passives);
-
-                actives.forEach(active => {
-                    const activeName = `Active: ${active.Name}`;
-                    let activeDesc = active.Description;
-                    if (active.Upgrade !== undefined) {
-                        const upgradeLevelText = active.Upgrade === 0 ? 'Placement' : `UPG ${active.Upgrade}`;
-                        let details = `(Unlocks at ${upgradeLevelText}`;
-                        if (active.Cooldown !== undefined) {
-                            const cooldownText = typeof active.Cooldown === 'number' ? `${active.Cooldown}s` : active.Cooldown;
-                            details += `, Cooldown: ${cooldownText}`;
-                        }
-                        details += ')';
-                        activeDesc += ` ${details}`;
-                    }
-                    allAbilities.push([activeName, activeDesc]);
-                });
-
-                if (allAbilities.length > 0) {
-                    const abilityWrapper = document.createElement('div');
-                    abilityWrapper.className = 'aux-table';
-                    
-                    const tableWrapper = document.createElement('div');
-                    tableWrapper.className = 'table-wrapper';
-                    const table = document.createElement('table');
-                    const thead = document.createElement('thead');
-                    const tbody = document.createElement('tbody');
-                    
-                    const headerText = allAbilities.length > 1 ? 'Abilities' : 'Ability';
-                    thead.appendChild(createTableRow('th', [headerText, 'Description']));
-                    
-                    allAbilities.forEach(([name, description]) => {
-                        const tr = document.createElement('tr');
-                        const tdName = document.createElement('td');
-                        tdName.textContent = name;
-                        tdName.classList.add('passive-name-cell');
-                        
-                        const tdDesc = document.createElement('td');
-                        tdDesc.textContent = description;
-                        tdDesc.classList.add('note-cell');
-                        
-                        tr.append(tdName, tdDesc);
-                        tbody.appendChild(tr);
-                    });
-                    
-                    table.append(thead, tbody);
-                    tableWrapper.appendChild(table);
-                    abilityWrapper.appendChild(tableWrapper);
-                    unitStatsContainer.appendChild(abilityWrapper);
-                }
-
-                const wrapper = document.createElement('div'), table = document.createElement('table'), thead = document.createElement('thead'),
-                    tbody = document.createElement('tbody');
-                wrapper.className = 'table-wrapper';
-                table.id = 'main-stats-table';
-                
                 const elementHeaderRow = document.createElement('tr');
                 const elementHeaderCell = document.createElement('th');
                 const elementDropdownContainer = document.createElement('div');
@@ -2477,9 +2763,10 @@
                 elementHeaderCell.id = 'element-header-cell';
                 elementHeaderCell.className = 'dropdown-header-cell';
                 elementHeaderCell.style.borderRight = 'none';
+                elementHeaderCell.colSpan = primaryData.headers.length;
                 elementHeaderCell.appendChild(elementDropdownContainer);
                 elementHeaderRow.appendChild(elementHeaderCell);
-                thead.appendChild(elementHeaderRow);
+                primaryThead.appendChild(elementHeaderRow);
 
                 const boostHeaderRow = document.createElement('tr');
                 const boostHeaderCell = document.createElement('th');
@@ -2499,88 +2786,72 @@
                 boostHeaderCell.id = 'boost-header-cell';
                 boostHeaderCell.className = 'dropdown-header-cell';
                 boostHeaderCell.style.borderRight = 'none';
+                boostHeaderCell.colSpan = primaryData.headers.length;
                 dropdownContainer.className = 'dropdown-flex-container';
                 dropdownContainer.append(versionDropdown, enchantsDropdown);
                 boostHeaderCell.appendChild(dropdownContainer);
                 boostHeaderRow.appendChild(boostHeaderCell);
-                thead.appendChild(boostHeaderRow);
+                primaryThead.appendChild(boostHeaderRow);
                 
-                const mainHeaderRow = document.createElement('tr');
-                mainHeaderRow.id = 'stats-header-row';
-                mainHeaderRow.className = 'main-header-row';
-                thead.appendChild(mainHeaderRow);
+                const primaryStatHeaderRow = document.createElement('tr');
+                primaryStatHeaderRow.className = 'main-header-row';
+                primaryStatHeaderRow.id = 'stats-header-row';
+                primaryData.headers.forEach(h => {
+                    const th = document.createElement('th');
+                    th.textContent = h;
+                    primaryStatHeaderRow.appendChild(th);
+                });
+                primaryThead.appendChild(primaryStatHeaderRow);
+
+                primaryData.rows.forEach(rowData => primaryTbody.appendChild(createTableRow('td', rowData)));
                 
-                tbody.id = 'upgrades-tbody';
-                tbody.addEventListener('click', (e) => {
+                primaryTbody.addEventListener('click', (e) => {
                     const clickedCell = e.target.closest('td.clickable-unit-name');
                     if (clickedCell) {
                         const unitName = clickedCell.textContent;
-
                         if (settings.saveBoosts) {
                             settings.savedBoosts = getBoostsState();
                             saveSettings();
                         }
-
-                        if (isDpsRankingsMode && !ENABLE_URL_ROUTING) {
-                            resetToSingleUnitView();
-                        }
-                        
+                        if (isDpsRankingsMode && !ENABLE_URL_ROUTING) resetToSingleUnitView();
                         selectAndDisplayUnit(unitName, settings.saveBoosts ? selectedVersionKey : 'normal');
                     }
                 });
-                table.append(thead, tbody);
-                wrapper.appendChild(table);
-                unitStatsContainer.appendChild(wrapper);
 
-                const maxUpgrade = currentStats.Upgrades[currentStats.Upgrades.length - 1];
-                const hasDamage = currentStats.Upgrades.some(upg => upg.Damage !== undefined);
-                const hasCooldown = currentStats.Upgrades.some(upg => upg.Cooldown !== undefined);
+                primaryTable.append(primaryThead, primaryTbody);
+                pairedMainWrapper.appendChild(primaryTable);
 
-                const hasBoostStats = maxUpgrade.DamageBoost || maxUpgrade.CooldownBoost || maxUpgrade.RangeBoost;
+                if (secondaryData) {
+                    const secondaryTable = document.createElement('table');
+                    secondaryTable.className = 'secondary-table';
+                    secondaryTable.id = 'main-stats-table-secondary';
+                    const secondaryThead = document.createElement('thead');
+                    const secondaryTbody = document.createElement('tbody');
+                    secondaryTbody.id = 'upgrades-tbody-secondary';
 
-                if (hasDamage || hasBoostStats) {
-                    const summaryWrapper = document.createElement('div');
-                    summaryWrapper.className = 'aux-table';
-                    summaryWrapper.id = 'summary-table-wrapper';
+                    const secondaryStatHeaderRow = document.createElement('tr');
+                    secondaryStatHeaderRow.className = 'main-header-row';
+                    secondaryStatHeaderRow.id = 'stats-header-row-secondary';
+                    secondaryData.headers.forEach(h => {
+                        const th = document.createElement('th');
+                        th.textContent = h;
+                        secondaryStatHeaderRow.appendChild(th);
+                    });
+                    secondaryThead.appendChild(secondaryStatHeaderRow);
 
-                    let headers = [];
-                    let rowData = [];
-
-                    if (hasBoostStats) {
-                        const totalDmgBoost = maxUpgrade.DamageBoost || 1.0;
-                        const totalCdBoost = maxUpgrade.CooldownBoost || 1.0;
-                        const totalRangeBoost = maxUpgrade.RangeBoost || 1.0;
-
-                        const totalDpsBoostPercent = (((totalDmgBoost / totalCdBoost) - 1) * 100).toFixed(1) + '%';
-                        
-                        const boostParts = [];
-                        if (totalDmgBoost !== 1.0) boostParts.push(`${totalDmgBoost.toFixed(2)}x DMG`);
-                        if (totalCdBoost !== 1.0) boostParts.push(`${totalCdBoost.toFixed(2)}x CD`);
-                        if (totalRangeBoost !== 1.0) boostParts.push(`${totalRangeBoost.toFixed(2)}x Range`);
-                        const totalBoostsString = boostParts.join(', ') || 'None';
-
-                        if (hasDamage && hasCooldown) {
-                            headers = ['Total DPS', 'Total DPS Boost', 'Total Boosts'];
-                            rowData = ['...', totalDpsBoostPercent, totalBoostsString];
-                        } else {
-                            headers = ['Total DPS Boost', 'Total Boosts'];
-                            rowData = [totalDpsBoostPercent, totalBoostsString];
-                        }
-                    } else if (hasDamage && hasCooldown) {
-                        headers = ['Total DPS'];
-                        rowData = ['...'];
-                    }
-                    
-                    if (headers.length > 0) {
-                        createTableInWrapper(headers, [rowData], summaryWrapper);
-                        unitStatsContainer.appendChild(summaryWrapper);
-                    }
+                    secondaryData.rows.forEach(rowData => secondaryTbody.appendChild(createTableRow('td', rowData)));
+                    secondaryTable.append(secondaryThead, secondaryTbody);
+                    pairedMainWrapper.appendChild(secondaryTable);
                 }
-                
-                const elementalContainer = document.createElement('div');
-                elementalContainer.id = 'elemental-dps-container';
-                elementalContainer.className = 'aux-table';
-                unitStatsContainer.appendChild(elementalContainer);
+
+                mainTableWrapper.appendChild(pairedMainWrapper);
+                auxMain.appendChild(mainTableWrapper);
+                unitStatsContainer.appendChild(auxMain);
+
+                const bottomStatsContainer = document.createElement('div');
+                bottomStatsContainer.id = 'bottom-stats-container';
+                bottomStatsContainer.style.display = 'contents';
+                unitStatsContainer.appendChild(bottomStatsContainer);
 
                 updateView();
                 setDropdownMinWidths();
@@ -2971,7 +3242,10 @@
                     matches.forEach(unitName => {
                         const suggestionItem = document.createElement('div');
                         suggestionItem.textContent = unitName;
-                        suggestionItem.addEventListener('click', () => selectAndDisplayUnit(unitName, settings.saveBoosts ? selectedVersionKey : 'normal'));
+                        suggestionItem.addEventListener('click', () => {
+                            unitSearchSuggestions.classList.remove('show');
+                            selectAndDisplayUnit(unitName, settings.saveBoosts ? selectedVersionKey : 'normal');
+                        });
                         fragment.appendChild(suggestionItem);
                     });
                     unitSearchSuggestions.replaceChildren(fragment);
@@ -2979,6 +3253,26 @@
                 } else {
                     unitSearchSuggestions.innerHTML = '';
                     unitSearchSuggestions.classList.remove('show');
+                }
+            }
+
+            function updateCompareSuggestions(matches = []) {
+                if (matches.length > 0) {
+                    const fragment = document.createDocumentFragment();
+                    matches.forEach(unitName => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.textContent = unitName;
+                        suggestionItem.addEventListener('click', () => {
+                            compareSearchSuggestions.classList.remove('show');
+                            selectAndDisplayUnit(unitName, selectedVersionKey, false, true);
+                        });
+                        fragment.appendChild(suggestionItem);
+                    });
+                    compareSearchSuggestions.replaceChildren(fragment);
+                    compareSearchSuggestions.classList.add('show');
+                } else {
+                    compareSearchSuggestions.innerHTML = '';
+                    compareSearchSuggestions.classList.remove('show');
                 }
             }
             
@@ -3004,12 +3298,35 @@
                     unitImageDisplayContainer.classList.add('hidden');
                     graphButton.disabled = true;
                     dpsRankingsButton.disabled = false;
+                    
+                    toggleCompareBtn.disabled = true;
+                    isCompareMode = false;
+                    toggleCompareBtn.classList.remove('active');
+                    compareContainer.classList.add('hidden');
+                    secondaryUnitName = null;
+                    compareSearchInput.value = '';
+
                     populateGallery();
                     updateGalleryCompareButtons();
                 }
             }
 
-            function selectAndDisplayUnit(unitName, version = 'normal', isPageLoad = false) {
+            function selectAndDisplayUnit(unitName, version = 'normal', isPageLoad = false, isSecondary = false) {
+                if (isSecondary) {
+                    if (allUnitData[unitName]) {
+                        secondaryUnitName = unitName;
+                        compareSearchInput.value = unitName;
+                        if (ENABLE_URL_ROUTING) {
+                            const url = new URL(window.location.href);
+                            url.searchParams.set('compare', createUnitSlug(unitName));
+                            window.history.replaceState({}, '', url.toString());
+                        }
+                        renderUnitTables();
+                        updateGalleryCompareButtons();
+                    }
+                    return;
+                }
+
                 if (ENABLE_URL_ROUTING) {
                     const unitSlug = createUnitSlug(unitName);
                     const currentPath = window.location.pathname.replace(/\/$/, '');
@@ -3017,7 +3334,11 @@
                     
                     if (!isPageLoad && unitSlug !== currentSlugOrPage) {
                         sessionStorage.setItem('selectedVersion', version);
-                        window.location.href = `${window.location.origin}/${unitSlug}`;
+                        const url = new URL(`${window.location.origin}/${unitSlug}`);
+                        if (isCompareMode && secondaryUnitName) {
+                            url.searchParams.set('compare', createUnitSlug(secondaryUnitName));
+                        }
+                        window.location.href = url.toString();
                         return;
                     }
                 }
@@ -3032,6 +3353,7 @@
                     }
                     selectedVersionKey = version;
 
+                    toggleCompareBtn.disabled = false;
                     unitImageDisplayContainer.classList.remove('hidden');
                     renderUnitTables();
                     dpsRankingsButton.disabled = false;
@@ -3044,7 +3366,7 @@
 
                     if (ENABLE_URL_ROUTING && isPageLoad) {
                         requestAnimationFrame(() => {
-                            const searchContainer = document.querySelector('.search-container');
+                            const searchContainer = document.querySelector('.search-stack');
                             if (searchContainer) {
                                 const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
                                 window.scrollTo({
@@ -3378,6 +3700,13 @@
                 };
                 menuButton.onclick = backButtonHandler;
                 
+                toggleCompareBtn.disabled = true;
+                isCompareMode = false;
+                secondaryUnitName = null;
+                toggleCompareBtn.classList.remove('active');
+                compareContainer.classList.add('hidden');
+                compareSearchInput.value = '';
+
                 searchButton.classList.add('hidden');
                 menuButton.parentElement.insertAdjacentElement('afterend', settingsButton);
                 unitSearchInput.placeholder = 'Filter rankings...';
@@ -3413,9 +3742,10 @@
                     }
                 } catch (e) {
                     console.error("Failed to load or parse settings from localStorage", e);
-                    settings = { saveBoosts: false, savedBoosts: null, presets: [] };
+                    settings = { saveBoosts: false, inputForSelections: false, savedBoosts: null, presets: [] };
                 }
                 saveBoostsCheckbox.checked = settings.saveBoosts;
+                inputForSelectionsCheckbox.checked = settings.inputForSelections;
                 
                 if (settings.saveBoosts && settings.savedBoosts) {
                     applyBoostsState(settings.savedBoosts, false);
@@ -3465,17 +3795,24 @@
                 }
                 
                 const versionTrigger = document.getElementById('versionDropdown');
-                const enchantTrigger = document.getElementById('enchantDropdown');
-                const levelInput = document.getElementById('customLevelInput');
-                
                 if (versionTrigger) {
                     versionTrigger.dataset.value = selectedVersionKey;
-                    versionTrigger.querySelector('.dropdown-trigger-text').textContent = `Version: ${versions[selectedVersionKey]}`;
+                    const txt = versionTrigger.querySelector('.dropdown-trigger-text');
+                    const inp = versionTrigger.querySelector('.dropdown-trigger-input');
+                    if (txt) txt.textContent = `Version: ${versions[selectedVersionKey]}`;
+                    if (inp) inp.value = versions[selectedVersionKey].replace(/\s*\(.*?\)/g, '');
                 }
+
+                const enchantTrigger = document.getElementById('enchantDropdown');
                 if (enchantTrigger) {
                     enchantTrigger.dataset.value = selectedEnchantKey;
-                    enchantTrigger.querySelector('.dropdown-trigger-text').textContent = `Enchant: ${enchants[selectedEnchantKey]}`;
+                    const txt = enchantTrigger.querySelector('.dropdown-trigger-text');
+                    const inp = enchantTrigger.querySelector('.dropdown-trigger-input');
+                    if (txt) txt.textContent = `Enchant: ${enchants[selectedEnchantKey]}`;
+                    if (inp) inp.value = enchants[selectedEnchantKey].replace(/\s*\(.*?\)/g, '');
                 }
+
+                const levelInput = document.getElementById('customLevelInput');
                 if (levelInput) {
                     levelInput.value = customLevel;
                 }
@@ -3789,9 +4126,23 @@
                         const path = window.location.pathname.replace(/\/$/, '');
                         const pathSlug = decodeURIComponent(path.substring(1));
 
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const compareSlug = urlParams.get('compare');
+                        if (compareSlug) {
+                            const secName = Object.keys(allUnitData).find(n => createUnitSlug(n) === compareSlug);
+                            if (secName) {
+                                secondaryUnitName = secName;
+                                isCompareMode = true;
+                                compareContainer.classList.remove('hidden');
+                                toggleCompareBtn.classList.add('active');
+                                compareSearchInput.value = secName;
+                            }
+                        }
+
                         if (pathSlug === 'dps-list') {
                             setTimeout(() => {
-                                selectAndDisplayUnit("Freddy", selectedVersionKey, true);
+                                const firstUnit = Object.keys(allUnitData)[0];
+                                selectAndDisplayUnit(firstUnit, selectedVersionKey, true);
                                 setupDpsRankingsView();
                             }, 0);
                         } else if (pathSlug && pathSlug !== 'unit-machine') {
@@ -3817,7 +4168,7 @@
             if (ENABLE_URL_ROUTING && sessionStorage.getItem('scrollToTopOnLoad') === 'true') {
                 sessionStorage.removeItem('scrollToTopOnLoad');
                 requestAnimationFrame(() => {
-                    const searchContainer = document.querySelector('.search-container');
+                    const searchContainer = document.querySelector('.search-stack');
                     if (searchContainer) {
                         const topPos = searchContainer.getBoundingClientRect().top + window.pageYOffset;
                         window.scrollTo({ top: topPos - 15, behavior: 'instant' });
@@ -3846,6 +4197,35 @@
                 }
             });
 
+            compareSearchInput.addEventListener('input', () => {
+                const searchTerm = compareSearchInput.value.trim();
+                updateCompareSuggestions(searchTerm.length > 0 && fuse ? fuse.search(searchTerm).slice(0, 15).map(r => r.item) : []);
+            });
+
+            compareSearchInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const searchTerm = compareSearchInput.value.trim();
+                    if (!searchTerm) {
+                        updateCompareSuggestions();
+                        return;
+                    }
+                    if (allUnitData[searchTerm]) {
+                        compareSearchSuggestions.classList.remove('show');
+                        selectAndDisplayUnit(searchTerm, selectedVersionKey, false, true);
+                        return;
+                    }
+                    const result = fuse.search(searchTerm);
+                    if (result.length > 0) {
+                        compareSearchSuggestions.classList.remove('show');
+                        selectAndDisplayUnit(result[0].item, selectedVersionKey, false, true);
+                    } else {
+                        alert('Unit Not Found'); 
+                        updateCompareSuggestions();
+                    }
+                }
+            });
+
             searchButton.addEventListener('click', () => {
                 triggerAnimation(searchButton);
                 if (isDpsRankingsMode) {
@@ -3853,6 +4233,37 @@
                 } else {
                     handleSearch();
                 }
+            });
+
+            toggleCompareBtn.addEventListener('click', () => {
+                triggerAnimation(toggleCompareBtn);
+                isCompareMode = !isCompareMode;
+                toggleCompareBtn.classList.toggle('active', isCompareMode);
+                if (isCompareMode) {
+                    compareContainer.classList.remove('hidden');
+                    if (secondaryUnitName) renderUnitTables();
+                } else {
+                    compareContainer.classList.add('hidden');
+                    if (ENABLE_URL_ROUTING) {
+                        const url = new URL(window.location.href);
+                        url.searchParams.delete('compare');
+                        window.history.replaceState({}, '', url.toString());
+                    }
+                    renderUnitTables();
+                }
+            });
+
+            clearCompareBtn.addEventListener('click', () => {
+                triggerAnimation(clearCompareBtn);
+                secondaryUnitName = null;
+                compareSearchInput.value = '';
+                if (ENABLE_URL_ROUTING) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('compare');
+                    window.history.replaceState({}, '', url.toString());
+                }
+                renderUnitTables();
+                updateGalleryCompareButtons();
             });
 
             document.querySelectorAll('.action-button').forEach(button => {
@@ -3901,7 +4312,8 @@
                     const tableExists = !!document.getElementById('main-stats-table');
                     if (!tableExists) {
                         unitStatsContainer.style.visibility = 'hidden';
-                        selectAndDisplayUnit("Freddy", 'normal');
+                        const firstUnit = Object.keys(allUnitData)[0];
+                        selectAndDisplayUnit(firstUnit, 'normal');
                         unitStatsContainer.style.visibility = 'visible';
                     }
                     currentUnitName = previousUnitName;
@@ -3909,7 +4321,7 @@
                 }
             });
             
-            if (settingsButton && !settingsButton.disabled) {
+            if (settingsButton) {
                 settingsButton.addEventListener('click', () => {
                     triggerAnimation(settingsButton);
                     settingsPanel.classList.add('show');
@@ -3926,6 +4338,16 @@
                     settings.savedBoosts = getBoostsState();
                 }
                 saveSettings();
+            });
+
+            inputForSelectionsCheckbox.addEventListener('change', () => {
+                settings.inputForSelections = inputForSelectionsCheckbox.checked;
+                saveSettings();
+                if (currentUnitName && !isDpsRankingsMode) {
+                    renderUnitTables();
+                } else if (isDpsRankingsMode) {
+                    updateView();
+                }
             });
 
             resetBoostsButton.addEventListener('click', () => {
@@ -3990,6 +4412,7 @@
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.input-container')) {
                     unitSearchSuggestions.classList.remove('show');
+                    compareSearchSuggestions.classList.remove('show');
                 }
                 if (!e.target.closest('.menu-container')) {
                     menuFlyout.classList.remove('show');
