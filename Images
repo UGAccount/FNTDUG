@@ -1,6 +1,12 @@
 {
   "Images": {
     "Presents": {
+    "Dragon Endo 01 Present": "https://iili.io/qSZDxPS.png",
+    "Medieval Present": "https://iili.io/qSZDqNf.png",
+    "Shepherd Fredbear Present": "https://iili.io/qSZD7Nj.png",
+    "Starfarer Princess Present": "https://iili.io/qSZDjDv.png",
+    "Shadow Knight Freddy Present": "https://iili.io/qSZDmJe.png",
+    "Lich Shadow Bonnie Present": "https://iili.io/qSZDt07.png",
     "UFO Tangle Present": "https://iili.io/q1e4w9j.png",
     "Crying Child Present": "https://iili.io/qIX2Yjs.png",
     "Nightmarionne Present": "https://iili.io/qIX27un.png",
@@ -163,6 +169,7 @@
       "Lucky": "https://iili.io/KtqMXYF.png"
     },
     "Currency": {
+    "Coins": "https://iili.io/qU2R0l9.png",
     "Hourglasses": "https://iili.io/fZBwoP9.png",
     "Gingerbread": "https://iili.io/fuxXuLu.png",
       "Pumpkins": "https://iili.io/KtqMhkg.png",
@@ -312,7 +319,9 @@
     "Puppeteer": "https://iili.io/fmgTuIa.png",
     "Tragedy": "https://iili.io/fmgTAhJ.png",
     "Remnant Fredbear": "https://iili.io/qTNINaa.png",
-    "Deep Sea Nautilus": "https://iili.io/q1e4OwQ.png"
+    "Deep Sea Nautilus": "https://iili.io/q1e4OwQ.png",
+    "Dragonic PaperPals": "https://iili.io/qSZDgJn.png",
+    "Monarch": "https://iili.io/qSZDDg9.png"
     },
     "Units": {
     "Balloon Boy": "https://iili.io/fPZ5UNa.png",
@@ -517,7 +526,25 @@
     "Nightmare Fredbear": "https://iili.io/qIVg1zG.png",
     "Shiny Nightmare Cupcake": "https://iili.io/qIVgjd7.png",
     "Shiny UFO Tangle": "https://iili.io/q1e4NAx.png",
-    "UFO Tangle": "https://iili.io/q1e4voB.png"
+    "UFO Tangle": "https://iili.io/q1e4voB.png",
+    "Dragon Endo 01": "https://iili.io/qSZDnol.png",
+    "Hag Withered Chica": "https://iili.io/qSZDoV2.png",
+    "Shadow Knight Freddy": "https://iili.io/qSZDYDx.png",
+    "Shiny Barbarian Boy": "https://iili.io/qSZD0iB.png",
+    "Shiny Starfarer Princess": "https://iili.io/qSZDlVV.png",
+    "Cursed Jester Spring Bonnie": "https://iili.io/qSZDvfI.png",
+    "Starfarer Princess": "https://iili.io/qSZDeiN.png",
+    "Shiny Cursed Jester Spring Bonnie": "https://iili.io/qSZDyOb.png",
+    "Shiny Harlequin Mangle": "https://iili.io/qSZbFqB.png",
+    "Shiny Lich Shadow Bonnie": "https://iili.io/qSZbBdF.png",
+    "Shiny Shepherd Fredbear": "https://iili.io/qSZbC5g.png",
+    "Harlequin Mangle": "https://iili.io/qSZbnea.png",
+    "Shiny Dragon Endo 01": "https://iili.io/qSZbAqN.png",
+    "Barbarian Boy": "https://iili.io/qSZbYdX.png",
+    "Lich Shadow Bonnie": "https://iili.io/qSZbces.png",
+    "Shiny Hag Withered Chica": "https://iili.io/qSZblmG.png",
+    "Shiny Shadow Knight Freddy": "https://iili.io/qSZbEX4.png",
+    "Shepherd Fredbear": "https://iili.io/qSZbw7e.png"
 },
     "Charts": {
       "Efficiency Chart": "https://iili.io/fhLh6qF.png",
