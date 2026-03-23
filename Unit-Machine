@@ -1806,7 +1806,7 @@
                     "Neutral": { dmg: 1.03, range: 1.03, cd: 0.97 },
                     "Light": { cd: 0.97 },
                     "Dark": { dmg: 1.03 },
-                    "Rust": { dmg: 1.06, cd: 1.03 }
+                    "Rust": { dmg: 1.06, cd: 0.97 }
                 };
 
                 const elBoosts = elementInherentBoosts[unitElement || 'Neutral'];
