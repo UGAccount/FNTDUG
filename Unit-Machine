@@ -1512,30 +1512,45 @@
                 const labelText = label ? `${label} ` : '';
                 optionsDiv.className = 'dropdown-options';
                 
-                let labelSpan, inputBox, triggerText;
-                const isInputMode = settings.inputForSelections;
+                const triggerText = document.createElement('span');
+                triggerText.className = 'dropdown-trigger-text';
+                triggerText.textContent = `${labelText}${options[defaultValue]}`;
                 
-                if (isInputMode) {
-                    labelSpan = document.createElement('span');
-                    labelSpan.textContent = labelText;
-                    labelSpan.style.whiteSpace = 'nowrap';
-                    inputBox = document.createElement('input');
-                    inputBox.type = 'text';
-                    inputBox.className = 'dropdown-trigger-input';
-                    inputBox.value = (options[defaultValue] || '').replace(/\s*\(.*?\)/g, '');
-                    inputBox.disabled = disabled;
-                    trigger.append(labelSpan, inputBox);
-                    trigger.addEventListener('click', (e) => {
-                        if (e.target !== inputBox && !disabled) inputBox.focus();
-                    });
-                } else {
-                    triggerText = document.createElement('span');
-                    triggerText.className = 'dropdown-trigger-text';
-                    triggerText.textContent = `${labelText}${options[defaultValue]}`;
-                    trigger.appendChild(triggerText);
-                }
+                const labelSpan = document.createElement('span');
+                labelSpan.className = 'dropdown-trigger-label';
+                labelSpan.textContent = labelText;
+                labelSpan.style.whiteSpace = 'nowrap';
+                labelSpan.style.display = 'none';
                 
+                const inputBox = document.createElement('input');
+                inputBox.type = 'text';
+                inputBox.className = 'dropdown-trigger-input';
+                inputBox.value = (options[defaultValue] || '').replace(/\s*\(.*?\)/g, '');
+                inputBox.disabled = disabled;
+                inputBox.style.display = 'none';
+                
+                trigger.append(triggerText, labelSpan, inputBox);
                 trigger.dataset.value = defaultValue;
+                
+                let isCurrentlyInputMode = false;
+                
+                const setInputMode = (active) => {
+                    isCurrentlyInputMode = active;
+                    if (active) {
+                        triggerText.style.display = 'none';
+                        labelSpan.style.display = '';
+                        inputBox.style.display = '';
+                        const currentSelected = optionEls.find(o => o.dataset.value === trigger.dataset.value);
+                        if (currentSelected) inputBox.value = currentSelected.dataset.rawName;
+                        inputBox.focus();
+                        optionEls.forEach(opt => opt.style.display = '');
+                    } else {
+                        triggerText.style.display = '';
+                        labelSpan.style.display = 'none';
+                        inputBox.style.display = 'none';
+                        optionEls.forEach(opt => opt.style.display = '');
+                    }
+                };
                 
                 const optionEls = [];
                 Object.entries(options).forEach(([value, text]) => {
@@ -1545,14 +1560,12 @@
                     option.dataset.rawName = text.replace(/\s*\(.*?\)/g, '');
                     option.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        if (isInputMode) {
-                            inputBox.value = option.dataset.rawName;
-                        } else {
-                            triggerText.textContent = `${labelText}${text}`;
-                        }
+                        inputBox.value = option.dataset.rawName;
+                        triggerText.textContent = `${labelText}${text}`;
                         trigger.dataset.value = value;
                         optionsDiv.classList.remove('show');
                         trigger.classList.remove('open', 'focused');
+                        if (isCurrentlyInputMode) setInputMode(false);
                         onChange(value);
                     });
                     optionsDiv.appendChild(option);
@@ -1572,73 +1585,88 @@
                 };
 
                 if (!disabled) {
-                    if (isInputMode) {
-                        inputBox.addEventListener('focus', (e) => {
-                            if (!optionsDiv.classList.contains('show')) toggle(e);
-                        });
-                        inputBox.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            if (!optionsDiv.classList.contains('show')) toggle(e);
-                        });
-                        inputBox.addEventListener('input', (e) => {
-                            if (!optionsDiv.classList.contains('show')) toggle(e);
-                            const filter = inputBox.value.toLowerCase();
-                            optionEls.forEach(opt => {
-                                if (opt.dataset.rawName.toLowerCase().includes(filter)) {
-                                    opt.style.display = '';
-                                } else {
-                                    opt.style.display = 'none';
-                                }
-                            });
-                        });
-                        inputBox.addEventListener('keydown', (e) => {
-                            if (e.key === 'Enter') {
+                    trigger.addEventListener('click', (e) => {
+                        if (e.target !== inputBox && !isCurrentlyInputMode) {
+                            if (settings.inputForSelections && e.detail >= 2) {
                                 e.preventDefault();
-                                const match = optionEls.find(o => o.style.display !== 'none');
-                                if (match) {
-                                    match.click();
-                                    inputBox.blur();
-                                }
-                            } else if (e.key === 'Escape') {
-                                optionsDiv.classList.remove('show');
-                                trigger.classList.remove('open', 'focused');
-                                inputBox.blur();
+                                e.stopPropagation();
+                                if (!optionsDiv.classList.contains('show')) toggle(e);
+                                setInputMode(true);
+                            } else {
+                                toggle(e);
+                            }
+                        }
+                    });
+
+                    inputBox.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (!optionsDiv.classList.contains('show')) toggle(e);
+                    });
+
+                    inputBox.addEventListener('input', (e) => {
+                        if (!optionsDiv.classList.contains('show')) toggle(e);
+                        const filter = inputBox.value.toLowerCase();
+                        optionEls.forEach(opt => {
+                            if (opt.dataset.rawName.toLowerCase().includes(filter)) {
+                                opt.style.display = '';
+                            } else {
+                                opt.style.display = 'none';
                             }
                         });
-                        inputBox.addEventListener('blur', () => {
-                            setTimeout(() => {
+                    });
+
+                    inputBox.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const match = optionEls.find(o => o.style.display !== 'none');
+                            if (match) match.click();
+                            inputBox.blur();
+                        } else if (e.key === 'Escape') {
+                            optionsDiv.classList.remove('show');
+                            trigger.classList.remove('open', 'focused');
+                            inputBox.blur();
+                        }
+                    });
+
+                    inputBox.addEventListener('blur', () => {
+                        setTimeout(() => {
+                            if (isCurrentlyInputMode) {
+                                setInputMode(false);
                                 const currentSelected = optionEls.find(o => o.dataset.value === trigger.dataset.value);
-                                if (currentSelected) inputBox.value = currentSelected.dataset.rawName;
-                            }, 150);
-                        });
-                    } else {
-                        trigger.addEventListener('click', toggle);
-                        let searchBuffer = '';
-                        let searchTimeout;
-                        trigger.addEventListener('keydown', (e) => { 
-                            if (e.key === 'Enter' || e.key === ' ') { 
-                                e.preventDefault(); toggle(e); 
-                            } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-                                e.preventDefault();
-                                searchBuffer += e.key.toLowerCase();
-                                clearTimeout(searchTimeout);
-                                searchTimeout = setTimeout(() => { searchBuffer = ''; }, 500);
-                                
-                                const match = optionEls.find(o => o.dataset.rawName.toLowerCase().startsWith(searchBuffer));
-                                if (match) {
-                                    triggerText.textContent = `${labelText}${match.textContent}`;
-                                    trigger.dataset.value = match.dataset.value;
-                                    optionEls.forEach(opt => {
-                                        opt.classList.toggle('selected', opt.dataset.value === match.dataset.value);
-                                    });
-                                    if (optionsDiv.classList.contains('show')) {
-                                        match.scrollIntoView({ block: 'nearest' });
-                                    }
-                                    onChange(match.dataset.value);
+                                if (currentSelected) {
+                                    inputBox.value = currentSelected.dataset.rawName;
+                                    triggerText.textContent = `${labelText}${currentSelected.textContent}`;
                                 }
                             }
-                        });
-                    }
+                        }, 150);
+                    });
+
+                    let searchBuffer = '';
+                    let searchTimeout;
+                    trigger.addEventListener('keydown', (e) => { 
+                        if (isCurrentlyInputMode) return;
+                        if (e.key === 'Enter' || e.key === ' ') { 
+                            e.preventDefault(); toggle(e); 
+                        } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                            e.preventDefault();
+                            searchBuffer += e.key.toLowerCase();
+                            clearTimeout(searchTimeout);
+                            searchTimeout = setTimeout(() => { searchBuffer = ''; }, 500);
+                            
+                            const match = optionEls.find(o => o.dataset.rawName.toLowerCase().startsWith(searchBuffer));
+                            if (match) {
+                                triggerText.textContent = `${labelText}${match.textContent}`;
+                                trigger.dataset.value = match.dataset.value;
+                                optionEls.forEach(opt => {
+                                    opt.classList.toggle('selected', opt.dataset.value === match.dataset.value);
+                                });
+                                if (optionsDiv.classList.contains('show')) {
+                                    match.scrollIntoView({ block: 'nearest' });
+                                }
+                                onChange(match.dataset.value);
+                            }
+                        }
+                    });
                 }
                 
                 container.append(trigger, optionsDiv);
@@ -2233,8 +2261,9 @@
                     
                     if (triggerTextSpan) {
                         triggerTextSpan.textContent = `${labelText}${elements[selectedElementKey]}`;
-                    } else if (triggerInput) {
-                        const labelSpan = elementDropdownTrigger.querySelector('span');
+                    }
+                    if (triggerInput) {
+                        const labelSpan = elementDropdownTrigger.querySelector('.dropdown-trigger-label');
                         if (labelSpan) labelSpan.textContent = labelText;
                         triggerInput.value = elements[selectedElementKey].replace(/\s*\(.*?\)/g, '');
                     }
