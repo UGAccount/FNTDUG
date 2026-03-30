@@ -1295,6 +1295,35 @@
                 return parts.length > 0 ? parts.join(' / ') : 'N/A';
             };
 
+            const getValueDataForCurrentSelection = (stats) => {
+                if (!stats) return null;
+
+                if (stats.DevValue) {
+                    const checkMatch = (override) => {
+                        const reqVersion = (override.version || '').toLowerCase();
+                        const reqEnchant = (override.enchant || '').toLowerCase();
+                        const curVersion = selectedVersionKey.toLowerCase();
+                        const curEnchant = selectedEnchantKey.toLowerCase();
+                        
+                        return reqVersion === curVersion && reqEnchant === curEnchant;
+                    };
+
+                    if (Array.isArray(stats.DevValue)) {
+                        const match = stats.DevValue.find(checkMatch);
+                        if (match) return match;
+                    } else if (typeof stats.DevValue === 'object') {
+                        if (checkMatch(stats.DevValue)) return stats.DevValue;
+                    }
+                }
+
+                if (stats.Value) {
+                    const key = selectedVersionKey.toLowerCase() === 'shiny' ? 'Shiny' : 'Normal';
+                    return stats.Value[key] || null;
+                }
+
+                return null;
+            };
+
             const createUnitSlug = (name) => {
                 if (typeof name !== 'string') return '';
                 return name
@@ -2574,7 +2603,7 @@
                     headers.push('Switch Time');
                     rowData.push(`${stats.SwitchSpeed}s`);
                 }
-                const valueData = stats.Value ? (selectedVersionKey === 'shiny' ? stats.Value.Shiny : stats.Value.Normal) : null;
+                const valueData = getValueDataForCurrentSelection(stats);
                 const existsValue = valueData?.exists ? formatLargeNumber(parseFloat(String(valueData.exists).replace(/,/g, ''))) : 'N/A';
                 
                 const placementsIndex = headers.indexOf('Placements');
@@ -2587,7 +2616,7 @@
 
             function buildValueTable(stats, isSecondary) {
                 if (!stats) return null;
-                const valueData = stats.Value ? (selectedVersionKey === 'shiny' ? stats.Value.Shiny : stats.Value.Normal) : null;
+                const valueData = getValueDataForCurrentSelection(stats);
                 if (!valueData) return null;
                 
                 const shouldShowValueTable = !(
@@ -4189,6 +4218,7 @@
                     enchants = generateOptionsObject(enchantMultipliers);
 
                     const unitValues = responseData.Values.Units || {};
+                    const devValues = responseData.Values.Dev || {};
                     const rawUnitData = responseData.Units;
                     const finalUnitData = {};
                     rawUnitData.forEach(unit => {
@@ -4203,6 +4233,7 @@
                             Obtainability: unit.Obtainability,
                             Skins: unit.Skins,
                             Value: unitValues[unit.Name] || null,
+                            DevValue: devValues[unit.Name] || null,
                             BackendNote: unit.Note || undefined,
                         };
                     });
