@@ -2240,6 +2240,48 @@
                 }
             }
 
+            function updateAuxiliaryTables(currentStats, secStats) {
+                const updateContainer = (id, buildFuncPrimary, buildFuncSecondary) => {
+                    const container = document.getElementById(id);
+                    if (!container) return;
+                    const wrapper = createSectionWrapper(
+                        () => buildFuncPrimary(currentStats, false),
+                        () => secStats ? buildFuncSecondary(secStats, true) : null
+                    );
+                    if (wrapper) {
+                        container.replaceChildren(wrapper);
+                        container.style.display = 'contents';
+                    } else {
+                        container.innerHTML = '';
+                        container.style.display = 'none';
+                    }
+                };
+
+                const updateNoteContainer = () => {
+                    const container = document.getElementById('note-container');
+                    if (!container) return;
+                    const wrapper = createSectionWrapper(
+                        () => currentStats && currentStats.BackendNote ? createTableNode(['Note'], [[currentStats.BackendNote]], false, 'note-row') : null,
+                        () => secStats && secStats.BackendNote ? createTableNode(['Note'], [[secStats.BackendNote]], true, 'note-row') : null
+                    );
+                    if (wrapper) {
+                        container.replaceChildren(wrapper);
+                        container.style.display = 'contents';
+                    } else {
+                        container.innerHTML = '';
+                        container.style.display = 'none';
+                    }
+                };
+
+                updateNoteContainer();
+                updateContainer('rarity-container', buildRarityTable, buildRarityTable);
+                updateContainer('value-container', buildValueTable, buildValueTable);
+                updateContainer('obtainability-container', buildObtainabilityTable, buildObtainabilityTable);
+                updateContainer('ability-container', buildAbilitiesTable, buildAbilitiesTable);
+                
+                adjustObtainabilityLayout();
+            }
+
             function updateView() {
                 if (!currentUnitName && !isDpsRankingsMode) return;
                 
@@ -2353,10 +2395,14 @@
                     const stats = getCurrentUnitData();
                     if (!stats) return;
                     
-                    const primaryData = generateUpgradeRowsAndSummary(stats, false);
-                    const secondaryData = (isCompareMode && secondaryUnitName && allUnitData[secondaryUnitName]) 
-                        ? generateUpgradeRowsAndSummary(allUnitData[secondaryUnitName], true) 
+                    const secStats = (isCompareMode && secondaryUnitName && allUnitData[secondaryUnitName]) 
+                        ? allUnitData[secondaryUnitName] 
                         : null;
+
+                    updateAuxiliaryTables(stats, secStats);
+
+                    const primaryData = generateUpgradeRowsAndSummary(stats, false);
+                    const secondaryData = secStats ? generateUpgradeRowsAndSummary(secStats, true) : null;
 
                     const primaryTbodyRef = document.getElementById('upgrades-tbody');
                     const primaryHeaderRef = document.getElementById('stats-header-row');
@@ -2613,12 +2659,9 @@
                     pendingMainBoosts = null;
                 }
 
-                unitStatsContainer.style.visibility = 'hidden';
-                unitStatsContainer.innerHTML = '';
-                
                 const stats = getCurrentUnitData();
                 if (!stats && !isDpsRankingsMode) {
-                    unitStatsContainer.style.visibility = 'visible';
+                    unitStatsContainer.innerHTML = '';
                     return;
                 }
                 
@@ -2627,7 +2670,7 @@
                 }
                 const currentStats = getCurrentUnitData();
                 if (!currentStats) {
-                    unitStatsContainer.style.visibility = 'visible';
+                    unitStatsContainer.innerHTML = '';
                     return;
                 }
                 
@@ -2636,35 +2679,15 @@
                 
                 const secStats = (isCompareMode && secondaryUnitName) ? allUnitData[secondaryUnitName] : null;
 
-                const noteWrapper = createSectionWrapper(
-                    () => currentStats.BackendNote ? createTableNode(['Note'], [[currentStats.BackendNote]], false, 'note-row') : null,
-                    () => (secStats && secStats.BackendNote) ? createTableNode(['Note'], [[secStats.BackendNote]], true, 'note-row') : null
-                );
-                if (noteWrapper) unitStatsContainer.appendChild(noteWrapper);
+                const fragment = document.createDocumentFragment();
 
-                const rarityWrapper = createSectionWrapper(
-                    () => buildRarityTable(currentStats, false),
-                    () => buildRarityTable(secStats, true)
-                );
-                if (rarityWrapper) unitStatsContainer.appendChild(rarityWrapper);
-
-                const valueWrapper = createSectionWrapper(
-                    () => buildValueTable(currentStats, false),
-                    () => buildValueTable(secStats, true)
-                );
-                if (valueWrapper) unitStatsContainer.appendChild(valueWrapper);
-
-                const obtainabilityWrapper = createSectionWrapper(
-                    () => buildObtainabilityTable(currentStats, false),
-                    () => buildObtainabilityTable(secStats, true)
-                );
-                if (obtainabilityWrapper) unitStatsContainer.appendChild(obtainabilityWrapper);
-
-                const abilityWrapper = createSectionWrapper(
-                    () => buildAbilitiesTable(currentStats, false),
-                    () => buildAbilitiesTable(secStats, true)
-                );
-                if (abilityWrapper) unitStatsContainer.appendChild(abilityWrapper);
+                const auxContainers = ['note-container', 'rarity-container', 'value-container', 'obtainability-container', 'ability-container'];
+                auxContainers.forEach(id => {
+                    const div = document.createElement('div');
+                    div.id = id;
+                    div.style.display = 'none';
+                    fragment.appendChild(div);
+                });
 
                 const auxMain = document.createElement('div');
                 auxMain.className = 'main-table-container';
@@ -2831,15 +2854,17 @@
                 const boostHeaderRow = document.createElement('tr');
                 const boostHeaderCell = document.createElement('th');
                 const dropdownContainer = document.createElement('div');
+                
                 const versionDropdown = createCustomDropdown('versionDropdown', 'Version:', versions, selectedVersionKey, (value) => {
                     selectedVersionKey = value;
                     updateUnitVisuals();
-                    renderUnitTables();
+                    updateView();
                     populateGallery();
                 });
                 
                 const enchantsDropdown = createCustomDropdown('enchantDropdown', 'Enchant:', enchants, selectedEnchantKey, (value) => {
-                    selectedEnchantKey = value; updateView();
+                    selectedEnchantKey = value; 
+                    updateView();
                 });
 
                 boostHeaderRow.className = 'main-header-row';
@@ -2906,17 +2931,18 @@
 
                 mainTableWrapper.appendChild(pairedMainWrapper);
                 auxMain.appendChild(mainTableWrapper);
-                unitStatsContainer.appendChild(auxMain);
+                fragment.appendChild(auxMain);
 
                 const bottomStatsContainer = document.createElement('div');
                 bottomStatsContainer.id = 'bottom-stats-container';
                 bottomStatsContainer.style.display = 'contents';
-                unitStatsContainer.appendChild(bottomStatsContainer);
+                fragment.appendChild(bottomStatsContainer);
 
+                unitStatsContainer.replaceChildren(fragment);
+
+                updateAuxiliaryTables(currentStats, secStats);
                 updateView();
                 setDropdownMinWidths();
-                adjustObtainabilityLayout();
-                unitStatsContainer.style.visibility = 'visible';
             }
             
             const calculatePercentile = (arr, percentile) => {
@@ -3584,7 +3610,15 @@
                     if (currentUnitName === unitName) {
                         selectedVersionKey = isNowShiny ? 'shiny' : 'normal';
                         updateUnitVisuals();
-                        renderUnitTables();
+                        const versionTrigger = document.getElementById('versionDropdown');
+                        if (versionTrigger) {
+                            versionTrigger.dataset.value = selectedVersionKey;
+                            const txt = versionTrigger.querySelector('.dropdown-trigger-text');
+                            const inp = versionTrigger.querySelector('.dropdown-trigger-input');
+                            if (txt) txt.textContent = `Version: ${versions[selectedVersionKey]}`;
+                            if (inp) inp.value = versions[selectedVersionKey].replace(/\s*\(.*?\)/g, '');
+                        }
+                        updateView();
                     }
                 });
                 imageContainer.appendChild(shinyBtn);
@@ -4371,10 +4405,8 @@
                 } else {
                     const tableExists = !!document.getElementById('main-stats-table');
                     if (!tableExists) {
-                        unitStatsContainer.style.visibility = 'hidden';
                         const firstUnit = Object.keys(allUnitData)[0];
                         selectAndDisplayUnit(firstUnit, 'normal');
-                        unitStatsContainer.style.visibility = 'visible';
                     }
                     currentUnitName = previousUnitName;
                     setupDpsRankingsView();
