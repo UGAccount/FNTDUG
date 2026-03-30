@@ -2557,8 +2557,39 @@
             }
 
             function buildObtainabilityTable(stats, isSecondary) {
-                if (!stats) return null;
-                const methods = stats.Obtainability && stats.Obtainability.length > 0 ? stats.Obtainability : ['Data Not Available'];
+                if (!stats || !stats.Obtainability) return null;
+
+                const obtainabilityData = stats.Obtainability;
+                let methods = [];
+
+                if (Array.isArray(obtainabilityData)) {
+                    methods = obtainabilityData.length > 0 ? obtainabilityData : ['Data Not Available'];
+                } 
+                else if (typeof obtainabilityData === 'object' && obtainabilityData !== null) {
+                    const isShiny = selectedVersionKey === 'shiny';
+                    const enchant = selectedEnchantKey !== 'None' ? selectedEnchantKey : null;
+                    
+                    let keyToUse = null;
+
+                    if (isShiny && enchant) {
+                        keyToUse = obtainabilityData[`Shiny-${enchant}`] ? `Shiny-${enchant}`
+                                 : obtainabilityData[`Base-${enchant}`] ? `Base-${enchant}`
+                                 : obtainabilityData['Shiny'] ? 'Shiny'
+                                 : 'Base';
+                    } else if (isShiny) {
+                        keyToUse = obtainabilityData['Shiny'] ? 'Shiny' : 'Base';
+                    } else if (enchant) {
+                        keyToUse = obtainabilityData[`Base-${enchant}`] ? `Base-${enchant}` : 'Base';
+                    } else {
+                        keyToUse = 'Base';
+                    }
+
+                    methods = obtainabilityData[keyToUse] || obtainabilityData['Base'] || ['Data Not Available'];
+
+                } else {
+                    methods = ['Data Not Available'];
+                }
+
                 const table = document.createElement('table');
                 table.classList.add('obtainability-table');
                 if (isSecondary) table.classList.add('secondary-table');
