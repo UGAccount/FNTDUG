@@ -1295,30 +1295,6 @@
                 return parts.length > 0 ? parts.join(' / ') : 'N/A';
             };
 
-            const getValueDataForCurrentSelection = (stats) => {
-                if (!stats || !stats.Value) return null;
-                const valueObj = stats.Value;
-
-                if (Array.isArray(valueObj)) {
-                    const match = valueObj.find(v =>
-                        (v.version || 'Normal').toLowerCase() === selectedVersionKey.toLowerCase() &&
-                        (v.enchant || 'None').toLowerCase() === selectedEnchantKey.toLowerCase()
-                    );
-                    if (match) return match;
-                    return null;
-                } else if (valueObj.version !== undefined || valueObj.enchant !== undefined) {
-                    const reqVersion = (valueObj.version || 'Normal').toLowerCase();
-                    const reqEnchant = (valueObj.enchant || 'None').toLowerCase();
-                    if (reqVersion === selectedVersionKey.toLowerCase() && reqEnchant === selectedEnchantKey.toLowerCase()) {
-                        return valueObj;
-                    }
-                    return null;
-                }
-
-                const key = selectedVersionKey.toLowerCase() === 'shiny' ? 'Shiny' : 'Normal';
-                return valueObj[key] || null;
-            };
-
             const createUnitSlug = (name) => {
                 if (typeof name !== 'string') return '';
                 return name
@@ -2598,7 +2574,7 @@
                     headers.push('Switch Time');
                     rowData.push(`${stats.SwitchSpeed}s`);
                 }
-                const valueData = getValueDataForCurrentSelection(stats);
+                const valueData = stats.Value ? (selectedVersionKey === 'shiny' ? stats.Value.Shiny : stats.Value.Normal) : null;
                 const existsValue = valueData?.exists ? formatLargeNumber(parseFloat(String(valueData.exists).replace(/,/g, ''))) : 'N/A';
                 
                 const placementsIndex = headers.indexOf('Placements');
@@ -2611,7 +2587,7 @@
 
             function buildValueTable(stats, isSecondary) {
                 if (!stats) return null;
-                const valueData = getValueDataForCurrentSelection(stats);
+                const valueData = stats.Value ? (selectedVersionKey === 'shiny' ? stats.Value.Shiny : stats.Value.Normal) : null;
                 if (!valueData) return null;
                 
                 const shouldShowValueTable = !(
@@ -4213,8 +4189,6 @@
                     enchants = generateOptionsObject(enchantMultipliers);
 
                     const unitValues = responseData.Values.Units || {};
-                    const devValues = responseData.Values.Dev || {};
-                    const combinedValues = { ...unitValues, ...devValues };
                     const rawUnitData = responseData.Units;
                     const finalUnitData = {};
                     rawUnitData.forEach(unit => {
@@ -4228,7 +4202,7 @@
                             Actives: unit.Actives || [],
                             Obtainability: unit.Obtainability,
                             Skins: unit.Skins,
-                            Value: combinedValues[unit.Name] || null,
+                            Value: unitValues[unit.Name] || null,
                             BackendNote: unit.Note || undefined,
                         };
                     });
