@@ -1179,6 +1179,13 @@
                 "Water": { "Boosts": { "Fire": 1.3, "Electricity": 0.85 } }
             };
 
+            const elementInherentBoosts = {
+                "Neutral": { dmg: 1.03, range: 1.03, cd: 0.97 },
+                "Light": { cd: 0.97 },
+                "Dark": { dmg: 1.03 },
+                "Rust": { dmg: 1.06, cd: 0.97 }
+            };
+
             const rarityClassMap = {
                 'Uncommon': 'rarity-uncommon',
                 'Rare': 'rarity-rare',
@@ -1204,6 +1211,14 @@
                 const finalRank = rank - (degrees / 1000);
                 return finalRank + (isSwitchUnit ? 0.5 : 0);
             };
+
+            const getUnitElementsArray = (elementField) => {
+                if (Array.isArray(elementField)) return elementField;
+                if (typeof elementField === 'string' && elementField.trim() !== '') return [elementField];
+                return ['Neutral'];
+            };
+
+            const getUnitElementsString = (elementField) => getUnitElementsArray(elementField).join(', ');
 
             const formatLargeNumber = (num) => {
                 if (num < 1000) return num.toString().replace(/\.0$/, '');
@@ -1859,19 +1874,21 @@
                     multipliers.dmg *= 1.10;
                 }
                 
-                const elementInherentBoosts = {
-                    "Neutral": { dmg: 1.03, range: 1.03, cd: 0.97 },
-                    "Light": { cd: 0.97 },
-                    "Dark": { dmg: 1.03 },
-                    "Rust": { dmg: 1.06, cd: 0.97 }
-                };
+                const unitElements = getUnitElementsArray(unitElement);
+                let elDmgBuff = 0, elCdBuff = 0, elRangeBuff = 0;
 
-                const elBoosts = elementInherentBoosts[unitElement || 'Neutral'];
-                if (elBoosts) {
-                    if (elBoosts.dmg) multipliers.dmg *= elBoosts.dmg;
-                    if (elBoosts.cd) multipliers.cd *= elBoosts.cd;
-                    if (elBoosts.range) multipliers.range *= elBoosts.range;
-                }
+                unitElements.forEach(el => {
+                    const elBoosts = elementInherentBoosts[el];
+                    if (elBoosts) {
+                        if (elBoosts.dmg) elDmgBuff += (elBoosts.dmg - 1);
+                        if (elBoosts.cd) elCdBuff += (elBoosts.cd - 1);
+                        if (elBoosts.range) elRangeBuff += (elBoosts.range - 1);
+                    }
+                });
+
+                multipliers.dmg *= Math.max(0, 1 + elDmgBuff);
+                multipliers.cd *= Math.max(0, 1 + elCdBuff);
+                multipliers.range *= Math.max(0, 1 + elRangeBuff);
 
                 multipliers.dmg *= calculateLevelMultiplier(customLevel);
 
@@ -2006,15 +2023,23 @@
                     }
                     
                     if (hasDamage) {
-                        const elementToUse = isSecondary ? (unitData.Element || 'Neutral') : selectedElementKey;
-                        const advantages = elementalAdvantages[elementToUse]?.Boosts;
-                        if (elementToUse !== 'Neutral' && advantages) {
-                            const boosts = Object.entries(advantages).filter(([, val]) => val !== 1.0);
-                            if (boosts.length > 0) {
-                                const eHeaders = boosts.map(([key]) => `${key} DPS`);
-                                const eData = [boosts.map(([, val]) => formatStat(maxDPS * (unitData.Max || 1) * val, 2))];
-                                elementalData = { headers: eHeaders, data: eData };
+                        const elementsToUse = getUnitElementsArray(isSecondary ? unitData.Element : selectedElementKey);
+                        const allAdvantages = {};
+                        
+                        elementsToUse.forEach(el => {
+                            const advantages = elementalAdvantages[el]?.Boosts;
+                            if (advantages) {
+                                Object.entries(advantages).forEach(([enemyEl, val]) => {
+                                    allAdvantages[enemyEl] = (allAdvantages[enemyEl] || 0) + (val - 1);
+                                });
                             }
+                        });
+                        
+                        const boosts = Object.entries(allAdvantages).filter(([, buff]) => buff !== 0);
+                        if (boosts.length > 0) {
+                            const eHeaders = boosts.map(([key]) => `${key} DPS`);
+                            const eData = [boosts.map(([, buff]) => formatStat(maxDPS * (unitData.Max || 1) * Math.max(0, 1 + buff), 2))];
+                            elementalData = { headers: eHeaders, data: eData };
                         }
                     }
                 }
@@ -2039,14 +2064,18 @@
                 const maxLevelStats = unit.Upgrades[unit.Upgrades.length - 1];
                 if (maxLevelStats.Damage === undefined) return null;
 
-                const unitElement = unit.Element || 'Neutral';
-                const multipliers = getGlobalBoostMultipliers(unitElement);
+                const multipliers = getGlobalBoostMultipliers(unit.Element);
                 const placements = unit.Max || 1;
+                
+                const unitElements = getUnitElementsArray(unit.Element);
                 const enemyElement = selectedElementKey;
-                let elementalMultiplier = 1.0;
-                if (elementalAdvantages[unitElement]?.Boosts?.[enemyElement] !== undefined) {
-                    elementalMultiplier = elementalAdvantages[unitElement].Boosts[enemyElement];
-                }
+                let advBuff = 0;
+                unitElements.forEach(el => {
+                    if (elementalAdvantages[el]?.Boosts?.[enemyElement] !== undefined) {
+                        advBuff += (elementalAdvantages[el].Boosts[enemyElement] - 1);
+                    }
+                });
+                const elementalMultiplier = Math.max(0, 1 + advBuff);
 
                 let finalDmg, boostedCd, boostedRange, fullDps, bestAttackTypeForSort, maxDegrees;
 
@@ -2108,7 +2137,7 @@
                     bestAttackTypeForSort: bestAttackTypeForSort,
                     maxDegrees: maxDegrees,
                     isSwitchUnit: !!unit.isSwitchUnit,
-                    element: unitElement,
+                    element: getUnitElementsString(unit.Element),
                     placements: placements,
                     fullDps: fullDps,
                     damage: finalDmg,
@@ -2330,13 +2359,21 @@
                     const triggerInput = elementDropdownTrigger.querySelector('.dropdown-trigger-input');
                     const labelText = isDpsRankingsMode ? 'Enemy Element: ' : 'Element: ';
                     
+                    const currentStats = getCurrentUnitData();
+                    let displayElementText = 'Neutral';
+                    if (isDpsRankingsMode) {
+                        displayElementText = elements[selectedElementKey];
+                    } else if (currentStats) {
+                        displayElementText = getUnitElementsString(currentStats.Element);
+                    }
+
                     if (triggerTextSpan) {
-                        triggerTextSpan.textContent = `${labelText}${elements[selectedElementKey]}`;
+                        triggerTextSpan.textContent = `${labelText}${displayElementText}`;
                     }
                     if (triggerInput) {
                         const labelSpan = elementDropdownTrigger.querySelector('.dropdown-trigger-label');
                         if (labelSpan) labelSpan.textContent = labelText;
-                        triggerInput.value = elements[selectedElementKey].replace(/\s*\(.*?\)/g, '');
+                        triggerInput.value = displayElementText.replace(/\s*\(.*?\)/g, '');
                     }
                     
                     if (isDpsRankingsMode) {
@@ -2598,7 +2635,7 @@
             function buildRarityTable(stats, isSecondary) {
                 if (!stats) return null;
                 let headers = ['Rarity', 'Attack Type', 'Element', 'Placements'];
-                let rowData = [stats.Rarity || 'N/A', stats.Type || 'N/A', stats.Element || 'Neutral', stats.Max || 'N/A'];
+                let rowData = [stats.Rarity || 'N/A', stats.Type || 'N/A', getUnitElementsString(stats.Element), stats.Max || 'N/A'];
                 if (stats.SwitchSpeed) {
                     headers.push('Switch Time');
                     rowData.push(`${stats.SwitchSpeed}s`);
@@ -2703,7 +2740,6 @@
                     return;
                 }
                 
-                selectedElementKey = isDpsRankingsMode ? selectedElementKey : (currentStats.Element || 'Neutral');
                 updateUnitVisuals();
                 
                 const secStats = (isCompareMode && secondaryUnitName) ? allUnitData[secondaryUnitName] : null;
