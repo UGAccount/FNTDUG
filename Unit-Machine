@@ -2023,7 +2023,7 @@
                     }
                     
                     if (hasDamage) {
-                        const elementsToUse = getUnitElementsArray(isSecondary ? unitData.Element : selectedElementKey);
+                        const elementsToUse = getUnitElementsArray(unitData.Element);
                         const allAdvantages = {};
                         
                         elementsToUse.forEach(el => {
@@ -2035,7 +2035,10 @@
                             }
                         });
                         
-                        const boosts = Object.entries(allAdvantages).filter(([, buff]) => buff !== 0);
+                        const boosts = Object.entries(allAdvantages)
+                            .filter(([, buff]) => Math.abs(buff) > 0.001)
+                            .sort((a, b) => b[1] - a[1]);
+
                         if (boosts.length > 0) {
                             const eHeaders = boosts.map(([key]) => `${key} DPS`);
                             const eData = [boosts.map(([, buff]) => formatStat(maxDPS * (unitData.Max || 1) * Math.max(0, 1 + buff), 2))];
@@ -2362,7 +2365,7 @@
                     const currentStats = getCurrentUnitData();
                     let displayElementText = 'Neutral';
                     if (isDpsRankingsMode) {
-                        displayElementText = elements[selectedElementKey];
+                        displayElementText = elements[selectedElementKey] || 'Neutral';
                     } else if (currentStats) {
                         displayElementText = getUnitElementsString(currentStats.Element);
                     }
