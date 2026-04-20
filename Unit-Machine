@@ -4214,7 +4214,7 @@
 
             (async function fetchData() {
                 try {
-                    const GITHUB_IMAGES_URL = 'https://raw.githubusercontent.com/UGAccount/FNTDUG/main/Images';
+                    const GITHUB_IMAGES_URL = 'https://raw.githubusercontent.com/UGAccount/FNTD2/main/Images';
 
                     const [statsResponse, imagesResponse] = await Promise.all([
                         fetch(GITHUB_URL),
